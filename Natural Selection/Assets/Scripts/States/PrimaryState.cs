@@ -4,16 +4,30 @@ using UnityEngine;
 
 public class PrimaryState : State
 {
-	private SubState _currentSubState;
-	private string _subStateName;
+	private enum SubState { ROAMING, IDLE }
+	private SubState _currentSubState = SubState.ROAMING;
 
-	public PrimaryState()
+	public PrimaryState(Entity entity) : base(entity)
 	{
+		_entity.isOnReproducingState = false;
+		_entity.fleeing = false;
 		_stateName = "Primary State";
+		_entity.isMating = false;
 	}
 
 	public override void HandleState()
 	{
+		if (ResourcesAreSufficient(30.0f))
+		{
+			if(_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
+				ChangeEntityState(new ReproduceState(_entity));
+			else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
+				ChangeEntityState(new ReproduceState(_entity));
+		}
+
+		if (_entity.order == Order.HERBIVORE && IsHungryOrThirsty(50.0f))
+			ChangeEntityState(new HungryThirstyState(_entity));
+
 		switch (_currentSubState)
 		{
 			case SubState.ROAMING:
@@ -25,23 +39,25 @@ public class PrimaryState : State
 			default:
 				break;
 		}
+
+		if (_entity.predator != null)
+			ChangeEntityState(new FleeState(_entity));
+
+		if (_entity.order == Order.CARNIVORE && IsHungryOrThirsty(50.0f))
+			ChangeEntityState(new ChaseState(_entity));
 	}
 
 	private void RoamingSubState()
 	{
-		_subStateName = "Roaming SubState";
-
 		if (IsHungryOrThirsty(50.0f))
 		{
-			_entity.TurnOnSense();
-			ChangeEntityState(new SearchResourcesState());
+			ChangeEntityState(new HungryThirstyState(_entity));
 		}
 
-		if (NotMovingOrNoPath())
+		if (_entity.IsStuck() || !_entity.HasPath())
 		{
-			Vector3 i = Utility.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV);
+			Vector3 i = TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV);
 			_entity.SetDestination(i);
-			//GameObject.Instantiate(_entity.beacon, i, Quaternion.identity);
 		}
 
 		if (_entity.Velocity() > 0.01f)
@@ -56,8 +72,6 @@ public class PrimaryState : State
 
 	private void IdleSubState()
 	{
-		_subStateName = "Idle SubState";
-
 		_entity.thirstiness += Time.deltaTime * 5 / 20;
 		_entity.hungriness += Time.deltaTime * 5 / 20;
 
@@ -74,19 +88,4 @@ public class PrimaryState : State
 	{
 		return _entity.thirstiness > threshold || _entity.hungriness > threshold;
 	}
-
-	private bool NotMovingOrNoPath()
-	{
-		return _entity.Velocity() < _entity.minVelocity || !_entity.HasPath();
-	}
-
-	private string GetSubStateName()
-	{
-		return _subStateName;
-	}	
-}
-
-public enum SubState
-{
-	ROAMING, IDLE
 }
