@@ -12,7 +12,8 @@ public class FleeState : State
 		lookingAway = false;
 		_entity.fleeing = true;
 		//_entity.fleeing = true;
-		_entity.SetSkinColor(EntityGenderColor.FLEEING);
+		//_entity.SetSkinColor(EntityGenderColor.FLEEING);
+		_entity.DangerColor();	// CHANGE COLOR
 	}
 
 	public override void HandleState()
@@ -40,7 +41,7 @@ public class FleeState : State
 		if (_entity.predator == null)
 		{
 			_entity.DecreaseMaxSpeed();
-			_entity.SetSkinColor(EntityGenderColor.HERBIVORE);
+			_entity.ResetColor(); // CHANGE COLOR
 			ChangeEntityState(new PrimaryState(_entity));
 		}
 	}

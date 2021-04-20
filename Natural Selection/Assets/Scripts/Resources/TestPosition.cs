@@ -25,7 +25,10 @@ public class TestPosition : MonoBehaviour
             entities.Add(gameObject.transform.GetChild(i).gameObject);
 
         foreach (GameObject e in entities)
+        {
             e.transform.position = GetRandomPosition();
+            e.transform.rotation = Quaternion.Euler(0.0f, Random.Range(0, 360), 0.0f);
+        }
     }
 
     public GameObject CreateNewEntity(Order order)

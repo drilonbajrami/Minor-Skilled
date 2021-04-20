@@ -11,7 +11,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Prototype v1.1.unity
     guid: 9aa1dd51f1c94104882ab1ea2b758e6a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Prototype v1.2.unity
     guid: a6770441bbe5b33498da109d93436bde
+  - enabled: 1
+    path: Assets/Scenes/HungryThirstyState.unity
+    guid: e9758068c6909d14f944d0a58497de48
+  - enabled: 1
+    path: Assets/Scenes/ChaseFleeState.unity
+    guid: 15c6c96d640c6924fbfde71c4bdaee29
+  - enabled: 1
+    path: Assets/Scenes/ReproduceState.unity
+    guid: 42413f7f681b64b41aeafff2bc5911dd
   m_configObjects: {}

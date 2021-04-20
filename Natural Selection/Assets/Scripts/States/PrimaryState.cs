@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PrimaryState : State
 {
@@ -17,42 +18,112 @@ public class PrimaryState : State
 
 	public override void HandleState()
 	{
-		if (ResourcesAreSufficient(30.0f))
+		if (SceneManager.GetActiveScene().buildIndex == 3)
 		{
-			if(_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
-				ChangeEntityState(new ReproduceState(_entity));
-			else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
-				ChangeEntityState(new ReproduceState(_entity));
+			if (_entity.predator != null)
+				ChangeEntityState(new FleeState(_entity));
+
+			if (_entity.order == Order.CARNIVORE && IsHungryOrThirsty(50.0f))
+				ChangeEntityState(new ChaseState(_entity));
+
+			switch (_currentSubState)
+			{
+				case SubState.ROAMING:
+					RoamingSubState();
+					break;
+				case SubState.IDLE:
+					IdleSubState();
+					break;
+				default:
+					break;
+			}
 		}
-
-		if (_entity.order == Order.HERBIVORE && IsHungryOrThirsty(50.0f))
-			ChangeEntityState(new HungryThirstyState(_entity));
-
-		switch (_currentSubState)
+		else if (SceneManager.GetActiveScene().buildIndex == 2)
 		{
-			case SubState.ROAMING:
-				RoamingSubState();
-				break;
-			case SubState.IDLE:
-				IdleSubState();
-				break;
-			default:
-				break;
+			if (_entity.order == Order.HERBIVORE && IsHungryOrThirsty(50.0f))
+				ChangeEntityState(new HungryThirstyState(_entity));
+
+			switch (_currentSubState)
+			{
+				case SubState.ROAMING:
+					RoamingSubState();
+					break;
+				case SubState.IDLE:
+					IdleSubState();
+					break;
+				default:
+					break;
+			}
 		}
+		else if (SceneManager.GetActiveScene().buildIndex == 4)
+		{
+			if (Input.GetKeyDown(KeyCode.M))
+			{
+					if (_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
+						ChangeEntityState(new ReproduceState(_entity));
+					else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
+						ChangeEntityState(new ReproduceState(_entity));
+			}
 
-		if (_entity.predator != null)
-			ChangeEntityState(new FleeState(_entity));
+			//if (ResourcesAreSufficient(30.0f))
+			//{
+			//	if (_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
+			//		ChangeEntityState(new ReproduceState(_entity));
+			//	else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
+			//		ChangeEntityState(new ReproduceState(_entity));
+			//}
 
-		if (_entity.order == Order.CARNIVORE && IsHungryOrThirsty(50.0f))
-			ChangeEntityState(new ChaseState(_entity));
+			switch (_currentSubState)
+			{
+				case SubState.ROAMING:
+					RoamingSubState();
+					break;
+				case SubState.IDLE:
+					IdleSubState();
+					break;
+				default:
+					break;
+			}
+		}
+		else
+		{
+			if (ResourcesAreSufficient(30.0f))
+			{
+				if (_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
+					ChangeEntityState(new ReproduceState(_entity));
+				else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
+					ChangeEntityState(new ReproduceState(_entity));
+			}
+
+			if (_entity.order == Order.HERBIVORE && IsHungryOrThirsty(50.0f))
+				ChangeEntityState(new HungryThirstyState(_entity));
+
+			switch (_currentSubState)
+			{
+				case SubState.ROAMING:
+					RoamingSubState();
+					break;
+				case SubState.IDLE:
+					IdleSubState();
+					break;
+				default:
+					break;
+			}
+
+			if (_entity.predator != null)
+				ChangeEntityState(new FleeState(_entity));
+
+			if (_entity.order == Order.CARNIVORE && IsHungryOrThirsty(50.0f))
+				ChangeEntityState(new ChaseState(_entity));
+		}
 	}
 
 	private void RoamingSubState()
 	{
-		if (IsHungryOrThirsty(50.0f))
-		{
-			ChangeEntityState(new HungryThirstyState(_entity));
-		}
+		//if (IsHungryOrThirsty(50.0f))
+		//{
+		//	ChangeEntityState(new HungryThirstyState(_entity));
+		//}
 
 		if (_entity.IsStuck() || !_entity.HasPath())
 		{
@@ -66,8 +137,8 @@ public class PrimaryState : State
 			_entity.hungriness += Time.deltaTime * _entity.Velocity() / 5;
 		}
 
-		if (ResourcesAreSufficient(20.0f))
-			_currentSubState = SubState.IDLE;
+		//if (ResourcesAreSufficient(20.0f))
+		//	_currentSubState = SubState.IDLE;
 	}
 
 	private void IdleSubState()

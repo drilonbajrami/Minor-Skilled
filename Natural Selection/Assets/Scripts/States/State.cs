@@ -22,7 +22,6 @@ public abstract class State
 	public void ChangeEntityState(State state)
 	{
 		this._entity.ChangeState(state);
-		//state.SetEntity(this._entity);
 	}
 
 	public string GetStateName()

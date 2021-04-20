@@ -17,7 +17,8 @@ public class ChaseState : State
 		chasing = false;
 		maxChaseTime = 600.0f;
 		currentChaseTime = maxChaseTime;
-		_entity.SetSkinColor(EntityGenderColor.CHASING);
+		//_entity.SetSkinColor(EntityGenderColor.CHASING);
+		_entity.DangerColor();	// CHANGE COLOR
 	}
 
 	public override void HandleState()
@@ -56,7 +57,7 @@ public class ChaseState : State
 				GameObject.Destroy(prey.gameObject);
 				_entity.hungriness = 0;
 				_entity.thirstiness = 0;
-				_entity.SetSkinColor(EntityGenderColor.CARNIVORE);
+				_entity.ResetColor(); // CHANGE COLOR
 				ChangeEntityState(new PrimaryState(_entity));
 			}
 		}

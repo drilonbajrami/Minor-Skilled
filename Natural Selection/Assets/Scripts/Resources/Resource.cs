@@ -12,13 +12,14 @@ public class Resource : MonoBehaviour, IPooledObject
 {
     [SerializeField] ResourceType type;
     private bool _isConsumed;
-    private float onConsumeTimer = 10.0f;
+    private float onConsumeTimer;
 
     public void OnObjectSpawn()
     {
-        gameObject.SetActive(true);
+        onConsumeTimer = 10.0f;
         _isConsumed = false;
         gameObject.GetComponent<MeshRenderer>().enabled = true;
+        gameObject.SetActive(true);
     }
 
 	public ResourceType GetResourceType()
@@ -42,8 +43,8 @@ public class Resource : MonoBehaviour, IPooledObject
 		if (_isConsumed)
 		{
 			onConsumeTimer -= Time.deltaTime;
-			if (onConsumeTimer <= 0.0f)
-				gameObject.SetActive(false);
+            if (onConsumeTimer <= 0.0f)
+                gameObject.SetActive(false);
 		}
 	}
 }

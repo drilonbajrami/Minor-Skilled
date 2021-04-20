@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ResourceSpawner : MonoBehaviour
 {
-    /*[SerializeField]*/ private GameObject ground;
+    private GameObject ground;
     private MeshCollider groundCollider;
 
     [SerializeField] private float spawnInterval = 5.0f;
@@ -30,6 +30,8 @@ public class ResourceSpawner : MonoBehaviour
                 resourcePooler.SpawnFromPool("Water", GetRandomPosition(), Quaternion.identity);
             else
                 resourcePooler.SpawnFromPool("Plant", GetRandomPosition(), Quaternion.identity);
+
+            spawnRate = spawnInterval;
         }
     }
 

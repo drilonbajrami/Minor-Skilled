@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ReproduceState : State
 {
@@ -46,8 +47,15 @@ public class ReproduceState : State
 			ChangeEntityState(new FleeState(_entity));
 		}
 
-		if (_entity.hungriness > 50.0f && _entity.thirstiness > 50.0f)
-			ChangeEntityState(new PrimaryState(_entity));
+		if (SceneManager.GetActiveScene().buildIndex == 4)
+		{
+			
+		}
+		else
+		{
+			if (_entity.hungriness > 50.0f && _entity.thirstiness > 50.0f)
+				ChangeEntityState(new PrimaryState(_entity));
+		}
 	}
 
 	private void SearchingSubState()
@@ -83,7 +91,7 @@ public class ReproduceState : State
 	// FEMALE SEARCHING
 	private void SearchingSubStateFemale()
 	{
-		if (_entity.Smell.HasPartnersAround())
+		if (_entity.Smell.HasPartnersAround() && _partner == null)
 		{
 			_partner = _entity.Smell.ChoosePartner();
 			if (_partner != null)
@@ -96,6 +104,10 @@ public class ReproduceState : State
 					_entity.Stop();
 					_currentSubState = SubState.MATING;
 				}
+			}
+			else
+			{
+				_partner = null;
 			}
 		}
 
@@ -129,7 +141,7 @@ public class ReproduceState : State
 	{
 		if (!goingToMate)
 		{
-			_entity.SetSkinColor(EntityGenderColor.REPRODUCING);
+			_entity.ReproduceColor(); // CHANGE COLOR
 			goingToMate = true;
 		}
 		else
@@ -143,11 +155,13 @@ public class ReproduceState : State
 
 		if (goingToMate && _entity.isMating == false)
 		{
-			if (_entity.order == Order.CARNIVORE)
-				_entity.SetSkinColor(EntityGenderColor.CARNIVORE);
+			_entity.ResetColor();	// CHANGE COLOR
+			//_entity.maleReproductionDuration = 30.0f;
+
+			if (SceneManager.GetActiveScene().buildIndex == 4)
+				_entity.maleReproductionDuration = 0.0f;
 			else
-				_entity.SetSkinColor(EntityGenderColor.HERBIVORE);
-			_entity.maleReproductionDuration = 30.0f;
+				_entity.maleReproductionDuration = 30.0f;
 			ChangeEntityState(new PrimaryState(_entity));
 		}
 	}
@@ -157,30 +171,39 @@ public class ReproduceState : State
 	{
 		if (!goingToMate)
 		{
-			_entity.SetSkinColor(EntityGenderColor.REPRODUCING);
+			_entity.ResetColor();	// CHANGE COLOR
 			_entity.SetDestination(_positionToMate);
 			_partner.gameObject.GetComponent<Entity>().SetDestination(_positionToMate);
+			_entity.isMating = true;
 			goingToMate = true;
 		}
 
-		if (TransformUtils.CheckIfClose(_entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
+		if (_partner != null)
 		{
-			_partner.gameObject.GetComponent<Entity>().DiscardMatingPartner();
-			GameObject offspring = _entity.gameObject.transform.parent.gameObject.GetComponent<TestPosition>().CreateNewEntity(_entity.order);
-			Vector3 pos = _entity.GetPosition();
-			pos.x -= 2;
-			offspring.transform.position = pos;
-			offspring.transform.localScale.Set(0.5f, 0.5f, 0.5f);
-			offspring.transform.parent = _entity.gameObject.transform.parent;
+			if (TransformUtils.CheckIfClose(_entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
+			{
+				_partner.gameObject.GetComponent<Entity>().DiscardMatingPartner();
+				GameObject offspring = _entity.gameObject.transform.parent.gameObject.GetComponent<TestPosition>().CreateNewEntity(_entity.order);
+				Vector3 pos = _entity.GetPosition();
+				pos.x -= 2;
+				offspring.transform.position = pos;
+				offspring.transform.localScale.Set(0.5f, 0.5f, 0.5f);
+				offspring.transform.parent = _entity.gameObject.transform.parent;
+		
+				if (SceneManager.GetActiveScene().buildIndex == 4)
+					_entity.gestationDuration = 0.0f;
+				else
+					_entity.gestationDuration = 60.0f;
 
-			_entity.gestationDuration = 60.0f;
+				_entity.ResetColor();
+				_entity.isMating = false;
 
-			if (_entity.order == Order.CARNIVORE)
-				_entity.SetSkinColor(EntityGenderColor.CARNIVORE);
-			else
-				_entity.SetSkinColor(EntityGenderColor.HERBIVORE);
+				ChangeEntityState(new PrimaryState(_entity));
+			}
+		}
+		else
+		{
 
-			ChangeEntityState(new PrimaryState(_entity));
 		}
 	}
 }

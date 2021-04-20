@@ -1,5 +1,63 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7418783752712353286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056329471211336699}
+  - component: {fileID: 7258223119230898548}
+  - component: {fileID: 118788487279207557}
+  m_Layer: 8
+  m_Name: Sight Sense
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1056329471211336699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418783752712353286}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9143079990107351946}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &7258223119230898548
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418783752712353286}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &118788487279207557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418783752712353286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e20219e7f8abc344b20460bf76423fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _objects: []
 --- !u!1 &9143079989960397133
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,7 +115,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4ebd9a4535df174e9e717e65d02e547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _smellZone: []
+  smellZone: []
+  smellZonePrey: []
 --- !u!1 &9143079990107351950
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +133,6 @@ GameObject:
   - component: {fileID: 9143079990107351944}
   - component: {fileID: 9143079990107351945}
   - component: {fileID: 9143079990107351943}
-  - component: {fileID: 9143079990107351942}
   - component: {fileID: 9143079990107351940}
   m_Layer: 8
   m_Name: Entity
@@ -95,6 +153,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 9143079989960397130}
+  - {fileID: 1056329471211336699}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -153,10 +212,10 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9143079990107351950}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 5
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9143079990107351947
 MonoBehaviour:
@@ -170,18 +229,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dced49d11654b914e8d5ab2b061d9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  female: {r: 1, g: 0, b: 0.89550066, a: 0}
-  male: {r: 0, g: 0.120423555, b: 1, a: 0}
   partner: {fileID: 0}
-  positionToMate: {x: 0, y: 0, z: 0}
+  isMating: 0
+  offspring: 0
+  isOnReproducingState: 0
+  gestationDuration: 0
+  maleReproductionDuration: 0
+  predator: {fileID: 0}
+  fleeing: 0
   _stateName: 
   hungriness: 0
   thirstiness: 0
   gender: 0
+  order: 0
   FOV: 90
   sightRadius: 0
   smellRadius: 0
-  Smell: {fileID: 0}
 --- !u!195 &9143079990107351944
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -314,19 +377,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _resources: []
---- !u!114 &9143079990107351942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9143079990107351950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e20219e7f8abc344b20460bf76423fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _sightZone: []
 --- !u!54 &9143079990107351940
 Rigidbody:
   m_ObjectHideFlags: 0

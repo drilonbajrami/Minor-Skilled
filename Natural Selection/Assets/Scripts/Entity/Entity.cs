@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Entity : MonoBehaviour
 {
@@ -44,57 +45,95 @@ public class Entity : MonoBehaviour
 
 	LineRenderer lineRenderer;
 
+	Color currentColor = new Color();
+
 	void Start()
 	{
-		int i = Random.Range(0, 2);
-		if (i == 0)
-		{
-			gender = Gender.MALE;
-			//order = Order.HERBIVORE;
-			//gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
-		}
-		else
-		{
-			gender = Gender.FEMALE;
-			//order = Order.CARNIVORE;
-			//gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
-		}
-
-		//int j = Random.Range(0, 2);
-		//if (j == 0)
+		//int i = Random.Range(0, 2);
+		//if (i == 0)
 		//{
-		//	order = Order.HERBIVORE;
-		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
+		//	gender = Gender.MALE;
+		//	//order = Order.HERBIVORE;
+		//	//gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
 		//}
 		//else
 		//{
-		//	order = Order.CARNIVORE;
-		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
+		//	gender = Gender.FEMALE;
+		//	//order = Order.CARNIVORE;
+		//	//gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
 		//}
 
-		if (order == Order.CARNIVORE)
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
+		//if (order == Order.CARNIVORE)
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
+		//else
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
+
+		if (order == Order.HERBIVORE)
+		{
+			if (gender == Gender.MALE)
+				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HMALE;
+			else
+				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HFEMALE;
+		}
 		else
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
+		{
+			if (gender == Gender.MALE)
+				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CMALE;
+			else
+				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CFEMALE;
+		}
 
 		agent = gameObject.GetComponent<NavMeshAgent>();
 		Memory = gameObject.GetComponent<Memory>();
-		Sight = gameObject.GetComponent<Sight>();
+		Sight = gameObject.GetComponentInChildren<Sight>();
 		Smell = gameObject.GetComponentInChildren<Smell>();
-		sightRadius = gameObject.GetComponent<SphereCollider>().radius;
-		smellRadius = Smell.GetComponent<SphereCollider>().radius;
+		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
+		//smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
 		maxSpeed = agent.speed;
 		_state = new PrimaryState(this);
 		_stateName = _state.GetStateName();
 		//_state = new ReproduceState(this);
 
-		hungriness = Random.Range(20.0f, 60.0f);
-		thirstiness = Random.Range(20.0f, 60.0f);
-		gestationDuration = Random.Range(10.0f, 50.0f);
-		maleReproductionDuration = Random.Range(10.0f, 50.0f);
+		hungriness = Random.Range(40.0f, 60.0f);
+		thirstiness = Random.Range(40.0f, 60.0f);
+		if (SceneManager.GetActiveScene().buildIndex == 4)
+		{
+			gestationDuration = 0.0f;
+			maleReproductionDuration = 0.0f;
+		}
+		else
+		{
+			gestationDuration = Random.Range(30.0f, 50.0f);
+			maleReproductionDuration = Random.Range(30.0f, 50.0f);
+		}
+		
 
 		lineRenderer = gameObject.GetComponent<LineRenderer>();
 		lineRenderer.positionCount = 6;
+		currentColor = gameObject.GetComponent<Renderer>().material.color;
+	}
+
+	public void ResetColor()
+	{
+		gameObject.GetComponent<Renderer>().material.color = currentColor;
+	}
+
+	public void ReproduceColor()
+	{
+		if (order == Order.HERBIVORE)
+		{
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HREPRODUCE;
+		}
+		else
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CREPRODUCE;
+	}
+
+	public void DangerColor()
+	{
+		if (order == Order.HERBIVORE)
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.FLEEING;
+		else
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CHASING;
 	}
 
 	void Update()
@@ -107,7 +146,7 @@ public class Entity : MonoBehaviour
 		//	Smell.gameObject.SetActive(true);
 
 		if (thirstiness >= 100.0f || hungriness >= 100.0f)
-			Destroy(this.gameObject);
+			//Destroy(this.gameObject);
 
 		gestationDuration -= Time.deltaTime;
 		maleReproductionDuration -= Time.deltaTime;
@@ -133,7 +172,7 @@ public class Entity : MonoBehaviour
 	}
 
 	//====================================================================================================
-	//											Entity Agent Methods
+	//											Entity Transform Methods
 	//====================================================================================================
 	public Transform GetTransform()
 	{
@@ -146,7 +185,7 @@ public class Entity : MonoBehaviour
 	}
 
 	//====================================================================================================
-	//											Entity Transform Methods
+	//											Entity Agent Methods
 	//====================================================================================================
 
 	public void SetDestination(Vector3 target)
@@ -240,43 +279,6 @@ public class Entity : MonoBehaviour
 	{
 		predator = null;
 	}
-
-	//====================================================================================================
-	//											TRIGGERS
-	//====================================================================================================
-	private void OnTriggerEnter(Collider other)
-	{
-		if (Memory != null && Sight != null)
-		{
-			if ((other.gameObject.tag == "Water" || other.gameObject.tag == "Plant"))
-			{
-				Memory.RegisterResourceToMemory(other.gameObject);
-				Sight.See(other.gameObject);
-			}
-		}
-	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		if (Sight != null)
-		{
-			if (other.gameObject != null)
-				Sight.Unsee(other.gameObject);
-		}
-	}
-
-	private void OnTriggerStay(Collider other)
-	{
-		if (Sight != null)
-		{
-			Resource a = other.gameObject.GetComponent<Resource>();
-			if (a != null)
-				if (a.IsConsumed())
-					Sight.Unsee(other.gameObject);
-		}
-	}
-	//====================================================================================================
-
 
 	private void DrawFieldOFView()
 	{
