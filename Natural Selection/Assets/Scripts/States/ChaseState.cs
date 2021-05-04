@@ -10,7 +10,7 @@ public class ChaseState : State
 	private float maxChaseTime;
 	private float currentChaseTime;
 
-	public ChaseState(Entity entity) : base(entity)
+	public ChaseState() : base()
 	{
 		_stateName = "Chase State";
 		prey = null;
@@ -18,47 +18,48 @@ public class ChaseState : State
 		maxChaseTime = 600.0f;
 		currentChaseTime = maxChaseTime;
 		//_entity.SetSkinColor(EntityGenderColor.CHASING);
-		_entity.DangerColor();	// CHANGE COLOR
+		//_entity.DangerColor();	// CHANGE COLOR
 	}
 
-	public override void HandleState()
+	public override void HandleState(Entity entity)
 	{
 		if (!chasing)
 		{
-			ChoosePrey();
-			_entity.SetDestination(TransformUtils.RandomTarget(_entity.GetTransform(), _entity.sightRadius, _entity.FOV));
+			ChoosePrey(entity);
+			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), entity.sightRadius, entity.FOV));
 		}
 		else
-			ChasePrey();
+			ChasePrey(entity);
 	}
 
-	private void ChoosePrey()
+	private void ChoosePrey(Entity entity)
 	{
-		if (_entity.Smell.HasPreyAround())
+		if (entity.Smell.HasPreyAround())
 		{
-			prey = _entity.Smell.ChoosePrey();
+			prey = entity.Smell.ChoosePrey();
 			if (prey != null)
 			{
-				prey.GetComponent<Entity>().SetPredator(_entity.gameObject);
-				_entity.IncreaseMaxSpeed();
+				prey.GetComponent<Entity>().SetPredator(entity.gameObject);
+				entity.IncreaseMaxSpeed();
 				chasing = true;
 			}
 		}
 	}
 
-	private void ChasePrey()
+	private void ChasePrey(Entity entity)
 	{
 		if (prey != null)
 		{
-			_entity.SetDestination(prey.transform.position);
+			entity.SetDestination(prey.transform.position);
 
-			if (TransformUtils.CheckIfClose(_entity.GetTransform(), prey.transform, 2.5f))
+			if (TransformUtils.CheckIfClose(entity.GetTransform(), prey.transform, 2.5f))
 			{
+				prey.gameObject.GetComponent<Entity>().Die();
 				GameObject.Destroy(prey.gameObject);
-				_entity.hungriness = 0;
-				_entity.thirstiness = 0;
-				_entity.ResetColor(); // CHANGE COLOR
-				ChangeEntityState(new PrimaryState(_entity));
+				entity.hungriness = 0;
+				entity.thirstiness = 0;
+				//entity.ResetColor(); // CHANGE COLOR
+				entity.ChangeState(new PrimaryState());
 			}
 		}
 		else

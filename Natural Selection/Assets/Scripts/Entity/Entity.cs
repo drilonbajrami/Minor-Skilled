@@ -1,11 +1,39 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class Entity : MonoBehaviour
 {
+	//public Genome genome;
+
+	// Event handler 
+	public event EventHandler<Entity> Death;
+
+	// Publish method
+	protected virtual void OnDeath(Entity entity)
+	{
+		if (Death != null)
+		{
+			Death(this, entity);
+		}
+	}
+
+	public void Die()
+	{
+		OnDeath(this);
+	}
+
+	// For others (Subscriber method to run)
+	public void OnOtherDeath(object source, Entity entity)
+	{
+		//Debug.Log($"Observer {this.gameObject.name}: {entity.gameObject.name} Died");
+		entity.Death -= OnOtherDeath;
+	}
+
 	public GameObject partner = null;
 	public bool isMating = false;
 	public bool offspring = false;
@@ -47,8 +75,9 @@ public class Entity : MonoBehaviour
 
 	Color currentColor = new Color();
 
-	void Start()
+	void Awake()
 	{
+		//genome = GetComponent<Genome>();
 		//int i = Random.Range(0, 2);
 		//if (i == 0)
 		//{
@@ -63,25 +92,22 @@ public class Entity : MonoBehaviour
 		//	//gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
 		//}
 
-		//if (order == Order.CARNIVORE)
-		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
-		//else
-		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
+		
 
-		if (order == Order.HERBIVORE)
-		{
-			if (gender == Gender.MALE)
-				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HMALE;
-			else
-				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HFEMALE;
-		}
-		else
-		{
-			if (gender == Gender.MALE)
-				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CMALE;
-			else
-				gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CFEMALE;
-		}
+		//if (order == Order.HERBIVORE)
+		//{
+		//	if (gender == Gender.MALE)
+		//		gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HMALE;
+		//	else
+		//		gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HFEMALE;
+		//}
+		//else
+		//{
+		//	if (gender == Gender.MALE)
+		//		gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CMALE;
+		//	else
+		//		gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CFEMALE;
+		//}
 
 		agent = gameObject.GetComponent<NavMeshAgent>();
 		Memory = gameObject.GetComponent<Memory>();
@@ -90,9 +116,8 @@ public class Entity : MonoBehaviour
 		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
 		//smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
 		maxSpeed = agent.speed;
-		_state = new PrimaryState(this);
+		_state = new PrimaryState();
 		_stateName = _state.GetStateName();
-		//_state = new ReproduceState(this);
 
 		hungriness = Random.Range(40.0f, 60.0f);
 		thirstiness = Random.Range(40.0f, 60.0f);
@@ -110,30 +135,38 @@ public class Entity : MonoBehaviour
 
 		lineRenderer = gameObject.GetComponent<LineRenderer>();
 		lineRenderer.positionCount = 6;
-		currentColor = gameObject.GetComponent<Renderer>().material.color;
+		//currentColor = gameObject.GetComponent<Renderer>().material.color;
+	}
+
+	private void Start()
+	{
+		if (order == Order.CARNIVORE)
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CARNIVORE;
+		else
+			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HERBIVORE;
 	}
 
 	public void ResetColor()
 	{
-		gameObject.GetComponent<Renderer>().material.color = currentColor;
+		//gameObject.GetComponent<Renderer>().material.color = currentColor;
 	}
 
 	public void ReproduceColor()
 	{
-		if (order == Order.HERBIVORE)
-		{
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HREPRODUCE;
-		}
-		else
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CREPRODUCE;
+		//if (order == Order.HERBIVORE)
+		//{
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.HREPRODUCE;
+		//}
+		//else
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CREPRODUCE;
 	}
 
 	public void DangerColor()
 	{
-		if (order == Order.HERBIVORE)
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.FLEEING;
-		else
-			gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CHASING;
+		//if (order == Order.HERBIVORE)
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.FLEEING;
+		//else
+		//	gameObject.GetComponent<Renderer>().material.color = EntityGenderColor.CHASING;
 	}
 
 	void Update()
@@ -157,18 +190,17 @@ public class Entity : MonoBehaviour
 		HandleState();
 	}
 
-	// Rarely used since states of an entity can be changed within those states
+	// Change entity's state from outside this class
 	public void ChangeState(State state)
 	{
 		_state = state;
-		_state.SetEntity(this);
 		_stateName = _state.GetStateName();
 	}
 
 	// Handles the state the entity is on
 	public void HandleState()
 	{
-		_state.HandleState();
+		_state.HandleState(this);
 	}
 
 	//====================================================================================================

@@ -14,37 +14,37 @@ public class ReproduceState : State
 	private Vector3 _positionToMate = new Vector3();
 	private bool goingToMate = false;
 
-	public ReproduceState(Entity entity) : base(entity)
+	public ReproduceState() : base()
 	{
-		_entity.isOnReproducingState = true;
+		//_entity.isOnReproducingState = true;
 		_stateName = "Reproduce State";
 		goingToMate = false;
 		_partner = null;
 		_positionToMate = new Vector3();
 	}
 
-	public override void HandleState()
+	public override void HandleState(Entity entity)
 	{
 		switch (_currentSubState)
 		{
 			case SubState.SEARCHING:
-				SearchingSubState();
+				SearchingSubState(entity);
 				break;
 			case SubState.MATING:
-				MatingSubState();
+				MatingSubState(entity);
 				break;
 			default:
 				break;
 		}
 
-		_entity.thirstiness += Time.deltaTime * 5 / 10;
-		_entity.hungriness += Time.deltaTime * 5 / 10;
+		entity.thirstiness += Time.deltaTime * 5 / 10;
+		entity.hungriness += Time.deltaTime * 5 / 10;
 
-		if (_entity.predator != null)
+		if (entity.predator != null)
 		{
-			_entity.partner = null;
-			_entity.isOnReproducingState = false;
-			ChangeEntityState(new FleeState(_entity));
+			entity.partner = null;
+			entity.isOnReproducingState = false;
+			entity.ChangeState(new FleeState());
 		}
 
 		if (SceneManager.GetActiveScene().buildIndex == 4)
@@ -53,35 +53,35 @@ public class ReproduceState : State
 		}
 		else
 		{
-			if (_entity.hungriness > 50.0f && _entity.thirstiness > 50.0f)
-				ChangeEntityState(new PrimaryState(_entity));
+			if (entity.hungriness > 50.0f && entity.thirstiness > 50.0f)
+				entity.ChangeState(new PrimaryState());
 		}
 	}
 
-	private void SearchingSubState()
+	private void SearchingSubState(Entity entity)
 	{
-		switch (_entity.gender)
+		switch (entity.gender)
 		{
 			case Gender.MALE:
-				SearchingSubStateMale();
+				SearchingSubStateMale(entity);
 				break;
 			case Gender.FEMALE:
-				SearchingSubStateFemale();
+				SearchingSubStateFemale(entity);
 				break;
 			default:
 				break;
 		}
 	}
 
-	private void MatingSubState()
+	private void MatingSubState(Entity entity)
 	{
-		switch (_entity.gender)
+		switch (entity.gender)
 		{
 			case Gender.MALE:
-				MatingSubStateMale();
+				MatingSubStateMale(entity);
 				break;
 			case Gender.FEMALE:
-				MatingSubStateFemale();
+				MatingSubStateFemale(entity);
 				break;
 			default:
 				break;
@@ -89,19 +89,19 @@ public class ReproduceState : State
 	}
 
 	// FEMALE SEARCHING
-	private void SearchingSubStateFemale()
+	private void SearchingSubStateFemale(Entity entity)
 	{
-		if (_entity.Smell.HasPartnersAround() && _partner == null)
+		if (entity.Smell.HasPartnersAround() && _partner == null)
 		{
-			_partner = _entity.Smell.ChoosePartner();
+			_partner = entity.Smell.ChoosePartner();
 			if (_partner != null)
 			{
 				if (!_partner.gameObject.GetComponent<Entity>().isMating)
 				{
-					_partner.GetComponent<Entity>().SetMatingPartner(_entity.gameObject);
-					_entity.transform.LookAt(_partner.transform);
-					_positionToMate = TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV);
-					_entity.Stop();
+					_partner.GetComponent<Entity>().SetMatingPartner(entity.gameObject);
+					entity.transform.LookAt(_partner.transform);
+					_positionToMate = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+					entity.Stop();
 					_currentSubState = SubState.MATING;
 				}
 			}
@@ -111,99 +111,95 @@ public class ReproduceState : State
 			}
 		}
 
-		if (_entity.IsStuck() || !_entity.HasPath())
+		if (entity.IsStuck() || !entity.HasPath())
 		{
-			Vector3 i = TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV);
-			_entity.SetDestination(i);
+			Vector3 i = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+			entity.SetDestination(i);
 		}
 	}
 
 	// MALE SEARCHING
-	private void SearchingSubStateMale()
+	private void SearchingSubStateMale(Entity entity)
 	{
-		if (_entity.partner != null)
+		if (entity.partner != null)
 		{
-			_partner = _entity.partner;
-			_entity.Stop();
+			_partner = entity.partner;
+			entity.Stop();
 			_currentSubState = SubState.MATING;
 		}
 
-		if (_entity.IsStuck() || !_entity.HasPath())
+		if (entity.IsStuck() || !entity.HasPath())
 		{
-			Vector3 i = TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV);
-			_entity.SetDestination(i);
+			Vector3 i = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+			entity.SetDestination(i);
 		}
 	}
 
 	
 	// MALE MATING
-	private void MatingSubStateMale()
+	private void MatingSubStateMale(Entity entity)
 	{
 		if (!goingToMate)
 		{
-			_entity.ReproduceColor(); // CHANGE COLOR
+			//entity.ReproduceColor(); // CHANGE COLOR
 			goingToMate = true;
 		}
 		else
 		{
-			if (_entity.HasPath() && TransformUtils.CheckIfClose(_entity.GetTransform(), _partner.gameObject.transform, 5.0f))
+			if (entity.HasPath() && TransformUtils.CheckIfClose(entity.GetTransform(), _partner.gameObject.transform, 5.0f))
 			{
-				_entity.ClearPath();
+				entity.ClearPath();
 				_partner.gameObject.GetComponent<Entity>().ClearPath();
 			}
 		}
 
-		if (goingToMate && _entity.isMating == false)
+		if (goingToMate && entity.isMating == false)
 		{
-			_entity.ResetColor();	// CHANGE COLOR
+			//entity.ResetColor();	// CHANGE COLOR
 			//_entity.maleReproductionDuration = 30.0f;
 
 			if (SceneManager.GetActiveScene().buildIndex == 4)
-				_entity.maleReproductionDuration = 0.0f;
+				entity.maleReproductionDuration = 0.0f;
 			else
-				_entity.maleReproductionDuration = 30.0f;
-			ChangeEntityState(new PrimaryState(_entity));
+				entity.maleReproductionDuration = 30.0f;
+			entity.ChangeState(new PrimaryState());
 		}
 	}
 
 	// FEMALE MATING
-	private void MatingSubStateFemale()
+	private void MatingSubStateFemale(Entity entity)
 	{
 		if (!goingToMate)
 		{
-			_entity.ResetColor();	// CHANGE COLOR
-			_entity.SetDestination(_positionToMate);
+			//entity.ResetColor();	// CHANGE COLOR
+			entity.SetDestination(_positionToMate);
 			_partner.gameObject.GetComponent<Entity>().SetDestination(_positionToMate);
-			_entity.isMating = true;
+			entity.isMating = true;
 			goingToMate = true;
 		}
 
 		if (_partner != null)
 		{
-			if (TransformUtils.CheckIfClose(_entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
+			if (TransformUtils.CheckIfClose(entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
 			{
 				_partner.gameObject.GetComponent<Entity>().DiscardMatingPartner();
-				GameObject offspring = _entity.gameObject.transform.parent.gameObject.GetComponent<TestPosition>().CreateNewEntity(_entity.order);
-				Vector3 pos = _entity.GetPosition();
+				GameObject offspring = entity.gameObject.transform.parent.gameObject.GetComponent<TestPosition>().CreateNewEntity(entity.order);
+				Vector3 pos = entity.GetPosition();
 				pos.x -= 2;
 				offspring.transform.position = pos;
 				offspring.transform.localScale.Set(0.5f, 0.5f, 0.5f);
-				offspring.transform.parent = _entity.gameObject.transform.parent;
+				offspring.transform.parent = entity.gameObject.transform.parent;
 		
 				if (SceneManager.GetActiveScene().buildIndex == 4)
-					_entity.gestationDuration = 0.0f;
+					entity.gestationDuration = 0.0f;
 				else
-					_entity.gestationDuration = 60.0f;
+					entity.gestationDuration = 60.0f;
 
-				_entity.ResetColor();
-				_entity.isMating = false;
+				//entity.ResetColor();
+				entity.isMating = false;
 
-				ChangeEntityState(new PrimaryState(_entity));
+				entity.ChangeState(new PrimaryState());
 			}
-		}
-		else
-		{
-
 		}
 	}
 }

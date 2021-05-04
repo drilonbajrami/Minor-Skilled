@@ -6,91 +6,91 @@ public class HungryThirstyState : State
 {
 	private GameObject _resource = null;
 
-	public HungryThirstyState(Entity entity) : base(entity)
+	public HungryThirstyState() : base()
 	{
 		_stateName = "Hungry/Thirsty State";
 	}
 
-	public override void HandleState()
+	public override void HandleState(Entity entity)
 	{
-		if (_entity.Velocity() > 0.01f)
+		if (entity.Velocity() > 0.01f)
 		{
-			_entity.thirstiness += Time.deltaTime * _entity.Velocity() / 10;
-			_entity.hungriness += Time.deltaTime * _entity.Velocity() / 10;
+			entity.thirstiness += Time.deltaTime * entity.Velocity() / 10;
+			entity.hungriness += Time.deltaTime * entity.Velocity() / 10;
 		}
 
-		ChooseEssentialResource();
+		ChooseEssentialResource(entity);
 
 		if (_resource != null)
 		{
-			float distance = GetDistanceToResource();
+			float distance = GetDistanceToResource(entity);
 
-			if (distance < _entity.sightRadius)
+			if (distance < entity.sightRadius)
 			{
-				if (!_entity.Sight.CanSee(_resource))
+				if (!entity.Sight.CanSee(_resource))
 				{
-					_entity.Memory.ForgetResource(_resource);
+					entity.Memory.ForgetResource(_resource);
 					_resource = null;
 				}
 				else if (distance < 0.5f)
-					ConsumeResource(_resource);
+					ConsumeResource(entity, _resource);
 			}
 		}
 
-		if (_entity.predator != null)
-			ChangeEntityState(new FleeState(_entity));
+		if (entity.predator != null)
+			entity.ChangeState(new FleeState());
 	}
 
-	private void ChooseEssentialResource()
+	private void ChooseEssentialResource(Entity entity)
 	{
 		if (_resource == null) {
-			if (_entity.IsThirsty() && _entity.IsHungry() && Mathf.Abs(_entity.thirstiness - _entity.hungriness) > 20) 
+			if (entity.IsThirsty() && entity.IsHungry() && Mathf.Abs(entity.thirstiness - entity.hungriness) > 20) 
 			{
-				if (_entity.thirstiness > _entity.hungriness && _entity.Memory.KnowsAboutResource(ResourceType.WATER))
-					_resource = _entity.Memory.FindClosestResource(ResourceType.WATER); // Go for water
+				if (entity.thirstiness > entity.hungriness && entity.Memory.KnowsAboutResource(ResourceType.WATER))
+					_resource = entity.Memory.FindClosestResource(ResourceType.WATER); // Go for water
 				else
-					_resource = _entity.Memory.FindClosestResource(ResourceType.FOOD); // Go for food
+					_resource = entity.Memory.FindClosestResource(ResourceType.FOOD); // Go for food
 
-				GoForResource(_resource);
+				GoForResource(entity, _resource);
 			}
-			else if (_entity.IsThirsty()) {
-				_resource = _entity.Memory.FindClosestResource(ResourceType.WATER);
-				GoForResource(_resource);
+			else if (entity.IsThirsty()) {
+				_resource = entity.Memory.FindClosestResource(ResourceType.WATER);
+				GoForResource(entity, _resource);
 			}
-			else if (_entity.IsHungry()) {
-				_resource = _entity.Memory.FindClosestResource(ResourceType.FOOD);
-				GoForResource(_resource);
+			else if (entity.IsHungry()) {
+				_resource = entity.Memory.FindClosestResource(ResourceType.FOOD);
+				GoForResource(entity, _resource);
 			}
 			else
-				ChangeEntityState(new PrimaryState(_entity));
+				entity.ChangeState(new PrimaryState());
 		}
 	}
 
-	private void GoForResource(GameObject resource)
+	private void GoForResource(Entity entity, GameObject resource)
 	{
 		if (resource != null)
-			_entity.SetDestination(resource.transform.position);
+			entity.SetDestination(resource.transform.position);
 		else if (resource == null)
-			_entity.SetDestination(TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV));
+			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV));
 	}
 
-	private float GetDistanceToResource()
+	private float GetDistanceToResource(Entity entity)
 	{
-		Vector3 deltaPos = _entity.GetPosition() - _entity.GetDestination();
+		Vector3 deltaPos = entity.GetPosition() - entity.GetDestination();
 		deltaPos.y = 0;
 		return deltaPos.magnitude;
 	}
 
-	private void ConsumeResource(GameObject resource)
+	private void ConsumeResource(Entity entity, GameObject resource)
 	{
 		if (resource == null)
 			return;
 		else {
-			_entity.Memory.ForgetResource(resource);
+			entity.Memory.ForgetResource(resource);
 			if (resource.GetComponent<Resource>().GetResourceType() == ResourceType.WATER)
-				_entity.thirstiness = 0;
+				entity.thirstiness = 0;
 			else
-				_entity.hungriness = 0;
+				entity.hungriness = 0;
 
 			resource.GetComponent<Resource>().Consume();
 			_resource = null;

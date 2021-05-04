@@ -38,6 +38,15 @@ public class Sight : MonoBehaviour
 
 	public void See(GameObject gameObject)
 	{
+		if (gameObject == null)
+		{
+			return;
+		}
+
+		//if (!_objects.Find(gameObj => gameObject.GetInstanceID().Equals(gameObject.GetInstanceID()))) {
+		//	_objects.Add(gameObject);
+		//}
+
 		if (_objectsWithinSight.Count == 0 || (gameObject != null && !_objectsWithinSight.ContainsKey(gameObject.GetInstanceID())))
 			_objectsWithinSight.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
 	}
@@ -53,14 +62,15 @@ public class Sight : MonoBehaviour
 		refreshTimer -= Time.deltaTime;
 		if (refreshTimer <= 0.0f)
 		{
+			//_objects = _objects.FindAll(gameObj => gameObj != null);
+
 			List<int> toRemove = new List<int>();
 			foreach (KeyValuePair<int, MemoryData> o in _objectsWithinSight)
 				if (o.Value.isObjectMissing() || !o.Value.Object.activeSelf)
 					toRemove.Add(o.Key);
-
 			for (int i = 0; i < toRemove.Count; i++)
 				_objectsWithinSight.Remove(toRemove[i]);
-
+			
 			refreshTimer = refreshInterval;
 		}
 	}
@@ -72,10 +82,15 @@ public class Sight : MonoBehaviour
 	{
 		if (memory != null)
 		{
-			if ((other.gameObject.tag == "Water" || other.gameObject.tag == "Plant"))
+			if (other.gameObject.CompareTag("Water") || other.gameObject.CompareTag("Plant"))
 			{
 				memory.RegisterResourceToMemory(other.gameObject);
 				See(other.gameObject);
+			}
+
+			if (other.gameObject.CompareTag("Entity"))
+			{
+				other.gameObject.GetComponent<Entity>().Death += gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
 			}
 		}
 	}
@@ -83,7 +98,14 @@ public class Sight : MonoBehaviour
 	private void OnTriggerExit(Collider other)
 	{
 		if (other.gameObject != null)
+		{
 			Unsee(other.gameObject);
+		}
+
+		if (other.gameObject.CompareTag("Entity"))
+		{
+			other.gameObject.GetComponent<Entity>().Death -= gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
+		}
 	}
 
 	//private void OnTriggerStay(Collider other)

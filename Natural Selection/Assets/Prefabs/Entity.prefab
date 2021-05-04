@@ -115,8 +115,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4ebd9a4535df174e9e717e65d02e547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smellZone: []
-  smellZonePrey: []
+  smellZ: []
+  smellP: []
 --- !u!1 &9143079990107351950
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 9143079990107351940}
   m_Layer: 8
   m_Name: Entity
-  m_TagString: Untagged
+  m_TagString: Entity
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

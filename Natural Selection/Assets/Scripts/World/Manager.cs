@@ -15,6 +15,8 @@ public class Manager : MonoBehaviour
 	void Update()
     {
 		if (Input.GetKeyDown(KeyCode.R))
+		{
 			SceneManager.LoadScene(_currentSceneName);
+		}
     }
 }

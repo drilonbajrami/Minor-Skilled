@@ -5,24 +5,10 @@ using UnityEngine;
 public abstract class State
 {
 	protected string _stateName;
-	protected Entity _entity;
 
-	protected State(Entity entity)
-	{
-		_entity = entity;
-	}
+	protected State() { }
 
-	public abstract void HandleState();
-
-	public void SetEntity(Entity entity)
-	{
-		this._entity = entity;
-	}
-
-	public void ChangeEntityState(State state)
-	{
-		this._entity.ChangeState(state);
-	}
+	public abstract void HandleState(Entity entity);
 
 	public string GetStateName()
 	{

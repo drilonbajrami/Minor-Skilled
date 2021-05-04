@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TimeController : MonoBehaviour
 {
-    [Range(0, 5)]
+    [Range(0, 10)]
     [SerializeField] private float timeScale = 1;
 
     void Update()

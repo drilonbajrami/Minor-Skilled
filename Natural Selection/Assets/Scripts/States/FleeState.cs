@@ -6,43 +6,43 @@ public class FleeState : State
 {
 	private bool lookingAway = false;
 
-	public FleeState(Entity entity) : base(entity)
+	public FleeState() : base()
 	{
 		_stateName = "Flee State";
 		lookingAway = false;
-		_entity.fleeing = true;
+		//_entity.fleeing = true;
 		//_entity.fleeing = true;
 		//_entity.SetSkinColor(EntityGenderColor.FLEEING);
-		_entity.DangerColor();	// CHANGE COLOR
+		//_entity.DangerColor();	// CHANGE COLOR
 	}
 
-	public override void HandleState()
+	public override void HandleState(Entity entity)
 	{
-		Flee();
-		CheckIfSafe();
+		Flee(entity);
+		CheckIfSafe(entity);
 	}
 
-	public void Flee()
+	public void Flee(Entity entity)
 	{
 		if (!lookingAway)
 		{
-			_entity.transform.LookAt(_entity.GetPosition() - (_entity.predator.transform.position - _entity.GetPosition()));
+			entity.transform.LookAt(entity.GetPosition() - (entity.predator.transform.position - entity.GetPosition()));
 			lookingAway = true;
 		}
 		else
 		{
-			_entity.IncreaseMaxSpeed();
-			_entity.SetDestination(TransformUtils.RandomTarget(_entity.GetTransform(), 20.0f, _entity.FOV));
+			entity.IncreaseMaxSpeed();
+			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV));
 		}
 	}
 
-	private void CheckIfSafe()
+	private void CheckIfSafe(Entity entity)
 	{
-		if (_entity.predator == null)
+		if (entity.predator == null)
 		{
-			_entity.DecreaseMaxSpeed();
-			_entity.ResetColor(); // CHANGE COLOR
-			ChangeEntityState(new PrimaryState(_entity));
+			entity.DecreaseMaxSpeed();
+			//entity.ResetColor(); // CHANGE COLOR
+			entity.ChangeState(new PrimaryState());
 		}
 	}
 }

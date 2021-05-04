@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GeneType
+public enum Dominance
 {
-	SPEED = 0,
-	SIZE =  1,
+	DOMINANT,
+	SEMIDOMINANT,
+	RECESSIVE
 }
