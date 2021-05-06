@@ -616,8 +616,8 @@ MonoBehaviour:
   parentB: {fileID: 2137650756}
   counter: 0
   MAXCOL: 10
-  mutationFactor: 0.128
-  mutationChance: 100
+  mutationFactor: 0.5
+  mutationChance: 63.9
   offsprings: []
 --- !u!4 &2091556303
 Transform:

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Memory : MonoBehaviour
 {
-	[SerializeField] List<GameObject> _resources;
-
 	Dictionary<int, MemoryData> _resourcesInMemory;
 
 	private int _memoryCapacity;
@@ -19,19 +17,13 @@ public class Memory : MonoBehaviour
 
 	private void Start()
 	{
-		_resources = new List<GameObject>();
 		_resourcesInMemory = new Dictionary<int, MemoryData>();
-		//_currentMemorySpan = _memorySpan;
 		_interval = _updateInterval;
 		_memoryCapacity = 20;
 	}
 
 	private void Update()
 	{
-		_resources.Clear();
-		foreach (KeyValuePair<int, MemoryData> o in _resourcesInMemory)
-			_resources.Add(o.Value.Object);
-
 		_interval -= Time.deltaTime;
 	}
 
@@ -112,8 +104,7 @@ public class Memory : MonoBehaviour
 	/// <param name="gameObject"></param>
 	public void ForgetResource(GameObject gameObject)
 	{
-		if (gameObject != null)
-			if (_resourcesInMemory.ContainsKey(gameObject.GetInstanceID()))
+		if (gameObject != null && _resourcesInMemory.ContainsKey(gameObject.GetInstanceID()))
 				_resourcesInMemory.Remove(gameObject.GetInstanceID());
 	}
 

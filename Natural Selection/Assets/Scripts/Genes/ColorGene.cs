@@ -5,6 +5,11 @@ public class ColorGene : Gene
 {
 	public ColorGene(ColorAllele pAlleleLeft, ColorAllele pAlleleRight) : base(pAlleleLeft, pAlleleRight) { }
 
+	public override Gene CrossGene(Gene other, float mutationFactor, float mutationChance)
+	{
+		return new ColorGene(this.GetRandomAlleleCopy(mutationFactor, mutationChance) as ColorAllele, other.GetRandomAlleleCopy(mutationFactor, mutationChance) as ColorAllele);
+	}
+
 	public override void CoDominance(EntityGeneTest entity)
 	{
 		Renderer rend = entity.gameObject.GetComponent<Renderer>();

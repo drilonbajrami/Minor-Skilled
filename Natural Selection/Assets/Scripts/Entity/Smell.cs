@@ -8,9 +8,6 @@ public class Smell : MonoBehaviour
     Dictionary<int, MemoryData> _smellZone;
     Dictionary<int, MemoryData> _smellZonePrey;
 
-    [SerializeField] List<GameObject> smellZ;
-    [SerializeField] List<GameObject> smellP;
-
     private float refreshTimer;
     private float refreshInterval = 5.0f;
 
@@ -18,27 +15,16 @@ public class Smell : MonoBehaviour
     {     
         _smellZone = new Dictionary<int, MemoryData>();
         _smellZonePrey = new Dictionary<int, MemoryData>();
-
-        smellZ = new List<GameObject>();
-        smellP = new List<GameObject>();
     }
 
 	private void Update()
 	{
-        smellZ.Clear();
-        smellP.Clear();
-
-        foreach (KeyValuePair<int, MemoryData> a in _smellZone)
-            smellZ.Add(a.Value.Object);
-
-        foreach (KeyValuePair<int, MemoryData> a in _smellZonePrey)
-            smellP.Add(a.Value.Object);
-
         RefreshSmell();
 	}
 
 	public GameObject ChoosePartner()
     {
+        // This should be changed at some point, the choice is based on fitness values 
         if (_smellZone.Count == 0)
             return null;
         else
@@ -50,6 +36,7 @@ public class Smell : MonoBehaviour
 
     public GameObject ChoosePrey()
     {
+        // This should be changed at some point as well, there should be selections to choose prey
 		if (_smellZonePrey.Count == 0)
 			return null;
 		else
@@ -78,11 +65,11 @@ public class Smell : MonoBehaviour
             List<int> toRemove2 = new List<int>();
 
             foreach (KeyValuePair<int, MemoryData> o in _smellZone)
-                if (o.Value.isObjectMissing() || !o.Value.Object.activeSelf)
+                if (o.Value.IsObjectMissing() || !o.Value.Object.activeSelf)
                     toRemove1.Add(o.Key);
 
             foreach (KeyValuePair<int, MemoryData> o in _smellZonePrey)
-                if (o.Value.isObjectMissing() || !o.Value.Object.activeSelf)
+                if (o.Value.IsObjectMissing() || !o.Value.Object.activeSelf)
                     toRemove2.Add(o.Key);
 
             for (int i = 0; i < toRemove1.Count; i++)
@@ -134,25 +121,4 @@ public class Smell : MonoBehaviour
             }
         }
 	}
-
-	//private void OnTriggerStay(Collider other)
-	//{
- //       Entity a = other.gameObject.GetComponent<Entity>();
-
- //       if (a != null)
- //       {
- //           if (a.gender != gameObject.GetComponentInParent<Entity>().gender && !_smellZone.ContainsKey(other.gameObject.GetInstanceID()) && a.isOnReproducingState)
- //           {
- //               _smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
- //           }
-
-	//		if (gameObject.GetComponentInParent<Entity>().order == Order.CARNIVORE && a.order == Order.HERBIVORE)
- //           {
- //               if (!_smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
- //               {
- //                   _smellZonePrey.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
- //               }
- //           }
-	//	}
- //   }
 }

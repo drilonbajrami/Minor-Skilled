@@ -33,6 +33,8 @@ public abstract class Gene
 			return _alleleRight.GetCopy(mutationFactor, mutationChance);
 	}
 
+	public abstract Gene CrossGene(Gene other, float mutationFactor, float mutationChance);
+
 	/// <summary>
 	/// Expresses the gene through entity's trait/feature based on its allele's types of dominance and values
 	/// </summary>

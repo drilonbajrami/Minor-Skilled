@@ -7,6 +7,11 @@ public class Combiner : MonoBehaviour
     [SerializeField] GameObject parentA;
     [SerializeField] GameObject parentB;
 
+	Vector3 positionA;
+
+	GameObject ch1;
+	GameObject ch2;
+
     public int counter;
 	private int col;
 	private int row;
@@ -25,14 +30,38 @@ public class Combiner : MonoBehaviour
 		offsprings = new List<GameObject>();
 		col = 0;
 		row = 0;
+		positionA = parentA.transform.position;
 	}
 
 	void Update()
     {
-		if (Input.GetKey(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			Genome father = parentA.GetComponent<EntityGeneTest>().genome;
 			Genome mother = parentB.GetComponent<EntityGeneTest>().genome;
+
+			GameObject offspring = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+			EntityGeneTest a = offspring.AddComponent<EntityGeneTest>();
+
+			a.genome = mother.CrossGenome(father, mutationFactor, mutationChance);
+			a.genome.ExpressGenome(a);
+
+			// Show values in inspector debugging 
+			a.colorLeft = (a.genome.Color.AlleleLeft as ColorAllele).Color;
+			a.colorRight = (a.genome.Color.AlleleRight as ColorAllele).Color;
+			a.sizeLeft = (a.genome.Size.AlleleLeft as SizeAllele).Size;
+			a.sizeRight = (a.genome.Size.AlleleRight as SizeAllele).Size;
+
+			a.UpdateGenomeInfo();
+			offsprings.Add(offspring);
+			counter++;
+			Place(offspring);
+		}
+
+		if (Input.GetKeyDown(KeyCode.C))
+		{
+			Genome father = ch1.GetComponent<EntityGeneTest>().genome;
+			Genome mother = ch2.GetComponent<EntityGeneTest>().genome;
 
 			GameObject offspring = GameObject.CreatePrimitive(PrimitiveType.Capsule);
 			EntityGeneTest a = offspring.AddComponent<EntityGeneTest>();
@@ -49,15 +78,15 @@ public class Combiner : MonoBehaviour
 			a.UpdateGenomeInfo();
 			offsprings.Add(offspring);
 			counter++;
-			Place(offspring);
+			PlaceB(offspring);
 		}
 
-		//if (counter > 0 && counter % 2 == 0)
-		//{
-		//	int a = counter;
-		//	parentA = offsprings[a - 2];
-		//	parentB = offsprings[a - 1];
-		//}
+		if (counter > 0 && counter % 2 == 0)
+		{
+			int a = counter;
+			ch1 = offsprings[a - 2];
+			ch2 = offsprings[a - 1];
+		}
 	}
 
 	public void Place(GameObject o)
@@ -69,6 +98,18 @@ public class Combiner : MonoBehaviour
 		}
 
 		o.transform.position = new Vector3(-MAXCOL + col * 2, o.transform.localScale.y, parentA.transform.position.z - 2 - row * 2);
+		col++;
+	}
+
+	public void PlaceB(GameObject o)
+	{
+		if (col == MAXCOL)
+		{
+			row++;
+			col = 0;
+		}
+
+		o.transform.position = new Vector3(-MAXCOL + col * 2, o.transform.localScale.y, positionA.z - 2 - row * 2);
 		col++;
 	}
 

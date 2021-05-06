@@ -23,6 +23,7 @@ public class Genome
 	public Genome CrossGenome(Genome otherGenome, float mutationFactor, float mutationChance)
 	{
 		ColorGene newColor = CrossColorGenes(otherGenome, mutationFactor, mutationChance);
+		//ColorGene newColor = (ColorGene)color.CrossGene(otherGenome.color, mutationFactor, mutationChance);
 		SizeGene newSize = CrossSizeGenes(otherGenome, mutationFactor, mutationChance);
 		return new Genome(newColor, newSize);
 	}

@@ -116,9 +116,12 @@ public class Entity : MonoBehaviour
 		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
 		//smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
 		maxSpeed = agent.speed;
+
+		// Do not touch
 		_state = new PrimaryState();
 		_stateName = _state.GetStateName();
 
+		// Has to be sent somehwere else
 		hungriness = Random.Range(40.0f, 60.0f);
 		thirstiness = Random.Range(40.0f, 60.0f);
 		if (SceneManager.GetActiveScene().buildIndex == 4)
