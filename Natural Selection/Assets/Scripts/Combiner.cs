@@ -47,10 +47,10 @@ public class Combiner : MonoBehaviour
 			a.genome.ExpressGenome(a);
 
 			// Show values in inspector debugging 
-			a.colorLeft = (a.genome.Color.AlleleLeft as ColorAllele).Color;
-			a.colorRight = (a.genome.Color.AlleleRight as ColorAllele).Color;
-			a.sizeLeft = (a.genome.Size.AlleleLeft as SizeAllele).Size;
-			a.sizeRight = (a.genome.Size.AlleleRight as SizeAllele).Size;
+			a.colorLeft = (a.genome.Color.AlleleA).Color;
+			a.colorRight = (a.genome.Color.AlleleB).Color;
+			a.sizeLeft = (a.genome.Size.AlleleA).Size;
+			a.sizeRight = (a.genome.Size.AlleleB).Size;
 
 			a.UpdateGenomeInfo();
 			offsprings.Add(offspring);
@@ -70,10 +70,10 @@ public class Combiner : MonoBehaviour
 			a.genome.ExpressGenome(a);
 
 			// Show values in inspector
-			a.colorLeft = (a.genome.Color.AlleleLeft as ColorAllele).Color;
-			a.colorRight = (a.genome.Color.AlleleRight as ColorAllele).Color;
-			a.sizeLeft = (a.genome.Size.AlleleLeft as SizeAllele).Size;
-			a.sizeRight = (a.genome.Size.AlleleRight as SizeAllele).Size;
+			a.colorLeft = (a.genome.Color.AlleleA as ColorAllele).Color;
+			a.colorRight = (a.genome.Color.AlleleB as ColorAllele).Color;
+			a.sizeLeft = (a.genome.Size.AlleleA as SizeAllele).Size;
+			a.sizeRight = (a.genome.Size.AlleleB as SizeAllele).Size;
 
 			a.UpdateGenomeInfo();
 			offsprings.Add(offspring);

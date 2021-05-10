@@ -4,18 +4,22 @@
 /// A gene consist of two alleles and it expresses the traits affected by the alleles
 /// based on their dominance and values
 /// </summary>
-public abstract class Gene
+public abstract class Gene<T, A>
+	where T : Gene<T, A>
+	where A : Allele<A>
 {
-	[SerializeField] private Allele _alleleLeft;
-	public Allele AlleleLeft => _alleleLeft;
-	[SerializeField] private Allele _alleleRight;
-	public Allele AlleleRight => _alleleRight;
+	// A gene consist of two alleles, one allele is inherited from each parent
+	[SerializeField] private A _alleleA;
+	[SerializeField] private A _alleleB;
+
+	public A AlleleA => _alleleA;
+	public A AlleleB => _alleleB;
     
 
-	public Gene(Allele pAlleleLeft, Allele pAlleleRight)
+	public Gene(A pAlleleA, A pAlleleB)
 	{
-		_alleleLeft = pAlleleLeft;
-		_alleleRight = pAlleleRight;	
+		_alleleA = pAlleleA;
+		_alleleB = pAlleleB;	
 	}
 
 	/// <summary>
@@ -24,16 +28,19 @@ public abstract class Gene
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public Allele GetRandomAlleleCopy(float mutationFactor, float mutationChance)
+	public A GetRandomAlleleCopy(float mutationFactor, float mutationChance)
 	{
-		int i = Random.Range(0, 2);
-		if (i == 0)
-			return _alleleLeft.GetCopy(mutationFactor, mutationChance);
-		else
-			return _alleleRight.GetCopy(mutationFactor, mutationChance);
+		return Random.Range(0, 2) == 0 ? _alleleA.GetCopy(mutationFactor, mutationChance) : _alleleB.GetCopy(mutationFactor, mutationChance);
 	}
 
-	public abstract Gene CrossGene(Gene other, float mutationFactor, float mutationChance);
+	/// <summary>
+	/// Returns a new combined gene from both parent genes
+	/// </summary>
+	/// <param name="otherParentGene"></param>
+	/// <param name="mutationFactor"></param>
+	/// <param name="mutationChance"></param>
+	/// <returns></returns>
+	public abstract T CrossGene(T otherParentGene, float mutationFactor, float mutationChance);
 
 	/// <summary>
 	/// Expresses the gene through entity's trait/feature based on its allele's types of dominance and values
@@ -41,11 +48,11 @@ public abstract class Gene
 	/// <param name="entity"></param>
 	public void ExpressGene(EntityGeneTest entity)
 	{
-		if (_alleleLeft.Dominance == Dominance.DOMINANT || 
-			_alleleRight.Dominance == Dominance.DOMINANT || 
-			(_alleleLeft.Dominance == Dominance.RECESSIVE && _alleleLeft.Dominance == _alleleRight.Dominance))
+		if (_alleleA.Dominance == Dominance.DOMINANT || 
+			_alleleB.Dominance == Dominance.DOMINANT || 
+			(_alleleA.Dominance == Dominance.RECESSIVE && _alleleA.Dominance == _alleleB.Dominance))
 			CompleteDominance(entity);
-		else if (_alleleLeft.Dominance == Dominance.SEMIDOMINANT && _alleleRight.Dominance == Dominance.SEMIDOMINANT)
+		else if (_alleleA.Dominance == Dominance.SEMIDOMINANT && _alleleB.Dominance == Dominance.SEMIDOMINANT)
 			CoDominance(entity);
 		else
 			IncompleteDominance(entity);
@@ -67,7 +74,7 @@ public abstract class Gene
 
 	/// <summary>
 	/// CoDominance occrus when two alleles are semi-dominant over one another.
-	/// The trait is a mixture between two alleles.
+	/// The trait is a mixture between both alleles.
 	/// </summary>
 	/// <param name="entity"></param>
 	public abstract void CoDominance(EntityGeneTest entity);

@@ -2,7 +2,7 @@
 using Random = UnityEngine.Random;
 
 [System.Serializable]
-public class SizeAllele : Allele
+public class SizeAllele : Allele<SizeAllele>
 {
 	[SerializeField] private float _size;
 	public float Size => _size;
@@ -12,9 +12,9 @@ public class SizeAllele : Allele
 		_size = pSize;
 	}
 
-	public override Allele GetCopy(float mutationFactor, float mutationChance)
+	public override SizeAllele GetCopy(float mutationFactor, float mutationChance)
 	{
-		SizeAllele copy = new SizeAllele(this.Dominance, this._size);
+		SizeAllele copy = new SizeAllele(Dominance, _size);
 		copy.Mutate(mutationFactor, mutationChance);
 		return copy;
 	}

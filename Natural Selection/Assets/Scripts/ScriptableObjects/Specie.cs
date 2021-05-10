@@ -9,7 +9,7 @@ public class Specie : ScriptableObject
     public Order Order;
     public int instanceNumber;
 
-    public List<Gene> colorGenes;
+    //public List<Gene> colorGenes;
 
     private void OnValidate()
     {

@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Struct that holds a reference to an object and its last know position
+/// </summary>
 public struct MemoryData
 {
-	private Vector3 lastKnownPosition;
-	private GameObject objectToRemember;
-
-	public Vector3 LastKnownPosition => lastKnownPosition;
-	public GameObject Object => objectToRemember;
-
+	public GameObject ObjectInMemory { get; }
+	public Vector3 LastKnownPosition { get; set; }
+	
 	public MemoryData(GameObject pObjectToRemember)
 	{
-		objectToRemember = pObjectToRemember;
-		lastKnownPosition = pObjectToRemember.transform.position;
+		ObjectInMemory = pObjectToRemember;
+		LastKnownPosition = pObjectToRemember.transform.position;
 	}
 
-	public bool IsObjectMissing()
+	public bool ObjectNoLongerExists()
 	{
-		return objectToRemember == null;
+		return ObjectInMemory == null;
+	}
+
+	public void UpdateLastKnownPosition()
+	{
+		LastKnownPosition = ObjectInMemory.transform.position;
 	}
 }

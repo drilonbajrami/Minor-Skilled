@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Genome contains all the genes that an entity has
+/// </summary>
 public class Genome
 {
 	[SerializeField] private ColorGene color;
@@ -14,29 +17,27 @@ public class Genome
 		size = pSize;
 	}
 
+	/// <summary>
+	/// Express the whole genome by expressing each gene indiviudally
+	/// </summary>
+	/// <param name="entity"></param>
 	public void ExpressGenome(EntityGeneTest entity)
 	{
 		color.ExpressGene(entity);
 		size.ExpressGene(entity);
 	}
 
+	/// <summary>
+	/// Returns a new mutated copy genome that is a mix of both parents genome
+	/// </summary>
+	/// <param name="otherGenome"></param>
+	/// <param name="mutationFactor"></param>
+	/// <param name="mutationChance"></param>
+	/// <returns></returns>
 	public Genome CrossGenome(Genome otherGenome, float mutationFactor, float mutationChance)
 	{
-		ColorGene newColor = CrossColorGenes(otherGenome, mutationFactor, mutationChance);
-		//ColorGene newColor = (ColorGene)color.CrossGene(otherGenome.color, mutationFactor, mutationChance);
-		SizeGene newSize = CrossSizeGenes(otherGenome, mutationFactor, mutationChance);
+		ColorGene newColor = color.CrossGene(otherGenome.color, mutationFactor, mutationChance);
+		SizeGene newSize = size.CrossGene(otherGenome.size, mutationFactor, mutationChance);
 		return new Genome(newColor, newSize);
-	}
-
-	private ColorGene CrossColorGenes(Genome otherGenome, float mutationFactor, float mutationChance)
-	{
-		return new ColorGene(this.color.GetRandomAlleleCopy(mutationFactor, mutationChance) as ColorAllele, 
-							 otherGenome.color.GetRandomAlleleCopy(mutationFactor, mutationChance) as ColorAllele);
-	}
-
-	private SizeGene CrossSizeGenes(Genome otherGenome, float mutationFactor, float mutationChance)
-	{
-		return new SizeGene(this.size.GetRandomAlleleCopy(mutationFactor, mutationChance) as SizeAllele,
-							otherGenome.size.GetRandomAlleleCopy(mutationFactor, mutationChance) as SizeAllele);
 	}
 }

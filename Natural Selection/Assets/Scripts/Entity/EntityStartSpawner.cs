@@ -2,22 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestPosition : MonoBehaviour
+public class EntityStartSpawner : MonoBehaviour
 {
+    public GameObject entityPrefab;
     private List<GameObject> entities;
 
-    private GameObject ground;
-    private MeshCollider groundCollider;
+    private Bounds bounds;
+    private List<Vector3> usedPositions;
 
-    List<Vector3> usedPositions;
-
-    public GameObject prefab;
-
-    // Start is called before the first frame update
     void Start()
     {
-        ground = GameObject.FindGameObjectWithTag("Ground");
-        groundCollider = ground.GetComponent<MeshCollider>();
+        bounds = GameObject.FindGameObjectWithTag("Ground").gameObject.GetComponent<MeshCollider>().bounds;
         entities = new List<GameObject>();
         usedPositions = new List<Vector3>();
 
@@ -26,7 +21,7 @@ public class TestPosition : MonoBehaviour
 
         foreach (GameObject e in entities)
         {
-            e.transform.position = GetRandomPosition();
+            e.transform.position = GetRandomPosition(10.0f);
             e.transform.rotation = Quaternion.Euler(0.0f, Random.Range(0, 360), 0.0f);
         }
     }
@@ -34,19 +29,19 @@ public class TestPosition : MonoBehaviour
     public GameObject CreateNewEntity(Order order)
     {
         if (order == Order.CARNIVORE)
-            prefab.GetComponent<Entity>().order = Order.CARNIVORE;
+            entityPrefab.GetComponent<Entity>().order = Order.CARNIVORE;
         else
-            prefab.GetComponent<Entity>().order = Order.HERBIVORE;
+            entityPrefab.GetComponent<Entity>().order = Order.HERBIVORE;
 
-        GameObject entity = Instantiate(prefab);
+        GameObject entity = Instantiate(entityPrefab);
         return entity;
     }
 
-    private Vector3 GetRandomPosition()
+    private Vector3 GetRandomPosition(float margin)
     {
         Vector3 position = new Vector3();
-        position.x = Random.Range(groundCollider.bounds.min.x + 10.0f, groundCollider.bounds.max.x - 10.0f);
-        position.z = Random.Range(groundCollider.bounds.min.z + 10.0f, groundCollider.bounds.max.z - 10.0f);
+        position.x = Random.Range(bounds.min.x + margin, bounds.max.x - margin);
+        position.z = Random.Range(bounds.min.z + margin, bounds.max.z - margin);
         position.y = 0.5f;
 
         if (usedPositions.Count != 0)
@@ -55,7 +50,7 @@ public class TestPosition : MonoBehaviour
             {
                 if (Vector3.Distance(usedPos, position) < 2.0f)
                 {
-                    position = GetRandomPosition();
+                    position = GetRandomPosition(margin);
                 }
             }
         }

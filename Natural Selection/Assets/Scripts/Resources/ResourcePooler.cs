@@ -1,9 +1,17 @@
-﻿using System.Collections;
+﻿// Object Pooling taken from Brackeys on YouTube: https://www.youtube.com/watch?v=tdSmKaJvCoA
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Uses object pooling for spawning resources
+/// </summary>
 public class ResourcePooler : MonoBehaviour
 {
+	/// <summary>
+	/// Pool of objects
+	/// </summary>
 	[System.Serializable]
 	public class Pool
 	{
@@ -15,6 +23,9 @@ public class ResourcePooler : MonoBehaviour
 	public List<Pool> pools;
     public Dictionary<string, Queue<GameObject>> poolDictionary;
 
+	/// <summary>
+	/// Create the pool of objects on start
+	/// </summary>
 	private void Start()
 	{
 		poolDictionary = new Dictionary<string, Queue<GameObject>>();
@@ -35,6 +46,13 @@ public class ResourcePooler : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Spawns an object from the object pool depending on the given tag, positoin and rotation
+	/// </summary>
+	/// <param name="tag"></param>
+	/// <param name="position"></param>
+	/// <param name="rotation"></param>
+	/// <returns></returns>
 	public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
 	{
 		if (!poolDictionary.ContainsKey(tag))

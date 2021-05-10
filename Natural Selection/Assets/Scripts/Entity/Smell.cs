@@ -30,7 +30,7 @@ public class Smell : MonoBehaviour
         else
         {
             int i = Random.Range(0, _smellZone.Count);
-            return _smellZone.Values.ElementAt(i).Object;
+            return _smellZone.Values.ElementAt(i).ObjectInMemory;
         }
     }
 
@@ -42,7 +42,7 @@ public class Smell : MonoBehaviour
 		else
 		{
 			int i = Random.Range(0, _smellZonePrey.Count);
-			return _smellZonePrey.Values.ElementAt(i).Object;
+			return _smellZonePrey.Values.ElementAt(i).ObjectInMemory;
 		}
 	}
 
@@ -65,11 +65,11 @@ public class Smell : MonoBehaviour
             List<int> toRemove2 = new List<int>();
 
             foreach (KeyValuePair<int, MemoryData> o in _smellZone)
-                if (o.Value.IsObjectMissing() || !o.Value.Object.activeSelf)
+                if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
                     toRemove1.Add(o.Key);
 
             foreach (KeyValuePair<int, MemoryData> o in _smellZonePrey)
-                if (o.Value.IsObjectMissing() || !o.Value.Object.activeSelf)
+                if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
                     toRemove2.Add(o.Key);
 
             for (int i = 0; i < toRemove1.Count; i++)

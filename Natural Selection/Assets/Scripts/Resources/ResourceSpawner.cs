@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class ResourceSpawner : MonoBehaviour
 {
-    private GameObject ground;
-    private MeshCollider groundCollider;
+    // Cache the bounds of the ground plane
+    private Bounds bounds;
 
     [SerializeField] private float spawnInterval = 5.0f;
     private float spawnRate;
@@ -14,8 +14,7 @@ public class ResourceSpawner : MonoBehaviour
 
     void Start()
     {
-        ground = GameObject.FindGameObjectWithTag("Ground");
-        groundCollider = ground.GetComponent<MeshCollider>();
+        bounds = GameObject.FindGameObjectWithTag("Ground").gameObject.GetComponent<MeshCollider>().bounds;
         resourcePooler = gameObject.GetComponent<ResourcePooler>();
         spawnRate = spawnInterval;
     }
@@ -27,18 +26,23 @@ public class ResourceSpawner : MonoBehaviour
         {
             int i = Random.Range(0, 2);
             if(i == 0)
-                resourcePooler.SpawnFromPool("Water", GetRandomPosition(), Quaternion.identity);
+                resourcePooler.SpawnFromPool("Water", GetRandomPosition(10.0f), Quaternion.identity);
             else
-                resourcePooler.SpawnFromPool("Plant", GetRandomPosition(), Quaternion.identity);
+                resourcePooler.SpawnFromPool("Plant", GetRandomPosition(10.0f), Quaternion.identity);
 
-            spawnRate = spawnInterval;
+            spawnRate = spawnInterval; // Reset spawn timer
         }
     }
 
-	private Vector3 GetRandomPosition()
+    /// <summary>
+    /// Returns a random position within the bounds of the ground
+    /// </summary>
+    /// <param name="margin"></param>
+    /// <returns></returns>
+	private Vector3 GetRandomPosition(float margin)
     {
-        float xRandom = Random.Range(groundCollider.bounds.min.x + 10.0f, groundCollider.bounds.max.x - 10.0f);
-        float zRandom = Random.Range(groundCollider.bounds.min.z + 10.0f, groundCollider.bounds.max.z - 10.0f);
+        float xRandom = Random.Range(bounds.min.x + margin, bounds.max.x - margin);
+        float zRandom = Random.Range(bounds.min.z + margin, bounds.max.z - margin);
         return new Vector3(xRandom, 0.5f, zRandom);
     }
 }

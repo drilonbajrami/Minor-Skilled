@@ -10,7 +10,6 @@ public class ColorAlleleSO : ScriptableObject
     {
         if (Name != "")
         {
-            colorAllele.SetName(Name);
             string thisFileNewName = Name;
             string assetPath = UnityEditor.AssetDatabase.GetAssetPath(this.GetInstanceID());
             UnityEditor.AssetDatabase.RenameAsset(assetPath, thisFileNewName);

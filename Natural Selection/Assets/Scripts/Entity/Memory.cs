@@ -42,13 +42,13 @@ public class Memory : MonoBehaviour
 		{
 			foreach (KeyValuePair<int, MemoryData> resource in _resourcesInMemory)
 			{
-				if (resource.Value.Object.GetComponent<Resource>().GetResourceType() == resourceType)
+				if (resource.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType)
 				{
 					float distance = Vector3.SqrMagnitude(gameObject.transform.position - resource.Value.LastKnownPosition);
 					if (distance < closestDistance)
 					{
 						closestDistance = distance;
-						closestResource = resource.Value.Object;
+						closestResource = resource.Value.ObjectInMemory;
 					}
 				}
 			}
@@ -110,7 +110,7 @@ public class Memory : MonoBehaviour
 
 	public bool KnowsAboutResource(ResourceType resourceType)
 	{
-		return _resourcesInMemory.Any(o => o.Value.Object.GetComponent<Resource>().GetResourceType() == resourceType);
+		return _resourcesInMemory.Any(o => o.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType);
 	}
 
 	//private void UpdateResources()

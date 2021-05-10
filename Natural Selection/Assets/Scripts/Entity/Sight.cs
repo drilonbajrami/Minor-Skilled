@@ -56,7 +56,7 @@ public class Sight : MonoBehaviour
 
 			// Store keys of pairs whose value's object is missing
 			foreach (KeyValuePair<int, MemoryData> o in _objectsWithinSight)
-				if (o.Value.IsObjectMissing() || !o.Value.Object.activeSelf)
+				if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
 					toRemove.Add(o.Key);
 
 			// Remove all pairs whose value contains a null reference

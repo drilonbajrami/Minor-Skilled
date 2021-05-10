@@ -1,31 +1,32 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class SizeGene : Gene
+public class SizeGene : Gene<SizeGene, SizeAllele>
 {
 	public SizeGene(SizeAllele pAlleleLeft, SizeAllele pAlleleRight) : base(pAlleleLeft, pAlleleRight) { }
 
-	public override Gene CrossGene(Gene other, float mutationFactor, float mutationChance)
+	public override SizeGene CrossGene(SizeGene other, float mutationFactor, float mutationChance)
 	{
-		throw new System.NotImplementedException();
+		return new SizeGene(GetRandomAlleleCopy(mutationFactor, mutationChance), other.GetRandomAlleleCopy(mutationFactor, mutationChance));
 	}
 
 	public override void CoDominance(EntityGeneTest entity)
 	{
-		
+		// This type of gene does not have the possibility of CoDominance
+		// since size is just a scalar
 	}
 
 	public override void CompleteDominance(EntityGeneTest entity)
 	{
-		//if (AlleleLeft.Dominance == Dominance.DOMINANT)
-		//	entity.gameObject.transform.localScale = new Vector3((AlleleLeft as SizeAllele).Size, (AlleleLeft as SizeAllele).Size, (AlleleLeft as SizeAllele).Size);
-		//else
-		//	entity.gameObject.transform.localScale = new Vector3((AlleleRight as SizeAllele).Size, (AlleleRight as SizeAllele).Size, (AlleleRight as SizeAllele).Size);
+		if (AlleleA.Dominance == Dominance.DOMINANT)
+			entity.gameObject.transform.localScale = new Vector3(/*AlleleA.Size*/1, AlleleA.Size, /*AlleleA.Size*/1);
+		else
+			entity.gameObject.transform.localScale = new Vector3(/*AlleleB.Size*/1, AlleleB.Size, /*AlleleB.Size*/1);
 	}
 
 	public override void IncompleteDominance(EntityGeneTest entity)
 	{
-		//float size = ((AlleleLeft as SizeAllele).Size + (AlleleRight as SizeAllele).Size) / 2;
-		//entity.gameObject.transform.localScale = new Vector3(size, size, size);
+		float size = (AlleleA.Size + AlleleB.Size) / 2;
+		entity.gameObject.transform.localScale = new Vector3(1, size, 1);
 	}
 }

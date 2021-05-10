@@ -14,6 +14,9 @@ public class Resource : MonoBehaviour, IPooledObject
     private bool _isConsumed;
     private float onConsumeTimer;
 
+    /// <summary>
+    /// When dequeued from the object pool for spawning, reset everything for this object
+    /// </summary>
     public void OnObjectSpawn()
     {
         onConsumeTimer = 10.0f;
@@ -40,6 +43,7 @@ public class Resource : MonoBehaviour, IPooledObject
 
 	public void Update()
 	{
+        // If consumed, wait for 10 seconds until disabling
 		if (_isConsumed)
 		{
 			onConsumeTimer -= Time.deltaTime;

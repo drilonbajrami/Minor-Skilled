@@ -183,7 +183,7 @@ public class ReproduceState : State
 			if (TransformUtils.CheckIfClose(entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
 			{
 				_partner.gameObject.GetComponent<Entity>().DiscardMatingPartner();
-				GameObject offspring = entity.gameObject.transform.parent.gameObject.GetComponent<TestPosition>().CreateNewEntity(entity.order);
+				GameObject offspring = entity.gameObject.transform.parent.gameObject.GetComponent<EntityStartSpawner>().CreateNewEntity(entity.order);
 				Vector3 pos = entity.GetPosition();
 				pos.x -= 2;
 				offspring.transform.position = pos;

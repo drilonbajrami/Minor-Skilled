@@ -10,7 +10,6 @@ public class SizeAlleleSO : ScriptableObject
     {
         if (Name != "")
         {
-            sizeAllele.SetName(Name);
             string thisFileNewName = Name;
             string assetPath = UnityEditor.AssetDatabase.GetAssetPath(this.GetInstanceID());
             UnityEditor.AssetDatabase.RenameAsset(assetPath, thisFileNewName);
