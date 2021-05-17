@@ -7,6 +7,9 @@ public class Sight : MonoBehaviour
 {
 	Dictionary<int, MemoryData> _objectsWithinSight;
 
+	public SightArea sightArea;
+	public PieGraph pieGraph;
+
 	private Memory memory;
 	private float refreshTimer;
 	private float refreshInterval = 5.0f;
@@ -16,11 +19,25 @@ public class Sight : MonoBehaviour
 		_objectsWithinSight = new Dictionary<int, MemoryData>();
 		memory = gameObject.GetComponentInParent<Memory>();
 		refreshTimer = refreshInterval;
+		sightArea = new SightArea(4);
+		pieGraph.CreatePieGraph(sightArea, gameObject.transform.parent.transform);
 	}
 
 	private void Update()
 	{
 		RefreshSight();
+
+		if (Input.GetKeyDown(KeyCode.Z))
+		{
+			float u = 0.0f;
+
+			for (int i = 0; i < sightArea.sightSections.Length; i++)
+			{
+				u = Random.Range(-1.0f, 1.0f);
+				sightArea.sightSections[i].EditUtilityValue(u);
+				pieGraph.ChangeUtilityColor(i, u);
+			}
+		}
 	}
 
 	public bool CanSee(GameObject gameObject)

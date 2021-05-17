@@ -94,4 +94,10 @@ public static class TransformUtils
 		float lengthB = (from.transform.position - toB.transform.position).sqrMagnitude;
 		return lengthA < lengthB ? toA : toB;
 	}
+
+	public static float GetAngle(Vector3 from, Vector3 to, Vector3 axis)
+	{
+		float signedAngle = Vector3.SignedAngle(from, to, axis);
+		return (signedAngle > 0.0f) ? signedAngle : 360.0f + signedAngle;
+	}
 }

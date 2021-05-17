@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\drilo\.Rider2019.1\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\drilo\.Rider2019.1\system\resharper-host\local\Transient\ReSharperHost\v191\SolutionCaches\_Natural Selection.1438102486.00" t="ExcludeRecursive" />
+    <e p="C:\Users\drilo\Desktop\Minor Skilled\Minor-Skilled\Natural Selection" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="Scripts" t="Include">
+          <e p="Combiner.cs" t="Include" />
+          <e p="Entity" t="Include">
+            <e p="Entity.cs" t="Include" />
+            <e p="EntityGenderColor.cs" t="Include" />
+            <e p="EntityStartSpawner.cs" t="Include" />
+            <e p="Memory.cs" t="Include" />
+            <e p="MemoryData.cs" t="Include" />
+            <e p="Sight.cs" t="Include" />
+            <e p="Smell.cs" t="Include" />
+          </e>
+          <e p="EntityGeneTest.cs" t="Include" />
+          <e p="Genes" t="Include">
+            <e p="Allele.cs" t="Include" />
+            <e p="ColorAllele.cs" t="Include" />
+            <e p="ColorGene.cs" t="Include" />
+            <e p="Gene.cs" t="Include" />
+            <e p="GeneAttributes.cs" t="Include" />
+            <e p="Genome.cs" t="Include" />
+            <e p="SizeAllele.cs" t="Include" />
+            <e p="SizeGene.cs" t="Include" />
+          </e>
+          <e p="Other" t="Include">
+            <e p="MeshCombiner" t="Include">
+              <e p="Editor" t="Include">
+                <e p="MeshCombinerEditor.cs" t="Include" />
+              </e>
+              <e p="Scripts" t="Include">
+                <e p="MeshCombiner.cs" t="Include" />
+              </e>
+            </e>
+            <e p="NavMeshComponents" t="Include">
+              <e p="Editor" t="Include">
+                <e p="NavMeshAssetManager.cs" t="Include" />
+                <e p="NavMeshComponentsEditor.asmdef" t="Include" />
+                <e p="NavMeshComponentsGUIUtility.cs" t="Include" />
+                <e p="NavMeshLinkEditor.cs" t="Include" />
+                <e p="NavMeshModifierEditor.cs" t="Include" />
+                <e p="NavMeshModifierVolumeEditor.cs" t="Include" />
+                <e p="NavMeshSurfaceEditor.cs" t="Include" />
+              </e>
+              <e p="Scripts" t="Include">
+                <e p="NavMeshComponents.asmdef" t="Include" />
+                <e p="NavMeshLink.cs" t="Include" />
+                <e p="NavMeshModifier.cs" t="Include" />
+                <e p="NavMeshModifierVolume.cs" t="Include" />
+                <e p="NavMeshSurface.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Resources" t="Include">
+            <e p="IPooledObject.cs" t="Include" />
+            <e p="Resource.cs" t="Include" />
+            <e p="ResourcePooler.cs" t="Include" />
+            <e p="ResourceSpawner.cs" t="Include" />
+          </e>
+          <e p="ScriptableObjects" t="Include">
+            <e p="ColorAlleleSO.cs" t="Include" />
+            <e p="SizeAlleleSO.cs" t="Include" />
+            <e p="Specie.cs" t="Include" />
+          </e>
+          <e p="States" t="Include">
+            <e p="ChaseState.cs" t="Include" />
+            <e p="FleeState.cs" t="Include" />
+            <e p="HungryThirstyState.cs" t="Include" />
+            <e p="PrimaryState.cs" t="Include" />
+            <e p="ReproduceState.cs" t="Include" />
+            <e p="State.cs" t="Include" />
+          </e>
+          <e p="World" t="Include">
+            <e p="DestroySelf.cs" t="Include" />
+            <e p="Manager.cs" t="Include" />
+            <e p="SimpleCameraController.cs" t="Include" />
+            <e p="TimeController.cs" t="Include" />
+            <e p="TransformUtils.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="Natural Selection.sln" t="IncludeFlat" />
+      <e p="NavMeshComponents.csproj" t="IncludeRecursive" />
+      <e p="NavMeshComponentsEditor.csproj" t="IncludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="5e4fae62-67a3-4e70-92b9-92f8eda981d0" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/Entity/Entity.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-435">
+              <folding>
+                <marker date="1620207666263" expanded="true" signature="6:184" ph="..." />
+                <marker date="1620207666263" expanded="true" signature="221:7909" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="225:268" ph="/* public Genome genome; ... */" />
+                <marker date="1620207666263" expanded="true" signature="377:436" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="401:433" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="456:479" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="578:698" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="1769:3693" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="1775:2188" ph="/* genome = GetComponent&lt;Genome&gt;(); ... */" />
+                <marker date="1620207666263" expanded="true" signature="2196:2684" ph="/* if (order == Order.HERBIVORE) ... */" />
+                <marker date="1620207666263" expanded="true" signature="3326:3399" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="3406:3523" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="3716:3931" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="3958:4035" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="4066:4303" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="4072:4300" ph="/* if (order == Order.HERBIVORE) ... */" />
+                <marker date="1620207666263" expanded="true" signature="4331:4550" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="4337:4547" ph="/* if (order == Order.HERBIVORE) ... */" />
+                <marker date="1620207666263" expanded="true" signature="4566:4929" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="4682:4755" ph="/* if (Input.GetKeyDown(KeyCode.P)) ... */" />
+                <marker date="1620207666263" expanded="true" signature="4958:4981" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="5070:5132" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="5199:5233" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="5236:5481" ph="/* ==================================================================================================== ... */" />
+                <marker date="1620207666263" expanded="true" signature="5514:5556" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="5587:5633" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="5636:5877" ph="/* ==================================================================================================== ... */" />
+                <marker date="1620207666263" expanded="true" signature="5922:5992" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6026:6060" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6084:6114" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6140:6167" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6188:6241" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6274:6313" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6347:6386" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6412:6444" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6468:6523" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6549:6590" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6593:6834" ph="/* ==================================================================================================== ... */" />
+                <marker date="1620207666263" expanded="true" signature="6858:6903" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="6929:6975" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7015:7083" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7134:7180" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7217:7261" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7307:7335" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7367:7392" ph="{...}" />
+                <marker date="1620207666263" expanded="true" signature="7425:7907" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Assets/Scripts/States/ChaseState.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="30" column="12" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="12" />
+              <folding>
+                <marker date="1620137159290" expanded="false" signature="6:78" ph="..." />
+                <marker date="1620137159290" expanded="true" signature="111:1747" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="256:482" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="386:479" ph="/* _entity.SetSkinColor(EntityGenderColor.CHASING); ... */" />
+                <marker date="1620137159290" expanded="true" signature="532:724" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="551:692" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="765:998" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="804:995" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="866:991" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="1038:1745" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="1061:1445" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="1198:1441" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="1452:1532" ph="{...}" />
+                <marker date="1620137159290" expanded="true" signature="1603:1742" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Entity/Entity.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/States/ChaseState.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/.idea.Natural Selection/.idea/indexLayout.xml" />
+        <option value="$PROJECT_DIR$/.idea/.idea.Natural Selection/.idea/vcs.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="2105" />
+    <option name="y" value="318" />
+    <option name="width" value="1152" />
+    <option name="height" value="619" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="UnityExplorer" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="SolutionExplorer">
+        <option name="show-all-files" value="false" />
+      </pane>
+      <pane id="FileSystemExplorer" />
+      <pane id="AssemblyExplorer" />
+      <pane id="UnityExplorer">
+        <subPane>
+          <expand>
+            <path>
+              <item name="" type="e068e287:UnityExplorerRootNode" />
+              <item name="Assets" type="8711f2a6:AssetsRoot" />
+            </path>
+            <path>
+              <item name="" type="e068e287:UnityExplorerRootNode" />
+              <item name="Assets" type="8711f2a6:AssetsRoot" />
+              <item name="Scripts" type="1045f7f1:UnityExplorerNode" />
+            </path>
+            <path>
+              <item name="" type="e068e287:UnityExplorerRootNode" />
+              <item name="Assets" type="8711f2a6:AssetsRoot" />
+              <item name="Scripts" type="1045f7f1:UnityExplorerNode" />
+              <item name="States" type="1045f7f1:UnityExplorerNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+        <option name="show-hidden-items" value="false" />
+        <option name="show-project-names" value="true" />
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Rider.DefaultBreakpoints.AreToggled" value="true" />
+    <property name="Rider.ProjectViewActivator.IsNotFirstRun" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="userSelectedPid" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="userSelectedPid" value="false" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5e4fae62-67a3-4e70-92b9-92f8eda981d0" name="Default Changelist" comment="" />
+      <created>1620671049189</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1620671049189</updated>
+      <workItem from="1620671050641" duration="53000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="53000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1912" y="78" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="NuGet" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Unit Tests" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Performance Profiler" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Errors In Solution" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Unit Tests Coverage" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" suspend="NONE" type="DotNet Exception Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Entity/Entity.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-435">
+          <folding>
+            <marker date="1620207666263" expanded="true" signature="6:184" ph="..." />
+            <marker date="1620207666263" expanded="true" signature="221:7909" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="225:268" ph="/* public Genome genome; ... */" />
+            <marker date="1620207666263" expanded="true" signature="377:436" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="401:433" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="456:479" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="578:698" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="1769:3693" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="1775:2188" ph="/* genome = GetComponent&lt;Genome&gt;(); ... */" />
+            <marker date="1620207666263" expanded="true" signature="2196:2684" ph="/* if (order == Order.HERBIVORE) ... */" />
+            <marker date="1620207666263" expanded="true" signature="3326:3399" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="3406:3523" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="3716:3931" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="3958:4035" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="4066:4303" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="4072:4300" ph="/* if (order == Order.HERBIVORE) ... */" />
+            <marker date="1620207666263" expanded="true" signature="4331:4550" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="4337:4547" ph="/* if (order == Order.HERBIVORE) ... */" />
+            <marker date="1620207666263" expanded="true" signature="4566:4929" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="4682:4755" ph="/* if (Input.GetKeyDown(KeyCode.P)) ... */" />
+            <marker date="1620207666263" expanded="true" signature="4958:4981" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="5070:5132" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="5199:5233" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="5236:5481" ph="/* ==================================================================================================== ... */" />
+            <marker date="1620207666263" expanded="true" signature="5514:5556" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="5587:5633" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="5636:5877" ph="/* ==================================================================================================== ... */" />
+            <marker date="1620207666263" expanded="true" signature="5922:5992" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6026:6060" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6084:6114" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6140:6167" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6188:6241" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6274:6313" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6347:6386" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6412:6444" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6468:6523" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6549:6590" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6593:6834" ph="/* ==================================================================================================== ... */" />
+            <marker date="1620207666263" expanded="true" signature="6858:6903" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="6929:6975" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7015:7083" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7134:7180" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7217:7261" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7307:7335" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7367:7392" ph="{...}" />
+            <marker date="1620207666263" expanded="true" signature="7425:7907" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/States/ChaseState.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="30" column="12" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="12" />
+          <folding>
+            <marker date="1620137159290" expanded="false" signature="6:78" ph="..." />
+            <marker date="1620137159290" expanded="true" signature="111:1747" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="256:482" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="386:479" ph="/* _entity.SetSkinColor(EntityGenderColor.CHASING); ... */" />
+            <marker date="1620137159290" expanded="true" signature="532:724" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="551:692" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="765:998" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="804:995" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="866:991" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="1038:1745" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="1061:1445" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="1198:1441" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="1452:1532" ph="{...}" />
+            <marker date="1620137159290" expanded="true" signature="1603:1742" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

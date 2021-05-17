@@ -73,7 +73,7 @@ public class Entity : MonoBehaviour
 
 	LineRenderer lineRenderer;
 
-	Color currentColor = new Color();
+	//Color currentColor = new Color();
 
 	void Awake()
 	{
