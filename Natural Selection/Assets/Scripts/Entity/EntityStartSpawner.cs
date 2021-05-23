@@ -45,15 +45,9 @@ public class EntityStartSpawner : MonoBehaviour
         position.y = 0.5f;
 
         if (usedPositions.Count != 0)
-        {
             foreach (Vector3 usedPos in usedPositions)
-            {
                 if (Vector3.Distance(usedPos, position) < 2.0f)
-                {
                     position = GetRandomPosition(margin);
-                }
-            }
-        }
 
         return position;
     }

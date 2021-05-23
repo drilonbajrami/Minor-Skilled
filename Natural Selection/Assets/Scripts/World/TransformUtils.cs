@@ -9,23 +9,22 @@ using UnityEngine.AI;
 /// </summary>
 public static class TransformUtils
 {
-	/// <summary>
-	/// Get a random point within a radius of given position
-	/// </summary>
-	/// <param name="from"></param>
-	/// <param name="radius"></param>
-	/// <returns></returns>
-	public static Vector3 RandomTarget(Vector3 from, float radius)
+	public static Vector3 UtilityRandomTarget(Transform transform, float radius, float angle, float sectionHalfAngle)
 	{
-		Vector3 randomDirection = Random.insideUnitSphere * radius;
-		randomDirection += from;
-		NavMeshHit hit;
+		Vector3 randomPoint = UtilityRandomPosition(transform, radius, angle, sectionHalfAngle);
+
 		Vector3 finalPosition = Vector3.zero;
-		if (NavMesh.SamplePosition(randomDirection, out hit, radius, 1))
+		if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, radius, 1))
 		{
 			finalPosition = hit.position;
 		}
+
 		return finalPosition;
+	}
+
+	public static Vector3 UtilityRandomPosition(Transform transform, float radius, float angle, float sectionHalfAngle)
+	{
+		return Quaternion.AngleAxis(Random.Range(angle - sectionHalfAngle, angle + sectionHalfAngle), Vector3.up) * transform.forward * radius + transform.localPosition;
 	}
 
 	/// <summary>
@@ -95,9 +94,16 @@ public static class TransformUtils
 		return lengthA < lengthB ? toA : toB;
 	}
 
+	/// <summary>
+	/// Returns an angle between 0 and 360 degrees
+	/// </summary>
+	/// <param name="from"></param>
+	/// <param name="to"></param>
+	/// <param name="axis"></param>
+	/// <returns></returns>
 	public static float GetAngle(Vector3 from, Vector3 to, Vector3 axis)
 	{
 		float signedAngle = Vector3.SignedAngle(from, to, axis);
-		return (signedAngle > 0.0f) ? signedAngle : 360.0f + signedAngle;
+		return (signedAngle >= 0.0f) ? signedAngle : 360.0f + signedAngle;
 	}
 }

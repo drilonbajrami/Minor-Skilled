@@ -5,51 +5,39 @@ using UnityEngine;
 
 public class Memory : MonoBehaviour
 {
-	Dictionary<int, MemoryData> _resourcesInMemory;
-
+	private Entity entity;
+	private Dictionary<int, MemoryData> _resources;
 	private int _memoryCapacity;
-
-	//private float _currentMemorySpan;
-	//private float _memorySpan = 5.0f;
-
-	private float _updateInterval = 2f;
-	private float _interval;
 
 	private void Start()
 	{
-		_resourcesInMemory = new Dictionary<int, MemoryData>();
-		_interval = _updateInterval;
-		_memoryCapacity = 20;
-	}
-
-	private void Update()
-	{
-		_interval -= Time.deltaTime;
+		entity = gameObject.GetComponent<Entity>();
+		_resources = new Dictionary<int, MemoryData>();
+		StartCoroutine(RefreshMemoryCoroutine());
 	}
 
 	/// <summary>
-	/// Depending on which type to look for, the entity
-	/// will find the closest resource of that type
+	/// Depending on which type to look for, the entity will find the closest resource of that type
 	/// </summary>
 	/// <param name="resourceType"></param>
 	/// <returns></returns>
 	public GameObject FindClosestResource(ResourceType resourceType)
 	{
+		if (_resources.Count == 0)
+			return null;
+
 		GameObject closestResource = null;
 		float closestDistance = Mathf.Infinity;
 
-		if (_resourcesInMemory.Count != 0)
+		foreach (KeyValuePair<int, MemoryData> resource in _resources)
 		{
-			foreach (KeyValuePair<int, MemoryData> resource in _resourcesInMemory)
+			if (resource.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType)
 			{
-				if (resource.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType)
+				float distance = Vector3.SqrMagnitude(gameObject.transform.position - resource.Value.LastKnownPosition);
+				if (distance < closestDistance)
 				{
-					float distance = Vector3.SqrMagnitude(gameObject.transform.position - resource.Value.LastKnownPosition);
-					if (distance < closestDistance)
-					{
-						closestDistance = distance;
-						closestResource = resource.Value.ObjectInMemory;
-					}
+					closestDistance = distance;
+					closestResource = resource.Value.ObjectInMemory;
 				}
 			}
 		}
@@ -61,13 +49,12 @@ public class Memory : MonoBehaviour
 	/// Entity will register resource to its memory
 	/// </summary>
 	/// <param name="gameObject"></param>
-	public void RegisterResourceToMemory(GameObject gameObject)
+	public void MemorizeResource(GameObject gameObject)
 	{
-		if (gameObject != null)
-			if (!gameObject.GetComponent<Resource>().IsConsumed())
-				if (!RemembersResource(gameObject))
-					if (_resourcesInMemory.Count <= _memoryCapacity)
-						_resourcesInMemory.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
+		if (gameObject == null)
+			return;
+		else if (!RemembersResource(gameObject) && !gameObject.GetComponent<Resource>().IsConsumed() && _resources.Count <= _memoryCapacity)
+			_resources.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
 	}
 
 	/// <summary>
@@ -77,26 +64,9 @@ public class Memory : MonoBehaviour
 	/// <returns></returns>
 	private bool RemembersResource(GameObject resource)
 	{
-		if (_resourcesInMemory.Count == 0)
-			return false;
-		else
-			return _resourcesInMemory.ContainsKey(resource.GetInstanceID());
+		if (resource == null) return false;
+		return _resources.ContainsKey(resource.GetInstanceID());
 	}
-
-	/// <summary>
-	/// If resource is already consumed then forget,
-	/// otherwise forget after (_memorySpan) time.
-	/// </summary>
-	//private void ForgetWithTime()
-	//{
-	//	_currentMemorySpan -= Time.deltaTime;
-	//	if (_currentMemorySpan <= 0.0f)
-	//	{
-	//		if (_resources.Count != 0)
-	//			_resources.RemoveAt(0);
-	//		_currentMemorySpan = _memorySpan;
-	//	}
-	//}
 
 	/// <summary>
 	/// If resource has already been consumed then forget about it.
@@ -104,21 +74,47 @@ public class Memory : MonoBehaviour
 	/// <param name="gameObject"></param>
 	public void ForgetResource(GameObject gameObject)
 	{
-		if (gameObject != null && _resourcesInMemory.ContainsKey(gameObject.GetInstanceID()))
-				_resourcesInMemory.Remove(gameObject.GetInstanceID());
+		if (gameObject != null && _resources.ContainsKey(gameObject.GetInstanceID()))
+			_resources.Remove(gameObject.GetInstanceID());
 	}
 
 	public bool KnowsAboutResource(ResourceType resourceType)
 	{
-		return _resourcesInMemory.Any(o => o.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType);
+		return _resources.Any(o => o.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType);
 	}
 
-	//private void UpdateResources()
-	//{
-	//	for (int i = 0; i < _resources.Count; i++)
-	//	{
-	//		if (_resources[i].GetComponent<Resource>().IsConsumed())
-	//			_resources.RemoveAt(i);
-	//	}
-	//}
+	/// <summary>
+	/// Memory refresh coroutine
+	/// </summary>
+	/// <returns></returns>
+	private IEnumerator RefreshMemoryCoroutine()
+	{
+		while (true)
+		{
+			yield return new WaitForSeconds(entity.SenseRefreshInterval);
+			RefreshMemory();
+		}
+	}
+
+	/// <summary>
+	/// Forget oldest memory and clean any memories that point to non-existing objects
+	/// </summary>
+	private void RefreshMemory()
+	{
+		if (_resources.Count == 0)
+			return;
+
+		// Forget oldest memory
+		_resources.Remove(_resources.First().Key);
+
+		List<int> toRemove = new List<int>();
+		// Store keys of pairs whose value's object is missing
+		foreach (KeyValuePair<int, MemoryData> o in _resources)
+			if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
+				toRemove.Add(o.Key);
+
+		// Remove all pairs whose value contains a null reference
+		foreach (int i in toRemove)
+			_resources.Remove(i);
+	}
 }

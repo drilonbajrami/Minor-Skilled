@@ -71,12 +71,12 @@ public class HungryThirstyState : State
 		if (resource != null)
 			entity.SetDestination(resource.transform.position);
 		else if (resource == null)
-			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV));
+			entity.SetDestination(TransformUtils.RandomTarget(entity.Transform, 20.0f, entity.FOV));
 	}
 
 	private float GetDistanceToResource(Entity entity)
 	{
-		Vector3 deltaPos = entity.GetPosition() - entity.GetDestination();
+		Vector3 deltaPos = entity.Transform.localPosition - entity.GetDestination();
 		deltaPos.y = 0;
 		return deltaPos.magnitude;
 	}
@@ -87,10 +87,10 @@ public class HungryThirstyState : State
 			return;
 		else {
 			entity.Memory.ForgetResource(resource);
-			if (resource.GetComponent<Resource>().GetResourceType() == ResourceType.WATER)
-				entity.thirstiness = 0;
-			else
-				entity.hungriness = 0;
+			//if (resource.GetComponent<Resource>().GetResourceType() == ResourceType.WATER)
+			//	entity.thirstiness = 0;
+			//else
+			//	entity.hungriness = 0;
 
 			resource.GetComponent<Resource>().Consume();
 			_resource = null;

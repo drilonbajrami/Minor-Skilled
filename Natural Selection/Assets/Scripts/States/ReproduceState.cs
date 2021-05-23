@@ -100,7 +100,7 @@ public class ReproduceState : State
 				{
 					_partner.GetComponent<Entity>().SetMatingPartner(entity.gameObject);
 					entity.transform.LookAt(_partner.transform);
-					_positionToMate = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+					_positionToMate = TransformUtils.RandomTarget(entity.Transform, 20.0f, entity.FOV);
 					entity.Stop();
 					_currentSubState = SubState.MATING;
 				}
@@ -113,7 +113,7 @@ public class ReproduceState : State
 
 		if (entity.IsStuck() || !entity.HasPath())
 		{
-			Vector3 i = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+			Vector3 i = TransformUtils.RandomTarget(entity.Transform, 20.0f, entity.FOV);
 			entity.SetDestination(i);
 		}
 	}
@@ -130,7 +130,7 @@ public class ReproduceState : State
 
 		if (entity.IsStuck() || !entity.HasPath())
 		{
-			Vector3 i = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+			Vector3 i = TransformUtils.RandomTarget(entity.Transform, 20.0f, entity.FOV);
 			entity.SetDestination(i);
 		}
 	}
@@ -146,7 +146,7 @@ public class ReproduceState : State
 		}
 		else
 		{
-			if (entity.HasPath() && TransformUtils.CheckIfClose(entity.GetTransform(), _partner.gameObject.transform, 5.0f))
+			if (entity.HasPath() && TransformUtils.CheckIfClose(entity.Transform, _partner.gameObject.transform, 5.0f))
 			{
 				entity.ClearPath();
 				_partner.gameObject.GetComponent<Entity>().ClearPath();
@@ -180,11 +180,11 @@ public class ReproduceState : State
 
 		if (_partner != null)
 		{
-			if (TransformUtils.CheckIfClose(entity.GetTransform(), _partner.gameObject.transform, 5.0f) && goingToMate)
+			if (TransformUtils.CheckIfClose(entity.Transform, _partner.gameObject.transform, 5.0f) && goingToMate)
 			{
 				_partner.gameObject.GetComponent<Entity>().DiscardMatingPartner();
 				GameObject offspring = entity.gameObject.transform.parent.gameObject.GetComponent<EntityStartSpawner>().CreateNewEntity(entity.order);
-				Vector3 pos = entity.GetPosition();
+				Vector3 pos = entity.Transform.localPosition;
 				pos.x -= 2;
 				offspring.transform.position = pos;
 				offspring.transform.localScale.Set(0.5f, 0.5f, 0.5f);

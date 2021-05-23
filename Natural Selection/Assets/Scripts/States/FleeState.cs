@@ -11,9 +11,6 @@ public class FleeState : State
 		_stateName = "Flee State";
 		lookingAway = false;
 		//_entity.fleeing = true;
-		//_entity.fleeing = true;
-		//_entity.SetSkinColor(EntityGenderColor.FLEEING);
-		//_entity.DangerColor();	// CHANGE COLOR
 	}
 
 	public override void HandleState(Entity entity)
@@ -26,13 +23,13 @@ public class FleeState : State
 	{
 		if (!lookingAway)
 		{
-			entity.transform.LookAt(entity.GetPosition() - (entity.predator.transform.position - entity.GetPosition()));
+			entity.transform.LookAt(entity.Transform.localPosition - (entity.predator.transform.position - entity.Transform.localPosition));
 			lookingAway = true;
 		}
 		else
 		{
 			entity.IncreaseMaxSpeed();
-			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV));
+			entity.SetDestination(TransformUtils.RandomTarget(entity.Transform, 20.0f, entity.FOV));
 		}
 	}
 
@@ -41,7 +38,6 @@ public class FleeState : State
 		if (entity.predator == null)
 		{
 			entity.DecreaseMaxSpeed();
-			//entity.ResetColor(); // CHANGE COLOR
 			entity.ChangeState(new PrimaryState());
 		}
 	}

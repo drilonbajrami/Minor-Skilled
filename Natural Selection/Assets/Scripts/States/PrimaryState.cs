@@ -8,133 +8,102 @@ public class PrimaryState : State
 	private enum SubState { ROAMING, IDLE }
 	private SubState _currentSubState = SubState.ROAMING;
 
+	private GameObject prey;
+	private float hungerTimer = 30.0f;
+	private float timer;
+	private bool chasing = false;
+	private bool hungry = false;
+
 	public PrimaryState() : base()
 	{
 		//_entity.isOnReproducingState = false;
 		//_entity.fleeing = false;
 		_stateName = "Primary State";
 		//_entity.isMating = false;
+		timer = hungerTimer;
 	}
 
 	public override void HandleState(Entity entity)
 	{
-		if (SceneManager.GetActiveScene().buildIndex == 3)
+		switch (_currentSubState)
 		{
-			if (entity.predator != null)
-				entity.ChangeState(new FleeState());
-
-			if (entity.order == Order.CARNIVORE && IsHungryOrThirsty(entity, 50.0f))
-				entity.ChangeState(new ChaseState());
-
-			switch (_currentSubState)
-			{
-				case SubState.ROAMING:
-					RoamingSubState(entity);
-					break;
-				case SubState.IDLE:
-					IdleSubState(entity);
-					break;
-				default:
-					break;
-			}
-		}
-		else if (SceneManager.GetActiveScene().buildIndex == 2)
-		{
-			if (entity.order == Order.HERBIVORE && IsHungryOrThirsty(entity, 50.0f))
-				entity.ChangeState(new HungryThirstyState());
-
-			switch (_currentSubState)
-			{
-				case SubState.ROAMING:
-					RoamingSubState(entity);
-					break;
-				case SubState.IDLE:
-					IdleSubState(entity);
-					break;
-				default:
-					break;
-			}
-		}
-		else if (SceneManager.GetActiveScene().buildIndex == 4)
-		{
-			if (Input.GetKeyDown(KeyCode.M))
-			{
-					if (entity.gender == Gender.FEMALE && entity.gestationDuration <= 0.0f)
-						entity.ChangeState(new ReproduceState());
-					else if (entity.gender == Gender.MALE && entity.maleReproductionDuration <= 0.0)
-						entity.ChangeState(new ReproduceState());
-			}
-
-			//if (ResourcesAreSufficient(30.0f))
-			//{
-			//	if (_entity.gender == Gender.FEMALE && _entity.gestationDuration <= 0.0f)
-			//		ChangeEntityState(new ReproduceState(_entity));
-			//	else if (_entity.gender == Gender.MALE && _entity.maleReproductionDuration <= 0.0)
-			//		ChangeEntityState(new ReproduceState(_entity));
-			//}
-
-			switch (_currentSubState)
-			{
-				case SubState.ROAMING:
-					RoamingSubState(entity);
-					break;
-				case SubState.IDLE:
-					IdleSubState(entity);
-					break;
-				default:
-					break;
-			}
-		}
-		else
-		{
-			if (ResourcesAreSufficient(entity, 30.0f))
-			{
-				if (entity.gender == Gender.FEMALE && entity.gestationDuration <= 0.0f)
-					entity.ChangeState(new ReproduceState());
-				else if (entity.gender == Gender.MALE && entity.maleReproductionDuration <= 0.0)
-					entity.ChangeState(new ReproduceState());
-			}
-
-			if (entity.order == Order.HERBIVORE && IsHungryOrThirsty(entity, 50.0f))
-				entity.ChangeState(new HungryThirstyState());
-
-			switch (_currentSubState)
-			{
-				case SubState.ROAMING:
-					RoamingSubState(entity);
-					break;
-				case SubState.IDLE:
-					IdleSubState(entity);
-					break;
-				default:
-					break;
-			}
-
-			if (entity.predator != null)
-				entity.ChangeState(new FleeState());
-
-			if (entity.order == Order.CARNIVORE && IsHungryOrThirsty(entity, 50.0f))
-				entity.ChangeState(new ChaseState());
+			case SubState.ROAMING:
+				RoamingSubState(entity);
+				break;
+			case SubState.IDLE:
+				IdleSubState(entity);
+				break;
+			default:
+				break;
 		}
 	}
 
 	private void RoamingSubState(Entity entity)
 	{
+		//if (chasing == false && hungry == false && entity.order == Order.CARNIVORE)
+		//{
+		//	timer -= Time.deltaTime;
+		//	if (timer < 0.0f)
+		//	{
+		//		timer = hungerTimer;
+		//		hungry = true;
+		//	}
+		//}
+
+		//if (entity.order == Order.CARNIVORE && hungry == true && chasing == false)
+		//{
+		//	prey = entity.Sight.ChoosePrey();
+		//	if (prey != null)
+		//	{
+		//		chasing = true;
+		//		entity.Stop();
+		//	}
+		//}
+
+		//if (prey == null && hungry == true)
+		//{
+		//	chasing = false;
+		//}
+
+		//if (prey != null && !entity.HasPath())
+		//{
+		//	entity.SetDestination(prey.transform.position);
+		//}
+
+		//if (prey != null)
+		//{
+		//	if (TransformUtils.CheckIfClose(entity.GetTransform(), prey.transform, 3.0f))
+		//	{
+		//		prey.GetComponent<Entity>().Die();
+		//		prey = null;
+		//		chasing = false;
+		//		hungry = false;
+		//	}
+		//}
+
 		//if (IsHungryOrThirsty(50.0f))
 		//{
 		//	ChangeEntityState(new HungryThirstyState(_entity));
 		//}
+		//float a = Random.Range(0, 10);
 
-		if (entity.IsStuck() || !entity.HasPath())
+		//if (a < 5 && entity.order == Order.HERBIVORE)
+		//{
+		//	float bestUtilAngle = entity.Sight.EvaluateUtilities();
+		//	Vector3 i = TransformUtils.UtilityRandomTarget(entity.GetTransform(), 10.0f, bestUtilAngle, entity.Sight.sightArea.halfAngle);
+		//	entity.SetDestination(i);
+		//}
+		if ((entity.IsStuck() || !entity.HasPath())/* && chasing == false*/)
 		{
-			Vector3 i = TransformUtils.RandomTarget(entity.GetTransform(), 20.0f, entity.FOV);
+			float bestUtilAngle = entity.Sight.EvaluateUtilities();
+			Vector3 i = TransformUtils.UtilityRandomTarget(entity.Transform, 20.0f, bestUtilAngle, entity.Sight.sightArea.halfAngle);
 			entity.SetDestination(i);
 		}
 
 		if (entity.Velocity() > 0.01f)
 		{
-			entity.thirstiness += Time.deltaTime * entity.Velocity() / 5;
-			entity.hungriness += Time.deltaTime * entity.Velocity() / 5;
+			//entity.thirstiness += Time.deltaTime * entity.Velocity() / 5;
+			//entity.hungriness += Time.deltaTime * entity.Velocity() / 5;
 		}
 
 		//if (ResourcesAreSufficient(20.0f))

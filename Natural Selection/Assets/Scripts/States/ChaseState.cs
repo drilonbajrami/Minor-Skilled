@@ -17,8 +17,6 @@ public class ChaseState : State
 		chasing = false;
 		maxChaseTime = 600.0f;
 		currentChaseTime = maxChaseTime;
-		//_entity.SetSkinColor(EntityGenderColor.CHASING);
-		//_entity.DangerColor();	// CHANGE COLOR
 	}
 
 	public override void HandleState(Entity entity)
@@ -26,7 +24,7 @@ public class ChaseState : State
 		if (!chasing)
 		{
 			ChoosePrey(entity);
-			entity.SetDestination(TransformUtils.RandomTarget(entity.GetTransform(), entity.sightRadius, entity.FOV));
+			entity.SetDestination(TransformUtils.RandomTarget(entity.Transform, entity.sightRadius, entity.FOV));
 		}
 		else
 			ChasePrey(entity);
@@ -52,13 +50,12 @@ public class ChaseState : State
 		{
 			entity.SetDestination(prey.transform.position);
 
-			if (TransformUtils.CheckIfClose(entity.GetTransform(), prey.transform, 2.5f))
+			if (TransformUtils.CheckIfClose(entity.Transform, prey.transform, 2.5f))
 			{
 				prey.gameObject.GetComponent<Entity>().Die();
 				GameObject.Destroy(prey.gameObject);
 				entity.hungriness = 0;
 				entity.thirstiness = 0;
-				//entity.ResetColor(); // CHANGE COLOR
 				entity.ChangeState(new PrimaryState());
 			}
 		}

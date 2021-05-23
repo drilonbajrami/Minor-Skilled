@@ -10,7 +10,7 @@ public enum ResourceType
 
 public class Resource : MonoBehaviour, IPooledObject
 {
-    [SerializeField] ResourceType type;
+    private ResourceType type;
     private bool _isConsumed;
     private float onConsumeTimer;
 
@@ -43,12 +43,12 @@ public class Resource : MonoBehaviour, IPooledObject
 
 	public void Update()
 	{
-        // If consumed, wait for 10 seconds until disabling
+		// If consumed, wait for 10 seconds until disabling
 		if (_isConsumed)
 		{
 			onConsumeTimer -= Time.deltaTime;
-            if (onConsumeTimer <= 0.0f)
-                gameObject.SetActive(false);
+			if (onConsumeTimer <= 0.0f)
+				gameObject.SetActive(false);
 		}
 	}
 }

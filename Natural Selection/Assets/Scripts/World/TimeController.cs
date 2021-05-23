@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class TimeController : MonoBehaviour
 {
-    [Range(0, 10)]
+    [Range(0, 20)]
     [SerializeField] private float timeScale = 1;
 
-    void Update()
-    {
+	private void OnValidate()
+	{
         timeScale = Mathf.Round(timeScale * 2) / 2;
         Time.timeScale = timeScale;
-    }
+	}
 }
