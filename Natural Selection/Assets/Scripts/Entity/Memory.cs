@@ -9,7 +9,7 @@ public class Memory : MonoBehaviour
 	private Dictionary<int, MemoryData> _resources;
 	private int _memoryCapacity;
 
-	private void Start()
+	private void OnEnable()
 	{
 		entity = gameObject.GetComponent<Entity>();
 		_resources = new Dictionary<int, MemoryData>();
@@ -31,13 +31,13 @@ public class Memory : MonoBehaviour
 
 		foreach (KeyValuePair<int, MemoryData> resource in _resources)
 		{
-			if (resource.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType)
+			if (resource.Value.Object.GetComponent<Resource>().GetResourceType() == resourceType)
 			{
 				float distance = Vector3.SqrMagnitude(gameObject.transform.position - resource.Value.LastKnownPosition);
 				if (distance < closestDistance)
 				{
 					closestDistance = distance;
-					closestResource = resource.Value.ObjectInMemory;
+					closestResource = resource.Value.Object;
 				}
 			}
 		}
@@ -80,7 +80,7 @@ public class Memory : MonoBehaviour
 
 	public bool KnowsAboutResource(ResourceType resourceType)
 	{
-		return _resources.Any(o => o.Value.ObjectInMemory.GetComponent<Resource>().GetResourceType() == resourceType);
+		return _resources.Any(o => o.Value.Object.GetComponent<Resource>().GetResourceType() == resourceType);
 	}
 
 	/// <summary>
@@ -110,7 +110,7 @@ public class Memory : MonoBehaviour
 		List<int> toRemove = new List<int>();
 		// Store keys of pairs whose value's object is missing
 		foreach (KeyValuePair<int, MemoryData> o in _resources)
-			if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
+			if (o.Value.ObjectNoLongerExists() || !o.Value.Object.activeSelf)
 				toRemove.Add(o.Key);
 
 		// Remove all pairs whose value contains a null reference

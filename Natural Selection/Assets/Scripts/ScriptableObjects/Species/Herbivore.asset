@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03c743ec71b38744b88118ba9ff9192c, type: 3}
+  m_Name: Herbivore
+  m_EditorClassIdentifier: 
+  Name: Herbivore
+  Order: 0
+  instanceNumber: 0
+  numberOfColorAlleles: 3
+  numberOfSexAlleles: 2
+  numberOfSizeAlleles: 2
+  numberOfBehaviorAlleles: 1
+  numberOfEntities: 100
+  numberOfFemales: 50
+  numberOfMales: 50
+  colorAlleles:
+  - {fileID: 11400000, guid: 4f6e1c9c9b5565a408f806c0ae9b2209, type: 2}
+  - {fileID: 11400000, guid: 76c41416a91004249b4b73a4f4ef7e35, type: 2}
+  - {fileID: 11400000, guid: 7b32efe6f69472247a72ccb9a97cdc6a, type: 2}
+  sexAlleles:
+  - {fileID: 11400000, guid: 6bcfaedc01332974faddfe0d83191a79, type: 2}
+  - {fileID: 11400000, guid: 7566d16e9a4dadb4d8ce2c590f10f247, type: 2}
+  sizeAlleles:
+  - {fileID: 11400000, guid: 3c40fd6e01aeeb74ca6691be504b47e9, type: 2}
+  - {fileID: 11400000, guid: 95f057a3ddfb79246bfd852bfbfd88dd, type: 2}
+  behaviorAlleles:
+  - {fileID: 11400000, guid: f81c3498f9ed4464f8949230a52a9bb3, type: 2}

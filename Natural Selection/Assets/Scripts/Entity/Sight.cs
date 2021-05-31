@@ -5,95 +5,97 @@ using UnityEngine;
 public class Sight : MonoBehaviour
 {
 	private Entity entity;
-	Dictionary<int, MemoryData> _objectsWithinSight;
+	Dictionary<int, MemoryData> _objectsInSight;
 
-	public SightArea sightArea;
+	public SightArea SightArea;
 	public PieGraph pieGraph;
 
-	void Start()
+	// Initialize
+	void OnEnable()
 	{
 		entity = gameObject.GetComponentInParent<Entity>();
-		_objectsWithinSight = new Dictionary<int, MemoryData>();
-		sightArea = new SightArea(12);
+		_objectsInSight = new Dictionary<int, MemoryData>();
+		SightArea = new SightArea(12);
 		StartCoroutine(RefreshSightCoroutine());
 
 		if (pieGraph != null)
-			pieGraph.CreatePieGraph(sightArea, gameObject.transform.parent.transform);
+			pieGraph.CreatePieGraph(SightArea, entity);
 	}
 
 	public GameObject ChoosePrey()
 	{
-		if (_objectsWithinSight.Count == 0)
+		if (_objectsInSight.Count == 0)
 			return null;
 
 		GameObject toReturn = null;
-		foreach (KeyValuePair<int, MemoryData> o in _objectsWithinSight)
+		foreach (KeyValuePair<int, MemoryData> o in _objectsInSight)
 		{
 			if (o.Value.ObjectNoLongerExists())
 				continue;
 
-			Entity e = o.Value.ObjectInMemory.GetComponent<Entity>();
+			Entity e = o.Value.Object.GetComponent<Entity>();
 			if (e.order == Order.CARNIVORE)
 				continue;
 			else
 			{
-				toReturn = o.Value.ObjectInMemory;
+				toReturn = o.Value.Object;
 			}
 		}
 
 		return toReturn;
 	}
 
-	public float EvaluateUtilities()
+	/// <summary>
+	/// Assess all sight area sections utility values
+	/// </summary>
+	/// <returns></returns>
+	public void AssessUtilities()
 	{
-		// Get list of gameObjects
-		List<GameObject> list = new List<GameObject>();
-		foreach (KeyValuePair<int, MemoryData> o in _objectsWithinSight)
-		{
-			if (o.Value.ObjectInMemory == null)
-				continue;
+		if (_objectsInSight.Count == 0)
+			return;
 
-			list.Add(o.Value.ObjectInMemory);
-		}
-
-		if (list.Count == 0)
-			return 0.0f;
-
-		float bestAngle = sightArea.CalculateUtilityValues(gameObject.transform.parent.gameObject.GetComponent<Entity>(), list);
+		SightArea.AssessUtilityValues(entity, _objectsInSight);
 
 		if (pieGraph != null)
 		{
-			for (int i = 0; i < sightArea.sections.Length; i++)
+			for (int i = 0; i < SightArea.sections.Length; i++)
 			{
-				pieGraph.UpdateSectionUtilityColor(i, sightArea.sections[i].UtilityValue);
+				pieGraph.UpdateSectionUtilityColor(i, SightArea.sections[i].UtilityValue);
 			}
+			pieGraph.UpdateRotation();
 		}
-
-		return bestAngle;
 	}
 
+	/// <summary>
+	/// Returns true if the object is in sight otherwise false if not.
+	/// </summary>
+	/// <param name="gameObject"></param>
+	/// <returns></returns>
 	public bool CanSee(GameObject gameObject)
 	{
-		if (gameObject != null)
-			return _objectsWithinSight.ContainsKey(gameObject.GetInstanceID());
-		else
-			return false;
+		if (gameObject == null)	return false;
+		else return _objectsInSight.ContainsKey(gameObject.GetInstanceID());
 	}
 
+	/// <summary>
+	/// Registers object to entity's sight.
+	/// </summary>
+	/// <param name="gameObject"></param>
 	public void See(GameObject gameObject)
 	{
-		if (gameObject == null)
-			return;
-		else if (!_objectsWithinSight.ContainsKey(gameObject.GetInstanceID()))
-			_objectsWithinSight.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
+		if (gameObject == null) return;
+		else if (!_objectsInSight.ContainsKey(gameObject.GetInstanceID()))
+			_objectsInSight.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
 	}
 
+	/// <summary>
+	/// Deregisters object from entity's sight.
+	/// </summary>
+	/// <param name="gameObject"></param>
 	public void Unsee(GameObject gameObject)
 	{
-		if (gameObject == null)
-			return;
-		else if (_objectsWithinSight.Count != 0)
-			_objectsWithinSight.Remove(gameObject.GetInstanceID());
+		if (gameObject == null) return;
+		else if (_objectsInSight.Count != 0) _objectsInSight.Remove(gameObject.GetInstanceID());
 	}
 
 	/// <summary>
@@ -102,8 +104,7 @@ public class Sight : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator RefreshSightCoroutine()
 	{
-		while (true)
-		{
+		while (true) {
 			yield return new WaitForSeconds(entity.SenseRefreshInterval);
 			RefreshSight();
 		}
@@ -115,15 +116,14 @@ public class Sight : MonoBehaviour
 	private void RefreshSight()
 	{
 		List<int> toRemove = new List<int>();
-
 		// Store keys of pairs whose value's object is missing
-		foreach (KeyValuePair<int, MemoryData> o in _objectsWithinSight)
-			if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
+		foreach (KeyValuePair<int, MemoryData> o in _objectsInSight)
+			if (o.Value.ObjectNoLongerExists() || !o.Value.Object.activeSelf)
 				toRemove.Add(o.Key);
 
 		// Remove all pairs whose value contains a null reference
 		for (int i = 0; i < toRemove.Count; i++)
-			_objectsWithinSight.Remove(toRemove[i]);
+			_objectsInSight.Remove(toRemove[i]);
 	}
 
 	//====================================================================================================

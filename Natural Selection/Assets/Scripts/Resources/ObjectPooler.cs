@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Uses object pooling for spawning resources
+/// Uses object pooling for spawning objects
 /// </summary>
-public class ResourcePooler : MonoBehaviour
+public class ObjectPooler : MonoBehaviour
 {
 	/// <summary>
 	/// Pool of objects

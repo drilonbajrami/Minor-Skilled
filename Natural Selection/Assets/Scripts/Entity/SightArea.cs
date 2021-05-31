@@ -4,7 +4,11 @@ using UnityEngine;
 public class SightArea
 {
 	public SightSection[] sections;
-	public float halfAngle;
+	private float halfAngle;
+
+	public float IdealDirectionAngle   { get; private set; }
+	public float HighestUtilityValue   { get; private set; }
+	public float LowestUtilityValue    { get; private set; }
 
 	public SightArea(int sectionCount)
 	{
@@ -23,77 +27,97 @@ public class SightArea
 		}
 	}
 
-	public float CalculateUtilityValues(Entity entity, List<GameObject> objectsWithinSight)
+	public void AssessUtilityValues(Entity entity, Dictionary<int, MemoryData> objectsOnSight)
 	{
-		for (int i = 0; i < sections.Length; i++)
-			sections[i].ResetUtilityValue();
+		ResetUtilityValues();
 
-		float difference;
-		float sectionAngle;
+		if (objectsOnSight.Count == 0 || objectsOnSight == null) return;
 
-		if (objectsWithinSight.Count == 0 || objectsWithinSight == null)
-			return 0.0f;
-
-		foreach (GameObject gameObject in objectsWithinSight)
+		foreach (KeyValuePair<int, MemoryData> o in objectsOnSight)
 		{
-			Vector3 toGameObject = gameObject.transform.position - entity.gameObject.transform.position;
-			float objectAngle = TransformUtils.GetAngle(entity.gameObject.transform.forward, toGameObject, entity.gameObject.transform.up);
-			float utilityValue = 0.0f;
+			if (o.Value.Object == null)
+				continue;
 
-			if (gameObject == null)
-				break;
+			Vector3 dirToObject = o.Value.Object.transform.localPosition - entity.Transform.localPosition;
+			float objectAngle = entity.GetAngleTo(dirToObject);
+			float objectUtilityValue = 0.0f;
 
-			Entity other = gameObject.GetComponent<Entity>();
+			Entity other = o.Value.Object.GetComponent<Entity>();
 
-			if (other != null && other.order == Order.HERBIVORE)
-				utilityValue = entity.preyU;
-			else if (other != null && other.order == Order.CARNIVORE)
-				utilityValue = entity.predatorU;
-			else if (gameObject.CompareTag("Water"))
-				utilityValue = entity.waterU;
-			else if (gameObject.CompareTag("Plant"))
-				utilityValue = entity.foodU;
-
-			for (int i = 0; i < sections.Length; i++)
+			if (other != null)
 			{
-				sectionAngle = sections[i].Angle;
-
-				if (objectAngle >= sectionAngle)
-				{
-					difference = objectAngle - sectionAngle;
-					if (difference >= 180)
-						difference = (360 - objectAngle) + sectionAngle;
-				}
+				if (other.order == Order.HERBIVORE)
+					objectUtilityValue = entity.preyU;
 				else
-				{
-					difference = sectionAngle - objectAngle;
-					if (difference >= 180)
-						difference = (360 - sectionAngle) + objectAngle;
-				}
-
-				float percentage = GetPercentage(180 - difference);
-				sections[i].EditUtilityValue(utilityValue * percentage);
+					objectUtilityValue = entity.predatorU;
 			}
+
+			AssessUtilityValuePerSection(objectAngle, objectUtilityValue);
 		}
 
-		return GetHighestUtilitySection();
+		AssessUtilityOptions();
 	}
 
-	private float GetHighestUtilitySection()
+	private void AssessUtilityValuePerSection(float objectAngle, float utilityValue)
 	{
-		float bestUtility = float.MinValue;
-		float bestAngle = 0.0f;
+		for (int i = 0; i < sections.Length; i++)
+		{
+			float sectionAngle = sections[i].Angle;
+			float difference;
+
+			if (objectAngle >= sectionAngle)
+			{
+				difference = objectAngle - sectionAngle;
+				if (difference >= 180) difference = (360 - objectAngle) + sectionAngle;
+			}
+			else
+			{
+				difference = sectionAngle - objectAngle;
+				if (difference >= 180) difference = (360 - sectionAngle) + objectAngle;
+			}
+
+			float effectPercentage = GetPercentage(180 - difference);
+			sections[i].EditUtilityValue(utilityValue * effectPercentage);
+		}
+	}
+
+	private void ResetUtilityValues()
+	{
+		for (int i = 0; i < sections.Length; i++) sections[i].ResetUtilityValue();
+	}
+
+	private void AssessUtilityOptions()
+	{
+		IdealDirectionAngle = 0.0f;
+		HighestUtilityValue = 0;
+		LowestUtilityValue = 0;
 
 		for (int i = 0; i < sections.Length; i++)
 		{
-			if (bestUtility <= sections[i].UtilityValue)
+			if (HighestUtilityValue < sections[i].UtilityValue)
 			{
-				bestUtility = sections[i].UtilityValue;
-				bestAngle = sections[i].Angle;
+				HighestUtilityValue = sections[i].UtilityValue;
+				IdealDirectionAngle = sections[i].Angle;
+			}
+
+			if (LowestUtilityValue > sections[i].UtilityValue)
+			{
+				LowestUtilityValue = sections[i].UtilityValue;
 			}
 		}
 
-		return bestAngle;
+		if (IdealDirectionAngle == 0)
+		{
+			if (Random.Range(0, 2) == 0)
+				IdealDirectionAngle = Random.Range(0, 45);
+			else
+				IdealDirectionAngle = Random.Range(315, 360);
+		}
+	}
+
+	public float GetIdealDirectionAngle()
+	{
+		return Random.Range(IdealDirectionAngle - halfAngle, IdealDirectionAngle + halfAngle);
 	}
 
 	private float GetPercentage(float value)

@@ -16,3 +16,4 @@ MonoBehaviour:
   colorAllele:
     dominance: 1
     _color: {r: 1, g: 1, b: 1, a: 1}
+    monochromaticMutation: 1

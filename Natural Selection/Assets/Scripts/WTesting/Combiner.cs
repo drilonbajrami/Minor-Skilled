@@ -44,7 +44,7 @@ public class Combiner : MonoBehaviour
 			EntityGeneTest a = offspring.AddComponent<EntityGeneTest>();
 
 			a.genome = mother.CrossGenome(father, mutationFactor, mutationChance);
-			a.genome.ExpressGenome(a);
+			//a.genome.ExpressGenome(a);
 
 			// Show values in inspector debugging 
 			a.colorLeft = (a.genome.Color.AlleleA).Color;
@@ -67,7 +67,7 @@ public class Combiner : MonoBehaviour
 			EntityGeneTest a = offspring.AddComponent<EntityGeneTest>();
 
 			a.genome = mother.CrossGenome(father, mutationFactor, mutationChance);
-			a.genome.ExpressGenome(a);
+			//a.genome.ExpressGenome(a);
 
 			// Show values in inspector
 			a.colorLeft = (a.genome.Color.AlleleA as ColorAllele).Color;

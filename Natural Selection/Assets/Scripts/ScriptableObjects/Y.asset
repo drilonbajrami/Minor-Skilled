@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9bc1f8285e1594ebcf0415e46a6f42, type: 3}
-  m_Name: Black
+  m_Script: {fileID: 11500000, guid: 641c68ade85cfb04cbf6ae691caa8138, type: 3}
+  m_Name: Y
   m_EditorClassIdentifier: 
-  Name: Black
-  colorAllele:
+  Name: Y
+  sexAllele:
     dominance: 0
-    _color: {r: 0, g: 0, b: 0, a: 1}
-    monochromaticMutation: 0
+    _isFemale: 0

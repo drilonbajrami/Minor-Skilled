@@ -9,10 +9,10 @@ public class PrimaryState : State
 	private SubState _currentSubState = SubState.ROAMING;
 
 	private GameObject prey;
-	private float hungerTimer = 30.0f;
-	private float timer;
+	//private float hungerTimer = 30.0f;
+	//private float timer;
 	private bool chasing = false;
-	private bool hungry = false;
+	//private bool hungry = false;
 
 	public PrimaryState() : base()
 	{
@@ -20,7 +20,7 @@ public class PrimaryState : State
 		//_entity.fleeing = false;
 		_stateName = "Primary State";
 		//_entity.isMating = false;
-		timer = hungerTimer;
+		//timer = hungerTimer;
 	}
 
 	public override void HandleState(Entity entity)
@@ -40,74 +40,34 @@ public class PrimaryState : State
 
 	private void RoamingSubState(Entity entity)
 	{
-		//if (chasing == false && hungry == false && entity.order == Order.CARNIVORE)
-		//{
-		//	timer -= Time.deltaTime;
-		//	if (timer < 0.0f)
-		//	{
-		//		timer = hungerTimer;
-		//		hungry = true;
-		//	}
-		//}
-
-		//if (entity.order == Order.CARNIVORE && hungry == true && chasing == false)
-		//{
-		//	prey = entity.Sight.ChoosePrey();
-		//	if (prey != null)
-		//	{
-		//		chasing = true;
-		//		entity.Stop();
-		//	}
-		//}
-
-		//if (prey == null && hungry == true)
-		//{
-		//	chasing = false;
-		//}
-
-		//if (prey != null && !entity.HasPath())
-		//{
-		//	entity.SetDestination(prey.transform.position);
-		//}
-
-		//if (prey != null)
-		//{
-		//	if (TransformUtils.CheckIfClose(entity.GetTransform(), prey.transform, 3.0f))
-		//	{
-		//		prey.GetComponent<Entity>().Die();
-		//		prey = null;
-		//		chasing = false;
-		//		hungry = false;
-		//	}
-		//}
-
-		//if (IsHungryOrThirsty(50.0f))
-		//{
-		//	ChangeEntityState(new HungryThirstyState(_entity));
-		//}
-		//float a = Random.Range(0, 10);
-
-		//if (a < 5 && entity.order == Order.HERBIVORE)
-		//{
-		//	float bestUtilAngle = entity.Sight.EvaluateUtilities();
-		//	Vector3 i = TransformUtils.UtilityRandomTarget(entity.GetTransform(), 10.0f, bestUtilAngle, entity.Sight.sightArea.halfAngle);
-		//	entity.SetDestination(i);
-		//}
-		if ((entity.IsStuck() || !entity.HasPath())/* && chasing == false*/)
+		if (entity.IsHungry())
 		{
-			float bestUtilAngle = entity.Sight.EvaluateUtilities();
-			Vector3 i = TransformUtils.UtilityRandomTarget(entity.Transform, 20.0f, bestUtilAngle, entity.Sight.sightArea.halfAngle);
-			entity.SetDestination(i);
+			if (entity.order == Order.CARNIVORE)
+			{
+				entity.ChangeState(new ChaseState());
+			}
+			else
+			{
+				entity.ChangeState(new HungryThirstyState());
+			}
 		}
 
-		if (entity.Velocity() > 0.01f)
+		if ((entity.IsStuck() || !entity.HasPath()))
 		{
-			//entity.thirstiness += Time.deltaTime * entity.Velocity() / 5;
-			//entity.hungriness += Time.deltaTime * entity.Velocity() / 5;
+			entity.Sight.AssessUtilities();
+			float difference = Mathf.Abs(entity.Sight.SightArea.HighestUtilityValue - entity.Sight.SightArea.LowestUtilityValue) + 1.5f;
+			entity.IncreaseMaxSpeed(difference);
+			bool doNotSocialize = false;
+			if(entity.Sight.SightArea.LowestUtilityValue >= 0)
+				doNotSocialize = Random.Range(0.0f, 100.0f) >= entity.genome.Behavior.IdealAllele.SocializingChance;
+			entity.SetDestination(entity.GetIdealRandomDestination(doNotSocialize));
 		}
 
-		//if (ResourcesAreSufficient(20.0f))
-		//	_currentSubState = SubState.IDLE;
+		//if (entity.Velocity() > 0.01f)
+		//{
+		//	//entity.thirstiness += Time.deltaTime * entity.Velocity() / 5;
+		//	entity.hungriness += Time.deltaTime * entity.Velocity() / 10;
+		//}
 	}
 
 	private void IdleSubState(Entity entity)

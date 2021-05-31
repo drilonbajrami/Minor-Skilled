@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03c743ec71b38744b88118ba9ff9192c, type: 3}
-  m_Name: Specie
+  m_Script: {fileID: 11500000, guid: dc9bc1f8285e1594ebcf0415e46a6f42, type: 3}
+  m_Name: Black
   m_EditorClassIdentifier: 
-  Name: 
-  Order: 0
-  instanceNumber: 0
+  Name: Black
+  colorAllele:
+    dominance: 0
+    _color: {r: 0, g: 0, b: 0, a: 1}
+    monochromaticMutation: 1

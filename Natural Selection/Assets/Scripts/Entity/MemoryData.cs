@@ -7,22 +7,22 @@ using UnityEngine;
 /// </summary>
 public class MemoryData
 {
-	public GameObject ObjectInMemory { get; }
+	public GameObject Object { get; }
 	public Vector3 LastKnownPosition { get; set; }
 	
-	public MemoryData(GameObject objectToRemember)
+	public MemoryData(GameObject itemToRemember)
 	{
-		ObjectInMemory = objectToRemember;
-		LastKnownPosition = objectToRemember.transform.position;
+		Object = itemToRemember;
+		LastKnownPosition = itemToRemember.transform.position;
 	}
 
 	public bool ObjectNoLongerExists()
 	{
-		return ObjectInMemory == null;
+		return Object == null;
 	}
 
 	public void UpdateLastKnownPosition()
 	{
-		LastKnownPosition = ObjectInMemory.transform.position;
+		LastKnownPosition = Object.transform.position;
 	}
 }

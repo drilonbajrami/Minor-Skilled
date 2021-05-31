@@ -36,17 +36,17 @@ public abstract class Gene<T, A>
 	/// <summary>
 	/// Returns a new combined gene from both parent genes
 	/// </summary>
-	/// <param name="otherParentGene"></param>
+	/// <param name="other"></param>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public abstract T CrossGene(T otherParentGene, float mutationFactor, float mutationChance);
+	public abstract T CrossGene(T other, float mutationFactor, float mutationChance);
 
 	/// <summary>
 	/// Expresses the gene through entity's trait/feature based on its allele's types of dominance and values
 	/// </summary>
 	/// <param name="entity"></param>
-	public void ExpressGene(EntityGeneTest entity)
+	public void ExpressGene(Entity entity)
 	{
 		if (_alleleA.Dominance == Dominance.DOMINANT || 
 			_alleleB.Dominance == Dominance.DOMINANT || 
@@ -63,19 +63,19 @@ public abstract class Gene<T, A>
 	/// The trait is determined by the dominant allele only.
 	/// </summary>
 	/// <param name="entity"></param>
-	public abstract void CompleteDominance(EntityGeneTest entity);
+	public abstract void CompleteDominance(Entity entity);
 
 	/// <summary>
 	/// Incomplete dominance occurs when one allele is not fully dominant over the other allele.
 	/// The trait is a blend between two alleles.
 	/// </summary>
 	/// <param name="entity"></param>
-	public abstract void IncompleteDominance(EntityGeneTest entity);
+	public abstract void IncompleteDominance(Entity entity);
 
 	/// <summary>
-	/// CoDominance occrus when two alleles are semi-dominant over one another.
+	/// CoDominance occurs when two alleles are semi-dominant over one another.
 	/// The trait is a mixture between both alleles.
 	/// </summary>
 	/// <param name="entity"></param>
-	public abstract void CoDominance(EntityGeneTest entity);
+	public abstract void CoDominance(Entity entity);
 }

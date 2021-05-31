@@ -26,8 +26,8 @@ public class EntityGeneTest : MonoBehaviour
             SizeGene size = new SizeGene(new SizeAllele(SLeft.sizeAllele.Dominance, SLeft.sizeAllele.Size), new SizeAllele(SRight.sizeAllele.Dominance, SRight.sizeAllele.Size));
 
             // Create the new genome with the given genes
-            genome = new Genome(color, size);
-            genome.ExpressGenome(this);
+            //genome = new Genome(color, size);
+            //genome.ExpressGenome(this);
 
             // This is for debugging in inspector
 			colorLeft = new Color(genome.Color.AlleleA.Color.r, genome.Color.AlleleA.Color.g, genome.Color.AlleleA.Color.b);

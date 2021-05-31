@@ -9,7 +9,8 @@ public class Smell : MonoBehaviour
 	Dictionary<int, MemoryData> _smellZone;
 	Dictionary<int, MemoryData> _smellZonePrey;
 
-	void Start()
+	// Initialize
+	void OnEnable()
 	{
 		entity = gameObject.GetComponentInParent<Entity>();
 		_smellZone = new Dictionary<int, MemoryData>();
@@ -25,7 +26,7 @@ public class Smell : MonoBehaviour
 		else
 		{
 			int i = Random.Range(0, _smellZone.Count);
-			return _smellZone.Values.ElementAt(i).ObjectInMemory;
+			return _smellZone.Values.ElementAt(i).Object;
 		}
 	}
 
@@ -37,7 +38,7 @@ public class Smell : MonoBehaviour
 		else
 		{
 			int i = Random.Range(0, _smellZonePrey.Count);
-			return _smellZonePrey.Values.ElementAt(i).ObjectInMemory;
+			return _smellZonePrey.Values.ElementAt(i).Object;
 		}
 	}
 
@@ -57,8 +58,7 @@ public class Smell : MonoBehaviour
 	/// <returns></returns>
 	private IEnumerator RefreshSmellCoroutine()
 	{
-		while (true)
-		{
+		while (true) {
 			yield return new WaitForSeconds(entity.SenseRefreshInterval);
 			RefreshSmell();
 		}
@@ -73,11 +73,11 @@ public class Smell : MonoBehaviour
 		List<int> toRemove2 = new List<int>();
 
 		foreach (KeyValuePair<int, MemoryData> o in _smellZone)
-			if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
+			if (o.Value.ObjectNoLongerExists() || !o.Value.Object.activeSelf)
 				toRemove1.Add(o.Key);
 
 		foreach (KeyValuePair<int, MemoryData> o in _smellZonePrey)
-			if (o.Value.ObjectNoLongerExists() || !o.Value.ObjectInMemory.activeSelf)
+			if (o.Value.ObjectNoLongerExists() || !o.Value.Object.activeSelf)
 				toRemove2.Add(o.Key);
 
 		foreach (int i in toRemove1)
@@ -96,10 +96,10 @@ public class Smell : MonoBehaviour
 
 		if (a != null)
 		{
-			if (a.gender != gameObject.GetComponentInParent<Entity>().gender && !a.isOnReproducingState && a.order == gameObject.GetComponentInParent<Entity>().order)
-			{
-				_smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
-			}
+			//if (a.gender != gameObject.GetComponentInParent<Entity>().gender && !a.isOnReproducingState && a.order == gameObject.GetComponentInParent<Entity>().order)
+			//{
+			//	_smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
+			//}
 
 			if (gameObject.GetComponentInParent<Entity>().order == Order.CARNIVORE && a.order == Order.HERBIVORE)
 			{

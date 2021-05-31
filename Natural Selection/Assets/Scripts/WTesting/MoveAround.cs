@@ -14,18 +14,18 @@ public class MoveAround : MonoBehaviour
         
     }
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.A))
-    //        deltaX -= delta;
-    //    else if (Input.GetKeyDown(KeyCode.D))
-    //        deltaX += delta;
-    //    else if (Input.GetKeyDown(KeyCode.W))
-    //        deltaZ += delta;
-    //    else if (Input.GetKeyDown(KeyCode.S))
-    //        deltaZ -= delta;
+	// Update is called once per frame
+	void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+			deltaX -= delta;
+		else if (Input.GetKeyDown(KeyCode.RightArrow))
+			deltaX += delta;
+		else if (Input.GetKeyDown(KeyCode.UpArrow))
+			deltaZ += delta;
+		else if (Input.GetKeyDown(KeyCode.DownArrow))
+			deltaZ -= delta;
 
-    //    gameObject.transform.position = new Vector3(deltaX, 0.5f, deltaZ);
-    //}
+		gameObject.transform.position = new Vector3(deltaX, 0.5f, deltaZ);
+	}
 }

@@ -12,4 +12,24 @@ public class TimeController : MonoBehaviour
         timeScale = Mathf.Round(timeScale * 2) / 2;
         Time.timeScale = timeScale;
 	}
+
+	private void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.Keypad1)) SpeedUpTime();
+		else if (Input.GetKeyDown(KeyCode.Keypad2)) SlowDownTime();
+	}
+
+	void SpeedUpTime()
+	{
+		timeScale += 1;
+		timeScale = Mathf.Clamp(timeScale, 0, 20);
+		Time.timeScale = timeScale;
+	}
+
+	void SlowDownTime()
+	{
+		timeScale -= 1;
+		timeScale = Mathf.Clamp(timeScale, 0, 20);
+		Time.timeScale = timeScale;
+	}
 }

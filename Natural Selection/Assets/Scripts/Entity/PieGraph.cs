@@ -10,11 +10,11 @@ public class PieGraph : MonoBehaviour
     [SerializeField] private Gradient riskColor;
 
     private Image[] wedges;
-    private Transform entityTransform;
+    Entity entity;
 
-	public void CreatePieGraph(SightArea sightArea, Transform pTransform)
+	public void CreatePieGraph(SightArea sightArea, Entity pEntity)
     {
-        entityTransform = pTransform;
+        entity = pEntity;
         float zRotation = 0.0f;
         wedges = new Image[sightArea.sections.Length];
 
@@ -33,15 +33,19 @@ public class PieGraph : MonoBehaviour
     {
         wedges[index].color = riskColor.Evaluate(Mathf.InverseLerp(-1, 1, utilityValue));
         wedges[index].gameObject.transform.GetChild(0).GetComponent<Text>().text = utilityValue.ToString("F2");
-        wedges[index].gameObject.transform.GetChild(1).GetComponent<Text>().text = (index + 1).ToString();
-        transform.eulerAngles = new Vector3(90, 0, -entityTransform.eulerAngles.y);
+        wedges[index].gameObject.transform.GetChild(1).GetComponent<Text>().text = (index + 1).ToString();  
     }
 
 	private void Update()
 	{
-        if (entityTransform != null)
+        if (entity != null)
         {
-            transform.position = entityTransform.position;
+            transform.position = entity.Transform.position;
         }
 	}
+
+    public void UpdateRotation()
+    {
+        transform.eulerAngles = new Vector3(90, 0, -entity.Transform.eulerAngles.y);
+    }
 }

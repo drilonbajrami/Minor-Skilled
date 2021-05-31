@@ -7,11 +7,23 @@
 public abstract class Allele<T> where T : Allele<T>
 {
 	[SerializeField] private Dominance dominance;
-	public Dominance Dominance { get { return dominance; } }
+	public Dominance Dominance { get { return dominance; } protected set { dominance = value; } }
 
+	/// <summary>
+	/// Constructor with dominance parameter
+	/// </summary>
+	/// <param name="pDominance"></param>
 	public Allele(Dominance pDominance)
 	{
 		dominance = pDominance;
+	}
+
+	/// <summary>
+	/// Default constructor
+	/// </summary>
+	public Allele()
+	{
+
 	}
 
 	/// <summary>

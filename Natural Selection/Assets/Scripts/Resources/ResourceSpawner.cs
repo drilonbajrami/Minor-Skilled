@@ -10,12 +10,12 @@ public class ResourceSpawner : MonoBehaviour
     [SerializeField] private float spawnInterval = 5.0f;
     private float spawnRate;
 
-    private ResourcePooler resourcePooler;
+    private ObjectPooler resourcePooler;
 
     void Start()
     {
         bounds = GameObject.FindGameObjectWithTag("Ground").gameObject.GetComponent<MeshCollider>().bounds;
-        resourcePooler = gameObject.GetComponent<ResourcePooler>();
+        resourcePooler = gameObject.GetComponent<ObjectPooler>();
         spawnRate = spawnInterval;
     }
 
@@ -25,7 +25,7 @@ public class ResourceSpawner : MonoBehaviour
         if (spawnRate < 0.0f)
         {
             int i = Random.Range(0, 2);
-            if(i == 0)
+            if(i == 4)
                 resourcePooler.SpawnFromPool("Water", GetRandomPosition(10.0f), Quaternion.identity);
             else
                 resourcePooler.SpawnFromPool("Plant", GetRandomPosition(10.0f), Quaternion.identity);

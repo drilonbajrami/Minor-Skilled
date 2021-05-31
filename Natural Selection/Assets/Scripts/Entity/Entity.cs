@@ -1,81 +1,42 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class Entity : MonoBehaviour
+public class Entity : MonoBehaviour, IPooledObject
 {
-	public float predatorU = -0.5f;
-	public float waterU = 0.5f;
-	public float foodU = 0.5f;
-	public float preyU = 0.1f;
-	//public Genome genome;
+	public bool isRunning = false;
+	public bool isDone = false;
+
+	public bool debugOn = false;
+	public float predatorU = 0.0f;
+	public float preyU = 0.0f;
+	public float social = 0.0f;
+
+	public float Fitness;
 
 	// Event handler 
 	public event EventHandler<Entity> Death;
 
-	// Publish method
-	protected virtual void OnDeath(Entity entity)
-	{
-		if (Death != null)
-		{
-			Death(this, entity);
-		}
-	}
-
-	public void Die()
-	{
-		HerbivoreCounter.counter--;
-		OnDeath(this);
-		Destroy(this.gameObject);
-	}
-
-	// For others (Subscriber method to run)
-	public void OnOtherDeath(object source, Entity entity)
-	{
-		//Debug.Log($"Observer {this.gameObject.name}: {entity.gameObject.name} Died");
-		if (order == Order.HERBIVORE)
-		{
-			predatorU -= 0.25f;
-		}
-
-		entity.Death -= OnOtherDeath;
-	}
-
-	public GameObject partner = null;
-	public bool isMating = false;
-	public bool offspring = false;
-	public bool isOnReproducingState = false;
-
-	public float gestationDuration;
-	public float maleReproductionDuration;
-
-	public GameObject predator = null;
-	public bool fleeing = false;
-
 	private State _state = null;
 	[SerializeField] private string _stateName;
 
-	public float hungriness = 0.0f;
-	public float thirstiness = 0.0f;
+	/*[HideInInspector]*/ public float hungriness = 0.0f;
+	[HideInInspector] public float thirstiness = 0.0f;
 	private float hungerThreshold = 50.0f;
 	private float thirstThreshold = 50.0f;
 
-	private float maxSpeed;
+	
 
-	[SerializeField] public Gender gender;
-	[SerializeField] public Order order;
-
-	// Field Of View
-	[HideInInspector] public float FOV = 90.0f;
 	[HideInInspector] public float sightRadius;
 	[HideInInspector] public float smellRadius;
 
-	private float minVelocity = 0.2f;
+	private readonly float minVelocity = 0.2f;
+	private float defaultSpeed;
 
+	public Genome genome;
+	[SerializeField] public Gender gender;
+	[SerializeField] public Order order;
 	[HideInInspector] public Memory Memory	{ get; private set; }
 	[HideInInspector] public Sight	Sight	{ get; private set; }
 	[HideInInspector] public Smell	Smell	{ get; private set; }
@@ -84,72 +45,88 @@ public class Entity : MonoBehaviour
 	private NavMeshAgent agent;
 	public Transform Transform { get; private set; }
 
-	LineRenderer lineRenderer;
-
-
-	void Awake()
+	void OnEnable()
 	{
 		// Cache the transform
 		Transform = gameObject.GetComponent<Transform>();
-
-		//genome = GetComponent<Genome>();
 		agent = gameObject.GetComponent<NavMeshAgent>();
 		Memory = gameObject.GetComponent<Memory>();
 		Sight = gameObject.GetComponentInChildren<Sight>();
 		Smell = gameObject.GetComponentInChildren<Smell>();
 
-
 		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
-		//smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
-		maxSpeed = agent.speed;
+		smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
+		Fitness = 0.0f;
+
+		defaultSpeed = agent.speed;
 
 		// Do not touch
 		_state = new PrimaryState();
 		_stateName = _state.GetStateName();
-
-		// Has to be sent somehwere else
-		hungriness = Random.Range(40.0f, 60.0f);
-		thirstiness = Random.Range(40.0f, 60.0f);
-		if (SceneManager.GetActiveScene().buildIndex == 4)
-		{
-			gestationDuration = 0.0f;
-			maleReproductionDuration = 0.0f;
-		}
-		else
-		{
-			gestationDuration = Random.Range(30.0f, 50.0f);
-			maleReproductionDuration = Random.Range(30.0f, 50.0f);
-		}
-		
-
-		lineRenderer = gameObject.GetComponent<LineRenderer>();
-		lineRenderer.positionCount = 6;
-	}
-
-	private void Start()
-	{
-		if (order == Order.CARNIVORE)
-			gameObject.GetComponent<Renderer>().material.color = Colors.CARNIVORE;
-		else
-			gameObject.GetComponent<Renderer>().material.color = Colors.HERBIVORE;
+		Cycle.CycleStart += OnCycleStart;
+		Cycle.CycleEnd += OnCycleEnd;
 	}
 
 	void Update()
 	{
-		//if (Input.GetKeyDown(KeyCode.Space))
-		//	lineRenderer.enabled = !lineRenderer.enabled;
-		//DrawFieldOFView();
+		if (isRunning)
+		{
+			HandleState();
+			hungriness += Time.deltaTime / 1.5f;
+			Fitness += 0.0001f;
+		}
 
-		if (thirstiness >= 100.0f || hungriness >= 100.0f)
-			//Destroy(this.gameObject);
+		if (!isRunning && !isDone)
+		{
+			if (!agent.hasPath)
+			{
+				isDone = true;
+				EntitySpawner.ActiveEntities++;
+			}
+		}
 
-		gestationDuration -= Time.deltaTime;
-		maleReproductionDuration -= Time.deltaTime;
+		if (!EntitySpawner.EntitiesNotReachedDestinationsYet && EntitySpawner.HasCycleEnded)
+		{
+			agent.enabled = false;
+		}
+
+		
+
+		if (hungriness >= 100.0f)
+			DieFromHungerAndThirst();
+
+		if (genome != null)
+		{
+			predatorU = genome.Behavior.IdealAllele.OpponentUtility;
+			preyU = genome.Behavior.IdealAllele.PeerUtility;
+			social = genome.Behavior.IdealAllele.SocializingChance;
+		}
+		//// Testing
+		//if (pU != predatorU && order == Order.HERBIVORE)
+		//{
+		//	pU = predatorU;
+		//	IncreaseMaxSpeed();
+		//	gameObject.GetComponent<Renderer>().material.color = Colors.FITCOLOR.Evaluate(Mathf.InverseLerp(0, -1, pU));
+		//}
+
 	}
 
-	private void FixedUpdate()
+	public void ResetEntity()
 	{
-		HandleState();
+		_state = new PrimaryState();
+		hungriness = 0.0f;
+	}
+
+	public void ExpressGenome()
+	{
+		genome.ExpressGenome(this);
+	}
+
+	public void OnObjectSpawn()
+	{
+		Fitness = 0.0f;
+		hungriness = 0.0f;
+		gameObject.SetActive(true);
 	}
 
 	// Change entity's state from outside this class
@@ -165,6 +142,20 @@ public class Entity : MonoBehaviour
 		_state.HandleState(this);
 	}
 
+	public void OnCycleStart(object sender, EventArgs eventArgs)
+	{
+		hungriness = 0.0f;
+		DecreaseMaxSpeed();
+		agent.enabled = true;
+		isRunning = true;
+	}
+
+	public void OnCycleEnd(object sender, EventArgs eventArgs)
+	{
+		_state = new PrimaryState();
+		isRunning = false;
+		isDone = false;
+	}
 	//====================================================================================================
 	//											Entity Agent Methods
 	//====================================================================================================
@@ -198,12 +189,18 @@ public class Entity : MonoBehaviour
 
 	public void IncreaseMaxSpeed()
 	{
-		agent.speed = maxSpeed * 1.5f;
+		agent.speed = defaultSpeed * 1.5f;
+	}
+
+	public void IncreaseMaxSpeed(float scale)
+	{
+		if (scale < 0.2) return;
+		agent.speed = defaultSpeed * scale;
 	}
 
 	public float DecreaseMaxSpeed()
 	{
-		return agent.speed = maxSpeed;
+		return agent.speed = defaultSpeed;
 	}
 
 	public bool IsStopped()
@@ -224,6 +221,50 @@ public class Entity : MonoBehaviour
 	//====================================================================================================
 	//											Entity Other Methods
 	//====================================================================================================
+	/// <summary>
+	/// Death publisher method
+	/// </summary>
+	/// <param name="entity"></param>
+	protected virtual void OnDeath(Entity entity)
+	{
+		Death?.Invoke(this, entity);
+	}
+
+	public void Die()
+	{
+		Cycle.CycleStart -= OnCycleStart;
+		Cycle.CycleEnd -= OnCycleEnd;
+		EntitySpawner.hCount--;
+		OnDeath(this);
+		gameObject.SetActive(false);
+		//Destroy(this.gameObject);
+	}
+
+	public void DieFromHungerAndThirst()
+	{
+		if (order == Order.HERBIVORE)
+			EntitySpawner.hCount--;
+		else
+			EntitySpawner.cCount--;
+
+		gameObject.SetActive(false);
+	}
+
+	// For others (Subscriber method to run)
+	public void OnOtherDeath(object source, Entity entity)
+	{
+		//Debug.Log($"Observer {this.gameObject.name}: {entity.gameObject.name} Died");
+		if (order == Order.HERBIVORE)
+		{
+			genome.Behavior.IdealAllele.ChangeOpponentUtility(-0.2f);
+			genome.Behavior.IdealAllele.ChangePeerUtility(0.1f);
+			genome.Behavior.IdealAllele.ChangeSocializingChance(Random.Range(-2.0f, 3.0f));
+			Fitness += 0.01f;
+		}
+
+		entity.Death -= OnOtherDeath;
+	}
+
 	public bool IsHungry()
 	{
 		return hungriness > hungerThreshold;
@@ -234,40 +275,87 @@ public class Entity : MonoBehaviour
 		return thirstiness > thirstThreshold;
 	}
 
-	public void SetMatingPartner(GameObject pObject)
+	/// <summary>
+	/// Returns the angle between entity's forward direction and the direction towards the object
+	/// Angle is in range from 0 to 360 degrees (exclusive)
+	/// </summary>
+	/// <param name="directionToObject"> The direction from entity towards the object.</param>
+	/// <returns></returns>
+	public float GetAngleTo(Vector3 directionToObject)
 	{
-		partner = pObject;
-		isMating = true;
+		float signedAngle = Vector3.SignedAngle(Transform.forward, directionToObject, Transform.up);
+		return (signedAngle >= 0.0f) ? signedAngle : 360.0f + signedAngle;
 	}
 
-	public void DiscardMatingPartner()
+	/// <summary>
+	/// Checks if distance between the entity and the object is smaller than the difference.
+	/// </summary>
+	/// <param name="a"></param>
+	/// <param name="b"></param>
+	/// <param name="difference"></param>
+	/// <returns></returns>
+	public bool CheckIfClose(GameObject b, float difference)
 	{
-		partner = null;
-		isMating = false;
+		return Mathf.Abs(Transform.localPosition.x - b.transform.localPosition.x) < difference && Mathf.Abs(Transform.localPosition.z - b.transform.localPosition.z) < difference;
 	}
 
-	public void SetPredator(GameObject pObject)
+	/// <summary>
+	/// Returns the closest object to the entity out of two given ones.
+	/// </summary>
+	/// <param name="toA"></param>
+	/// <param name="toB"></param>
+	/// <returns></returns>
+	public GameObject ClosestTo(GameObject toA, GameObject toB)
 	{
-		predator = pObject;
+		float lengthA = (Transform.localPosition - toA.transform.localPosition).sqrMagnitude;
+		float lengthB = (Transform.localPosition - toB.transform.localPosition).sqrMagnitude;
+		return lengthA < lengthB ? toA : toB;
 	}
 
-	public void DiscardPredator()
+	public Vector3 GetIdealRandomDestination(bool fullRandom = false)
 	{
-		predator = null;
-	}
+		float angle;
+		if (!fullRandom)
+			angle = Sight.SightArea.GetIdealDirectionAngle();
+		else
+		{
+			if (Random.Range(0, 2) == 0)
+				angle = Random.Range(0, 45);
+			else
+				angle = Random.Range(315, 360);
+		}
 
-	private void DrawFieldOFView()
-	{
-		lineRenderer.SetPosition(0, transform.position);
-		lineRenderer.SetPosition(1, transform.forward * 10 + transform.position);
+		Vector3 randomPoint = Quaternion.AngleAxis(angle, Vector3.up) * Transform.forward * sightRadius + Transform.position;
+		Vector3 finalPosition = Vector3.zero;
+		if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, sightRadius, 1))
+		{
+			finalPosition = hit.position;
+		}
 
-		lineRenderer.SetPosition(2, transform.position);
-		lineRenderer.SetPosition(3, Quaternion.AngleAxis(FOV / 2, transform.up) * transform.forward * 10 + transform.position);
+		if (finalPosition == Vector3.zero)
+			finalPosition = Random.insideUnitSphere * sightRadius;
 
-		lineRenderer.SetPosition(4, transform.position);
-		lineRenderer.SetPosition(5, Quaternion.AngleAxis(-FOV / 2, transform.up) * transform.forward * 10 + transform.position);
+		return finalPosition;
 	}
 }
 
 public enum Gender { MALE, FEMALE }
 public enum Order { HERBIVORE, CARNIVORE }
+
+// Unused Code
+//LineRenderer lineRenderer;
+
+//lineRenderer = gameObject.GetComponent<LineRenderer>();
+//lineRenderer.positionCount = 6;
+
+//private void DrawFieldOFView()
+//{
+//	lineRenderer.SetPosition(0, transform.position);
+//	lineRenderer.SetPosition(1, transform.forward * 10 + transform.position);
+
+//	lineRenderer.SetPosition(2, transform.position);
+//	lineRenderer.SetPosition(3, Quaternion.AngleAxis(FOV / 2, transform.up) * transform.forward * 10 + transform.position);
+
+//	lineRenderer.SetPosition(4, transform.position);
+//	lineRenderer.SetPosition(5, Quaternion.AngleAxis(-FOV / 2, transform.up) * transform.forward * 10 + transform.position);
+//}

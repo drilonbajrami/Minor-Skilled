@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc9bc1f8285e1594ebcf0415e46a6f42, type: 3}
-  m_Name: Brown
+  m_Script: {fileID: 11500000, guid: cdecb4047c1b103449c6f0276e0a4fd5, type: 3}
+  m_Name: Carnivore Behavior
   m_EditorClassIdentifier: 
-  Name: Brown
-  colorAllele:
-    dominance: 1
-    _color: {r: 0.6603774, g: 0.34130275, b: 0, a: 1}
+  Name: Carnivore Behavior
+  behaviorAllele:
+    dominance: 0
+    _peerUtility: 0
+    _opponentUtility: 0.5
+    _socializingChance: 0

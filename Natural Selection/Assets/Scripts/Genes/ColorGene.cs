@@ -13,7 +13,7 @@ public class ColorGene : Gene<ColorGene, ColorAllele>
 		return new ColorGene(GetRandomAlleleCopy(mutationFactor, mutationChance), other.GetRandomAlleleCopy(mutationFactor, mutationChance));
 	}
 
-	public override void CompleteDominance(EntityGeneTest entity)
+	public override void CompleteDominance(Entity entity)
 	{
 		if (AlleleA.Dominance == Dominance.DOMINANT)
 			entity.gameObject.GetComponent<Renderer>().material.color = new Color(AlleleA.Color.r, AlleleA.Color.g, AlleleA.Color.b);
@@ -21,14 +21,14 @@ public class ColorGene : Gene<ColorGene, ColorAllele>
 			entity.gameObject.GetComponent<Renderer>().material.color = new Color(AlleleB.Color.r, AlleleB.Color.g, AlleleB.Color.b);
 	}
 
-	public override void IncompleteDominance(EntityGeneTest entity)
+	public override void IncompleteDominance(Entity entity)
 	{
 		Color left = new Color(AlleleA.Color.r, AlleleA.Color.g, AlleleA.Color.b);
 		Color right = new Color(AlleleB.Color.r, AlleleB.Color.g, AlleleB.Color.b);
 		entity.gameObject.GetComponent<Renderer>().material.color = Color.Lerp(left, right, 0.5f);
 	}
 
-	public override void CoDominance(EntityGeneTest entity)
+	public override void CoDominance(Entity entity)
 	{
 		Renderer rend = entity.gameObject.GetComponent<Renderer>();
 		rend.material = new Material(Shader.Find("Shader Graphs/Skin"));
