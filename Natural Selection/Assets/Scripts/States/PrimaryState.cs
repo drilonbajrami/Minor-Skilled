@@ -1,26 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class PrimaryState : State
 {
 	private enum SubState { ROAMING, IDLE }
 	private SubState _currentSubState = SubState.ROAMING;
 
-	private GameObject prey;
-	//private float hungerTimer = 30.0f;
-	//private float timer;
-	private bool chasing = false;
-	//private bool hungry = false;
-
 	public PrimaryState() : base()
 	{
-		//_entity.isOnReproducingState = false;
-		//_entity.fleeing = false;
 		_stateName = "Primary State";
-		//_entity.isMating = false;
-		//timer = hungerTimer;
 	}
 
 	public override void HandleState(Entity entity)
@@ -42,7 +29,7 @@ public class PrimaryState : State
 	{
 		if (entity.IsHungry())
 		{
-			if (entity.order == Order.CARNIVORE)
+			if (entity.IsCarnivore())
 			{
 				entity.ChangeState(new ChaseState());
 			}
@@ -52,11 +39,14 @@ public class PrimaryState : State
 			}
 		}
 
-		if ((entity.IsStuck() || !entity.HasPath()))
+		if ((entity.IsStopped() || !entity.HasPath()))
 		{
 			entity.Sight.AssessUtilities();
-			float difference = Mathf.Abs(entity.Sight.SightArea.HighestUtilityValue - entity.Sight.SightArea.LowestUtilityValue) + 1.5f;
-			entity.IncreaseMaxSpeed(difference);
+			if (entity.Sight.SightArea.LowestUtilityValue < 0)
+				entity.Run();
+			else
+				entity.Walk();
+			
 			bool doNotSocialize = false;
 			if(entity.Sight.SightArea.LowestUtilityValue >= 0)
 				doNotSocialize = Random.Range(0.0f, 100.0f) >= entity.genome.Behavior.IdealAllele.SocializingChance;

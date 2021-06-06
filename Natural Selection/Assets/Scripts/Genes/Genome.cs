@@ -3,23 +3,27 @@
 /// <summary>
 /// Genome contains all the genes that an entity has
 /// </summary>
+[System.Serializable]
 public class Genome
 {
-	[SerializeField] private ColorGene color;
-	[SerializeField] private SizeGene size;
 	[SerializeField] private SexGene sex;
+	[SerializeField] private ColorGene color;
+	[SerializeField] private HeightGene height;
+	[SerializeField] private SpeedGene speed;
 	[SerializeField] private BehaviorGene behavior;
 
-	public ColorGene Color { get { return color; } set { color = value; } }
-	public SizeGene Size { get { return size; } set { size = value; } }
-	public SexGene Sex { get { return sex; } set { sex = value; } }
-	public BehaviorGene Behavior { get { return behavior; } set { behavior = value; } }
+	public SexGene		Sex		 { get { return sex;	  } }
+	public ColorGene	Color	 { get { return color;	  } }
+	public HeightGene	Height	 { get { return height;	  } }
+	public SpeedGene	Speed	 { get { return speed;	  } }
+	public BehaviorGene Behavior { get { return behavior; } }
 
-	public Genome(ColorGene pColor, SizeGene pSize, SexGene pSex, BehaviorGene pBehavior)
+	public Genome(SexGene pSex, ColorGene pColor, HeightGene pHeight, SpeedGene pSpeed, BehaviorGene pBehavior)
 	{
-		color = pColor;
-		size = pSize;
 		sex = pSex;
+		color = pColor;
+		height = pHeight;
+		speed = pSpeed;
 		behavior = pBehavior;
 	}
 
@@ -29,9 +33,10 @@ public class Genome
 	/// <param name="entity"></param>
 	public void ExpressGenome(Entity entity)
 	{
-		color.ExpressGene(entity);
-		size.ExpressGene(entity);
 		sex.ExpressGene(entity);
+		color.ExpressGene(entity);
+		height.ExpressGene(entity);
+		speed.ExpressGene(entity);
 		behavior.ExpressGene(entity);
 	}
 
@@ -44,10 +49,11 @@ public class Genome
 	/// <returns></returns>
 	public Genome CrossGenome(Genome otherGenome, float mutationFactor, float mutationChance)
 	{
-		ColorGene newColor = color.CrossGene(otherGenome.color, mutationFactor, mutationChance);
-		SizeGene newSize = size.CrossGene(otherGenome.size, mutationFactor, mutationChance);
-		SexGene newSex = sex.CrossGene(otherGenome.sex, mutationFactor, mutationChance);
-		BehaviorGene newBehavior = behavior.CrossGene(otherGenome.behavior, mutationFactor, mutationChance);
-		return new Genome(newColor, newSize, newSex, newBehavior);
+		SexGene newSex = sex.CrossGene(otherGenome.Sex);
+		ColorGene newColor = color.CrossGene(otherGenome.Color, mutationFactor, mutationChance);
+		HeightGene newSize = height.CrossGene(otherGenome.Height, mutationFactor, mutationChance);
+		SpeedGene newSpeed = speed.CrossGene(otherGenome.Speed, mutationFactor, mutationChance);
+		BehaviorGene newBehavior = behavior.CrossGene(otherGenome.Behavior);
+		return new Genome(newSex, newColor, newSize, newSpeed, newBehavior);
 	}
 }

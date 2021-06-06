@@ -7,7 +7,7 @@ public class Memory : MonoBehaviour
 {
 	private Entity entity;
 	private Dictionary<int, MemoryData> _resources;
-	private int _memoryCapacity;
+	private int _memoryCapacity = 20;
 
 	private void OnEnable()
 	{

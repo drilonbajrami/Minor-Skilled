@@ -230,9 +230,9 @@ MonoBehaviour:
   isDone: 0
   debugOn: 0
   predatorU: 0
-  waterU: 0
-  foodU: 0
   preyU: 0
+  social: 0
+  Fitness: 0
   _stateName: 
   hungriness: 0
   thirstiness: 0

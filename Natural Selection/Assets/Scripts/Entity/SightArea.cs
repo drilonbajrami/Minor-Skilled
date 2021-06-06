@@ -46,10 +46,10 @@ public class SightArea
 
 			if (other != null)
 			{
-				if (other.order == Order.HERBIVORE)
-					objectUtilityValue = entity.preyU;
+				if (other.IsHerbivore())
+					objectUtilityValue = entity.peerUtility;
 				else
-					objectUtilityValue = entity.predatorU;
+					objectUtilityValue = entity.opponentUtility;
 			}
 
 			AssessUtilityValuePerSection(objectAngle, objectUtilityValue);

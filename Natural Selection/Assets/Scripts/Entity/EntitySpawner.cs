@@ -33,12 +33,6 @@ public class EntitySpawner : MonoBehaviour
     public static bool HasCycleEnded = false;
     public static bool ReadyToStartNewCycle = true;
 
-    public Text herbivoreCount;
-    public Text carnivoreCount;
-
-    public static int hCount;
-    public static int cCount;
-
     void Start()
     {
         bounds = GameObject.FindGameObjectWithTag("Ground").gameObject.GetComponent<MeshCollider>().bounds;
@@ -56,10 +50,6 @@ public class EntitySpawner : MonoBehaviour
             EntitiesNotReachedDestinationsYet = false;
             ReadyToStartNewCycle = true;
         }
-
-        herbivoreCount.text = $"Herbivore count: {hCount}";
-        carnivoreCount.text = $"Carnivore count: {cCount}";
-
     }
 
 	private void OnCycleStart(object sender, EventArgs eventArgs)
@@ -94,54 +84,63 @@ public class EntitySpawner : MonoBehaviour
     {
         for (int s = 0; s < species.Count; s++)
         {
-            for (int i = 0; i < species[s].numberOfEntities; i++)
+            for (int i = 0; i < species[s].total; i++)
             {
                 GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomStartingPosition(), Quaternion.identity);
                 Entity e = o.GetComponent<Entity>();
                 e.transform.LookAt(Vector3.zero);
 
-                ColorAllele colorA = species[s].colorAlleles[Random.Range(0, species[s].numberOfColorAlleles)].colorAllele;
-                ColorAllele colorB = species[s].colorAlleles[Random.Range(0, species[s].numberOfColorAlleles)].colorAllele;
-
-                SizeAllele sizeA = species[s].sizeAlleles[Random.Range(0, species[s].numberOfSizeAlleles)].sizeAllele;
-                SizeAllele sizeB = species[s].sizeAlleles[Random.Range(0, species[s].numberOfSizeAlleles)].sizeAllele;
-
                 SexAllele sexA;
                 SexAllele sexB;
 
-                BehaviorAllele behaviorA = species[s].behaviorAlleles[Random.Range(0, species[s].numberOfBehaviorAlleles)].behaviorAllele;
+                ColorAllele colorA = species[s].colorAlleles[Random.Range(0, species[s].numberOfColorAlleles)].Allele;
+                ColorAllele colorB = species[s].colorAlleles[Random.Range(0, species[s].numberOfColorAlleles)].Allele;
 
-                if (i < species[s].numberOfFemales)
+                HeightAllele heightA = species[s].heightAlleles[Random.Range(0, species[s].numberOfHeightAlleles)].Allele;
+                HeightAllele heightB = species[s].heightAlleles[Random.Range(0, species[s].numberOfHeightAlleles)].Allele;
+
+                SpeedAllele speedA = species[s].speedAlleles[Random.Range(0, species[s].numberOfSpeedAlleles)].Allele;
+                SpeedAllele speedB = species[s].speedAlleles[Random.Range(0, species[s].numberOfSpeedAlleles)].Allele;
+
+                BehaviorAllele behaviorA = species[s].behaviorAlleles[Random.Range(0, species[s].numberOfBehaviorAlleles)].Allele;
+
+                if (i < species[s].females)
                 {
-                    sexA = species[s].sexAlleles[0].sexAllele;
-                    sexB = species[s].sexAlleles[0].sexAllele;
+                    sexA = species[s].sexAlleles[0].Allele;
+                    sexB = species[s].sexAlleles[0].Allele;
                 }
                 else
                 {
-                    sexA = species[s].sexAlleles[0].sexAllele;
-                    sexB = species[s].sexAlleles[1].sexAllele;
+                    sexA = species[s].sexAlleles[0].Allele;
+                    sexB = species[s].sexAlleles[1].Allele;
                 }
 
+                SexGene sex = new SexGene(sexA.GetCopy(), sexB.GetCopy());
                 ColorGene color = new ColorGene(colorA.GetCopy(0.25f, 70.0f), colorB.GetCopy(0.25f, 70.0f));
-                SizeGene size = new SizeGene(sizeA.GetCopy(0.10f, 50.0f), sizeB.GetCopy(0.10f, 50.0f));
-                SexGene sex = new SexGene(sexA.GetCopy(0, 0), sexB.GetCopy(0, 0));
-                BehaviorGene behavior = new BehaviorGene(behaviorA.GetCopy(0, 0), behaviorA.GetCopy(0, 0));
+                HeightGene height = new HeightGene(heightA.GetCopy(0.10f, 50.0f), heightB.GetCopy(0.10f, 50.0f));
+                SpeedGene speed = new SpeedGene(speedA.GetCopy(0.25f, 50.0f), speedB.GetCopy(0.25f, 50.0f));
+                BehaviorGene behavior = new BehaviorGene(behaviorA.GetCopy(), behaviorA.GetCopy());
 
-                e.genome = new Genome(color, size, sex, behavior);
+                e.genome = new Genome(sex, color, height, speed, behavior);
                 e.ExpressGenome();
 
                 if (s == 0)
                 {
-                    e.order = Order.HERBIVORE;
-                    hCount++;
+                    e.SetOrder(Order.HERBIVORE);
+                    Counter.herbivoreTotal++;
+                    Counter.herbivoreAlive++;
                 }
                 else
                 {
-                    e.order = Order.CARNIVORE;
-                    cCount++;
+                    e.SetOrder(Order.CARNIVORE);
+                    Counter.carnivoreTotal++;
+                    Counter.carnivoreAlive++;
                 }
             }
         }
+
+        Counter.herbivoreCounts.Add(Counter.herbivoreAlive);
+        Counter.carnivoreCounts.Add(Counter.carnivoreAlive);
     }
 
     private void FirstCyclePositioning()
@@ -161,16 +160,16 @@ public class EntitySpawner : MonoBehaviour
         foreach (GameObject entity in entities)
         {
             Entity e = entity.GetComponent<Entity>();
-            if (e.order == Order.HERBIVORE)
+            if (e.IsHerbivore())
             {
-                if (e.gender == Gender.FEMALE)
+                if (e.IsFemale())
                     herbivoreFemales.Add(entity);
                 else
                     herbivoreMales.Add(entity);
             }
             else
             {
-                if (e.gender == Gender.FEMALE)
+                if (e.IsFemale())
                     carnivoreFemales.Add(entity);
                 else
                     carnivoreMales.Add(entity);
@@ -206,10 +205,11 @@ public class EntitySpawner : MonoBehaviour
                 e.transform.LookAt(Vector3.zero);
 
                 e.genome = herbivoreFemales[i].GetComponent<Entity>().genome.CrossGenome(herbivoreMales[Random.Range(0, maxMaleCount)].GetComponent<Entity>().genome, mutationFactor, mutationChance);
-                e.order = Order.HERBIVORE;
+                e.SetOrder(Order.HERBIVORE);
                 e.ExpressGenome();
                 entities.Add(o);
-                hCount++;
+                Counter.herbivoreTotal++;
+                Counter.herbivoreAlive++;
             }
         }
 
@@ -224,12 +224,16 @@ public class EntitySpawner : MonoBehaviour
                 Entity e = o.GetComponent<Entity>();
                 e.transform.LookAt(Vector3.zero);
                 e.genome = carnivoreFemales[i].GetComponent<Entity>().genome.CrossGenome(carnivoreMales[Random.Range(0, maxMaleCount)].GetComponent<Entity>().genome, mutationFactor, mutationChance);
-                e.order = Order.CARNIVORE;
+                e.SetOrder(Order.CARNIVORE);
                 e.ExpressGenome();
                 entities.Add(o);
-                cCount++;
+                Counter.carnivoreTotal++;
+                Counter.carnivoreAlive++;
             }
         }
+
+        Counter.herbivoreCounts.Add(Counter.herbivoreAlive);
+        Counter.carnivoreCounts.Add(Counter.carnivoreAlive);
     }
 
     /// Get all current active entities

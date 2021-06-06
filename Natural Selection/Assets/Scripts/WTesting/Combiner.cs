@@ -49,8 +49,8 @@ public class Combiner : MonoBehaviour
 			// Show values in inspector debugging 
 			a.colorLeft = (a.genome.Color.AlleleA).Color;
 			a.colorRight = (a.genome.Color.AlleleB).Color;
-			a.sizeLeft = (a.genome.Size.AlleleA).Size;
-			a.sizeRight = (a.genome.Size.AlleleB).Size;
+			a.sizeLeft = (a.genome.Height.AlleleA).Height;
+			a.sizeRight = (a.genome.Height.AlleleB).Height;
 
 			a.UpdateGenomeInfo();
 			offsprings.Add(offspring);
@@ -72,8 +72,8 @@ public class Combiner : MonoBehaviour
 			// Show values in inspector
 			a.colorLeft = (a.genome.Color.AlleleA as ColorAllele).Color;
 			a.colorRight = (a.genome.Color.AlleleB as ColorAllele).Color;
-			a.sizeLeft = (a.genome.Size.AlleleA as SizeAllele).Size;
-			a.sizeRight = (a.genome.Size.AlleleB as SizeAllele).Size;
+			a.sizeLeft = (a.genome.Height.AlleleA as HeightAllele).Height;
+			a.sizeRight = (a.genome.Height.AlleleB as HeightAllele).Height;
 
 			a.UpdateGenomeInfo();
 			offsprings.Add(offspring);

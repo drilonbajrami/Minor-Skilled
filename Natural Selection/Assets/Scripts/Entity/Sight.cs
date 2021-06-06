@@ -34,7 +34,7 @@ public class Sight : MonoBehaviour
 				continue;
 
 			Entity e = o.Value.Object.GetComponent<Entity>();
-			if (e.order == Order.CARNIVORE)
+			if (e.IsCarnivore())
 				continue;
 			else
 			{

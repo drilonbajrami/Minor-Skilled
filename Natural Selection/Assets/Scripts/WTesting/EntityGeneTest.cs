@@ -7,8 +7,8 @@ public class EntityGeneTest : MonoBehaviour
 {
     [SerializeField] ColorAlleleSO CLeft;
     [SerializeField] ColorAlleleSO CRight;
-    [SerializeField] SizeAlleleSO SLeft;
-    [SerializeField] SizeAlleleSO SRight;
+    [SerializeField] HeightAlleleSO SLeft;
+    [SerializeField] HeightAlleleSO SRight;
 
     public Color colorLeft;
     public Color colorRight;
@@ -22,8 +22,8 @@ public class EntityGeneTest : MonoBehaviour
         if (CLeft != null && CRight != null)
         {
             // Create the genes for the first generation
-            ColorGene color = new ColorGene(new ColorAllele(CLeft.colorAllele.Dominance, CLeft.colorAllele.Color), new ColorAllele(CRight.colorAllele.Dominance, CRight.colorAllele.Color));
-            SizeGene size = new SizeGene(new SizeAllele(SLeft.sizeAllele.Dominance, SLeft.sizeAllele.Size), new SizeAllele(SRight.sizeAllele.Dominance, SRight.sizeAllele.Size));
+            ColorGene color = new ColorGene(new ColorAllele(CLeft.Allele.Dominance, CLeft.Allele.Color), new ColorAllele(CRight.Allele.Dominance, CRight.Allele.Color));
+            HeightGene size = new HeightGene(new HeightAllele(SLeft.Allele.Dominance, SLeft.Allele.Height), new HeightAllele(SRight.Allele.Dominance, SRight.Allele.Height));
 
             // Create the new genome with the given genes
             //genome = new Genome(color, size);
@@ -32,8 +32,8 @@ public class EntityGeneTest : MonoBehaviour
             // This is for debugging in inspector
 			colorLeft = new Color(genome.Color.AlleleA.Color.r, genome.Color.AlleleA.Color.g, genome.Color.AlleleA.Color.b);
 			colorRight = new Color(genome.Color.AlleleB.Color.r, genome.Color.AlleleB.Color.g, genome.Color.AlleleB.Color.b);
-			sizeLeft = genome.Size.AlleleA.Size;
-			sizeRight = genome.Size.AlleleB.Size;
+			sizeLeft = genome.Height.AlleleA.Height;
+			sizeRight = genome.Height.AlleleB.Height;
 		}
     }
 
@@ -42,7 +42,7 @@ public class EntityGeneTest : MonoBehaviour
         // Used for debugging in inspector
 		colorLeft = new Color(genome.Color.AlleleA.Color.r, genome.Color.AlleleA.Color.g, genome.Color.AlleleA.Color.b);
 		colorRight = new Color(genome.Color.AlleleB.Color.r, genome.Color.AlleleB.Color.g, genome.Color.AlleleB.Color.b);
-		sizeLeft = genome.Size.AlleleA.Size;
-		sizeRight = genome.Size.AlleleB.Size;
+		sizeLeft = genome.Height.AlleleA.Height;
+		sizeRight = genome.Height.AlleleB.Height;
 	}
 }

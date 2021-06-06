@@ -101,7 +101,7 @@ public class Smell : MonoBehaviour
 			//	_smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
 			//}
 
-			if (gameObject.GetComponentInParent<Entity>().order == Order.CARNIVORE && a.order == Order.HERBIVORE)
+			if (gameObject.GetComponentInParent<Entity>().IsCarnivore() && a.IsHerbivore())
 			{
 				if (!_smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
 					_smellZonePrey.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
@@ -120,7 +120,7 @@ public class Smell : MonoBehaviour
 				_smellZone.Remove(other.gameObject.GetInstanceID());
 			}
 
-			if (a.order == Order.HERBIVORE && gameObject.GetComponentInParent<Entity>().order == Order.CARNIVORE && _smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
+			if (a.IsHerbivore() && gameObject.GetComponentInParent<Entity>().IsCarnivore() && _smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
 			{
 				_smellZonePrey.Remove(other.gameObject.GetInstanceID());
 			}

@@ -5,61 +5,50 @@ using Random = UnityEngine.Random;
 
 public class Entity : MonoBehaviour, IPooledObject
 {
+	private const float MIN_SPEED = 0.2f;
+
 	public bool isRunning = false;
 	public bool isDone = false;
 
-	public bool debugOn = false;
-	public float predatorU = 0.0f;
-	public float preyU = 0.0f;
-	public float social = 0.0f;
+	public float opponentUtility = 0.0f;
+	public float peerUtility = 0.0f;
+	public float socializingChance = 0.0f;
 
 	public float Fitness;
+	public float hungriness = 0.0f;
+	public float thirstiness = 0.0f;
+	private float hungerThreshold = 50.0f;
+	private float thirstThreshold = 50.0f;
 
 	// Event handler 
 	public event EventHandler<Entity> Death;
 
 	private State _state = null;
 	[SerializeField] private string _stateName;
+	[SerializeField] public Genome genome;
+	private Sex sex;
+	private Order order;
+	private Speed speed;
+	public Memory Memory { get; private set; }
+	public Sight  Sight	 { get; private set; }
+	public Smell  Smell	 { get; private set; }
 
-	/*[HideInInspector]*/ public float hungriness = 0.0f;
-	[HideInInspector] public float thirstiness = 0.0f;
-	private float hungerThreshold = 50.0f;
-	private float thirstThreshold = 50.0f;
-
-	
-
+	[HideInInspector] public int SenseRefreshInterval = 5;
 	[HideInInspector] public float sightRadius;
-	[HideInInspector] public float smellRadius;
-
-	private readonly float minVelocity = 0.2f;
-	private float defaultSpeed;
-
-	public Genome genome;
-	[SerializeField] public Gender gender;
-	[SerializeField] public Order order;
-	[HideInInspector] public Memory Memory	{ get; private set; }
-	[HideInInspector] public Sight	Sight	{ get; private set; }
-	[HideInInspector] public Smell	Smell	{ get; private set; }
-	[Range(5, 20)] public int SenseRefreshInterval = 5;
 
 	private NavMeshAgent agent;
 	public Transform Transform { get; private set; }
 
 	void OnEnable()
 	{
-		// Cache the transform
 		Transform = gameObject.GetComponent<Transform>();
 		agent = gameObject.GetComponent<NavMeshAgent>();
 		Memory = gameObject.GetComponent<Memory>();
 		Sight = gameObject.GetComponentInChildren<Sight>();
 		Smell = gameObject.GetComponentInChildren<Smell>();
-
 		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
-		smellRadius = Smell.gameObject.GetComponent<SphereCollider>().radius;
+
 		Fitness = 0.0f;
-
-		defaultSpeed = agent.speed;
-
 		// Do not touch
 		_state = new PrimaryState();
 		_stateName = _state.GetStateName();
@@ -90,25 +79,8 @@ public class Entity : MonoBehaviour, IPooledObject
 			agent.enabled = false;
 		}
 
-		
-
 		if (hungriness >= 100.0f)
 			DieFromHungerAndThirst();
-
-		if (genome != null)
-		{
-			predatorU = genome.Behavior.IdealAllele.OpponentUtility;
-			preyU = genome.Behavior.IdealAllele.PeerUtility;
-			social = genome.Behavior.IdealAllele.SocializingChance;
-		}
-		//// Testing
-		//if (pU != predatorU && order == Order.HERBIVORE)
-		//{
-		//	pU = predatorU;
-		//	IncreaseMaxSpeed();
-		//	gameObject.GetComponent<Renderer>().material.color = Colors.FITCOLOR.Evaluate(Mathf.InverseLerp(0, -1, pU));
-		//}
-
 	}
 
 	public void ResetEntity()
@@ -142,10 +114,11 @@ public class Entity : MonoBehaviour, IPooledObject
 		_state.HandleState(this);
 	}
 
+	#region CycleEventMethods
 	public void OnCycleStart(object sender, EventArgs eventArgs)
 	{
 		hungriness = 0.0f;
-		DecreaseMaxSpeed();
+		Walk();
 		agent.enabled = true;
 		isRunning = true;
 	}
@@ -156,19 +129,12 @@ public class Entity : MonoBehaviour, IPooledObject
 		isRunning = false;
 		isDone = false;
 	}
-	//====================================================================================================
-	//											Entity Agent Methods
-	//====================================================================================================
+	#endregion
 
+	#region AgentMethods
 	public void SetDestination(Vector3 target)
 	{
-		agent.isStopped = false;
-		this.agent.SetDestination(target);
-	}
-
-	public Vector3 GetDestination()
-	{
-		return agent.destination;
+		agent.SetDestination(target);
 	}
 
 	public bool HasPath()
@@ -187,44 +153,78 @@ public class Entity : MonoBehaviour, IPooledObject
 		agent.ResetPath();
 	}
 
-	public void IncreaseMaxSpeed()
-	{
-		agent.speed = defaultSpeed * 1.5f;
-	}
-
-	public void IncreaseMaxSpeed(float scale)
-	{
-		if (scale < 0.2) return;
-		agent.speed = defaultSpeed * scale;
-	}
-
-	public float DecreaseMaxSpeed()
-	{
-		return agent.speed = defaultSpeed;
-	}
-
 	public bool IsStopped()
 	{
-		return agent.isStopped;
+		return agent.isStopped || agent.velocity.magnitude < MIN_SPEED;
 	}
 
-	public bool IsStuck()
+	public void Run()
 	{
-		return agent.velocity.magnitude < minVelocity;
+		agent.speed = speed.running;
 	}
 
-	public float Velocity()
+	public float Walk()
 	{
-		return agent.velocity.magnitude;
+		return agent.speed = speed.walking;
+	}
+	#endregion
+
+	#region SetTraitsMethods
+	public void SetColor(Color color)
+	{
+		gameObject.GetComponent<Renderer>().material.color = color;
 	}
 
-	//====================================================================================================
-	//											Entity Other Methods
-	//====================================================================================================
-	/// <summary>
-	/// Death publisher method
-	/// </summary>
-	/// <param name="entity"></param>
+	public void SetHeight(float height)
+	{
+		Transform.localScale = new Vector3(1, height, 1);
+	}
+
+	public void SetSpeed(float pWalking, float pRunning, float pAngular, float pAcceleration)
+	{
+		speed = new Speed(pWalking, pRunning, pAngular, pAcceleration);
+	}
+
+	public void SetSex(Sex pSex)
+	{
+		sex = pSex;
+	}
+
+	public void SetOrder(Order pOrder)
+	{
+		order = pOrder;
+	}
+
+	public void SetBehavior(float pPeerUtility, float pOpponentUtility, float pSocializingChance)
+	{
+		peerUtility = pPeerUtility;
+		opponentUtility = pOpponentUtility;
+		socializingChance = pSocializingChance;
+	}
+
+	private void EditPeerUtility(float value)
+	{
+		peerUtility += value;
+		peerUtility = Mathf.Clamp(peerUtility, -1.0f, 1.0f);
+		genome.Behavior.IdealAllele.ChangePeerUtility(value);
+	}
+
+	private void EditOpponentUtility(float value)
+	{
+		opponentUtility += value;
+		opponentUtility = Mathf.Clamp(opponentUtility, -1.0f, 1.0f);
+		genome.Behavior.IdealAllele.ChangeOpponentUtility(value);
+	}
+
+	private void EditSocializingChance(float value)
+	{
+		socializingChance += value;
+		socializingChance = Mathf.Clamp(socializingChance, 0.0f, 100.0f);
+		genome.Behavior.IdealAllele.ChangeSocializingChance(value);
+	}
+	#endregion
+
+	#region EventMethods
 	protected virtual void OnDeath(Entity entity)
 	{
 		Death?.Invoke(this, entity);
@@ -234,7 +234,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	{
 		Cycle.CycleStart -= OnCycleStart;
 		Cycle.CycleEnd -= OnCycleEnd;
-		EntitySpawner.hCount--;
+		Counter.herbivoreAlive--;
 		OnDeath(this);
 		gameObject.SetActive(false);
 		//Destroy(this.gameObject);
@@ -243,9 +243,9 @@ public class Entity : MonoBehaviour, IPooledObject
 	public void DieFromHungerAndThirst()
 	{
 		if (order == Order.HERBIVORE)
-			EntitySpawner.hCount--;
+			Counter.herbivoreAlive--;
 		else
-			EntitySpawner.cCount--;
+			Counter.carnivoreAlive--;
 
 		gameObject.SetActive(false);
 	}
@@ -253,18 +253,19 @@ public class Entity : MonoBehaviour, IPooledObject
 	// For others (Subscriber method to run)
 	public void OnOtherDeath(object source, Entity entity)
 	{
-		//Debug.Log($"Observer {this.gameObject.name}: {entity.gameObject.name} Died");
 		if (order == Order.HERBIVORE)
 		{
-			genome.Behavior.IdealAllele.ChangeOpponentUtility(-0.2f);
-			genome.Behavior.IdealAllele.ChangePeerUtility(0.1f);
-			genome.Behavior.IdealAllele.ChangeSocializingChance(Random.Range(-2.0f, 3.0f));
+			EditOpponentUtility(-0.2f);
+			EditPeerUtility(0.1f);
+			EditSocializingChance(Random.Range(-2.0f, 3.0f));
 			Fitness += 0.01f;
 		}
 
 		entity.Death -= OnOtherDeath;
 	}
+	#endregion
 
+	#region IsMethods
 	public bool IsHungry()
 	{
 		return hungriness > hungerThreshold;
@@ -275,12 +276,32 @@ public class Entity : MonoBehaviour, IPooledObject
 		return thirstiness > thirstThreshold;
 	}
 
+	public bool IsHerbivore()
+	{
+		return order == Order.HERBIVORE;
+	}
+
+	public bool IsCarnivore()
+	{
+		return order == Order.CARNIVORE;
+	}
+
+	public bool IsMale()
+	{
+		return sex == Sex.MALE;
+	}
+
+	public bool IsFemale()
+	{
+		return sex == Sex.FEMALE;
+	}
+	#endregion
+
+	#region TransformMethods
 	/// <summary>
-	/// Returns the angle between entity's forward direction and the direction towards the object
-	/// Angle is in range from 0 to 360 degrees (exclusive)
+	/// Get angle between <strong>this.forward</strong> and <strong>directionToObject</strong>.
 	/// </summary>
-	/// <param name="directionToObject"> The direction from entity towards the object.</param>
-	/// <returns></returns>
+	/// <returns> Angle in range from <strong>0</strong> to <strong>360</strong> degrees. </returns>
 	public float GetAngleTo(Vector3 directionToObject)
 	{
 		float signedAngle = Vector3.SignedAngle(Transform.forward, directionToObject, Transform.up);
@@ -288,30 +309,28 @@ public class Entity : MonoBehaviour, IPooledObject
 	}
 
 	/// <summary>
-	/// Checks if distance between the entity and the object is smaller than the difference.
+	/// Checks if distance to the object <strong>B</strong> is smaller than the <strong>difference</strong>.
 	/// </summary>
-	/// <param name="a"></param>
-	/// <param name="b"></param>
-	/// <param name="difference"></param>
-	/// <returns></returns>
 	public bool CheckIfClose(GameObject b, float difference)
 	{
 		return Mathf.Abs(Transform.localPosition.x - b.transform.localPosition.x) < difference && Mathf.Abs(Transform.localPosition.z - b.transform.localPosition.z) < difference;
 	}
 
 	/// <summary>
-	/// Returns the closest object to the entity out of two given ones.
+	/// Returns the closest object out of <strong>A</strong> and <strong>B</strong>.
 	/// </summary>
-	/// <param name="toA"></param>
-	/// <param name="toB"></param>
-	/// <returns></returns>
-	public GameObject ClosestTo(GameObject toA, GameObject toB)
+	public GameObject ClosestTo(GameObject A, GameObject B)
 	{
-		float lengthA = (Transform.localPosition - toA.transform.localPosition).sqrMagnitude;
-		float lengthB = (Transform.localPosition - toB.transform.localPosition).sqrMagnitude;
-		return lengthA < lengthB ? toA : toB;
+		float lengthA = (Transform.localPosition - A.transform.localPosition).sqrMagnitude;
+		float lengthB = (Transform.localPosition - B.transform.localPosition).sqrMagnitude;
+		return lengthA < lengthB ? A : B;
 	}
 
+	/// <summary> Returns a random direction depending on the given condition of <strong>fullRandom</strong>. </summary>
+	/// <returns> 
+	/// <para> If 'fullRandom == false': Random direction within bounds of the ideal direction ± half the angle of a sigth section </para>
+	/// <para> If 'fullRandom == true' : Random direction within bounds of forward direction ± 45 degrees </para>
+	/// </returns>
 	public Vector3 GetIdealRandomDestination(bool fullRandom = false)
 	{
 		float angle;
@@ -337,10 +356,27 @@ public class Entity : MonoBehaviour, IPooledObject
 
 		return finalPosition;
 	}
+	#endregion
 }
 
-public enum Gender { MALE, FEMALE }
-public enum Order { HERBIVORE, CARNIVORE }
+public enum Sex { MALE, FEMALE }
+public enum Order { HERBIVORE, CARNIVORE, OMNIVORE }
+
+public struct Speed
+{
+	public readonly float walking;
+	public readonly float running;
+	public readonly float angular;
+	public readonly float acceleration;
+
+	public Speed(float pWalking, float pRunning, float pAngular, float pAcceleration)
+	{
+		walking = pWalking;
+		running = pRunning;
+		angular = pAngular;
+		acceleration = pAcceleration;
+	}
+}
 
 // Unused Code
 //LineRenderer lineRenderer;

@@ -32,12 +32,22 @@ public abstract class Allele<T> where T : Allele<T>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public abstract T GetCopy(float mutationFactor, float mutationChance);
+	public abstract T GetCopy(float mutationFactor = 0, float mutationChance = 0);
 
 	/// <summary>
 	/// Performs mutation on the allele depending on the mutationFactor and mutationChance
 	/// </summary>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
-	public abstract void Mutate(float mutationFactor, float mutationChance);
+	public virtual void Mutate(float mutationFactor, float mutationChance) { }
+}
+
+/// <summary>
+/// Allele dominance type
+/// </summary>
+public enum Dominance
+{
+	DOMINANT,
+	SEMIDOMINANT,
+	RECESSIVE
 }

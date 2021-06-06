@@ -4,6 +4,7 @@
 /// A gene consist of two alleles and it expresses the traits affected by the alleles
 /// based on their dominance and values
 /// </summary>
+[System.Serializable]
 public abstract class Gene<T, A>
 	where T : Gene<T, A>
 	where A : Allele<A>
@@ -28,7 +29,7 @@ public abstract class Gene<T, A>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public A GetRandomAlleleCopy(float mutationFactor, float mutationChance)
+	public A GetRandomAlleleCopy(float mutationFactor = 0, float mutationChance = 0)
 	{
 		return Random.Range(0, 2) == 0 ? _alleleA.GetCopy(mutationFactor, mutationChance) : _alleleB.GetCopy(mutationFactor, mutationChance);
 	}
@@ -40,7 +41,7 @@ public abstract class Gene<T, A>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public abstract T CrossGene(T other, float mutationFactor, float mutationChance);
+	public abstract T CrossGene(T other, float mutationFactor = 0, float mutationChance = 0);
 
 	/// <summary>
 	/// Expresses the gene through entity's trait/feature based on its allele's types of dominance and values
@@ -48,8 +49,7 @@ public abstract class Gene<T, A>
 	/// <param name="entity"></param>
 	public void ExpressGene(Entity entity)
 	{
-		if (_alleleA.Dominance == Dominance.DOMINANT || 
-			_alleleB.Dominance == Dominance.DOMINANT || 
+		if (_alleleA.Dominance == Dominance.DOMINANT || _alleleB.Dominance == Dominance.DOMINANT || 
 			(_alleleA.Dominance == Dominance.RECESSIVE && _alleleA.Dominance == _alleleB.Dominance))
 			CompleteDominance(entity);
 		else if (_alleleA.Dominance == Dominance.SEMIDOMINANT && _alleleB.Dominance == Dominance.SEMIDOMINANT)

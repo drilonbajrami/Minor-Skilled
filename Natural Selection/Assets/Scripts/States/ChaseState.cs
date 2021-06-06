@@ -29,10 +29,10 @@ public class ChaseState : State
 			if (prey != null)
 			{
 				chasing = true;
-				entity.IncreaseMaxSpeed();
+				entity.Run();
 			}
 			else
-				entity.DecreaseMaxSpeed();
+				entity.Walk();
 		}
 		else
 		{
