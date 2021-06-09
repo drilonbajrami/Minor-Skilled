@@ -234,7 +234,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	{
 		Cycle.CycleStart -= OnCycleStart;
 		Cycle.CycleEnd -= OnCycleEnd;
-		Counter.herbivoreAlive--;
+		Counter.DecrementHerbivoreAlive();
 		OnDeath(this);
 		gameObject.SetActive(false);
 		//Destroy(this.gameObject);
@@ -243,9 +243,9 @@ public class Entity : MonoBehaviour, IPooledObject
 	public void DieFromHungerAndThirst()
 	{
 		if (order == Order.HERBIVORE)
-			Counter.herbivoreAlive--;
+			Counter.DecrementHerbivoreAlive();
 		else
-			Counter.carnivoreAlive--;
+			Counter.DecrementCarnivoreAlive();
 
 		gameObject.SetActive(false);
 	}

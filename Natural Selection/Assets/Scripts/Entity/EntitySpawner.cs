@@ -64,6 +64,7 @@ public class EntitySpawner : MonoBehaviour
             SpawnFirstGenerationOfEntities();
             GetActiveEntities();
             FirstCyclePositioning();
+            Counter.AddCountPerCycle();
         }
         else
         {
@@ -78,6 +79,7 @@ public class EntitySpawner : MonoBehaviour
         GetActiveEntities();
         SendAllEntitiesBackToStartingPositions();
         HasCycleEnded = true;
+        Counter.AddCountPerCycle();
     }
 
     private void SpawnFirstGenerationOfEntities()
@@ -127,20 +129,17 @@ public class EntitySpawner : MonoBehaviour
                 if (s == 0)
                 {
                     e.SetOrder(Order.HERBIVORE);
-                    Counter.herbivoreTotal++;
-                    Counter.herbivoreAlive++;
+                    Counter.IncrementHerbivoreTotal();
+                    Counter.IncrementHerbivoreAlive();
                 }
                 else
                 {
                     e.SetOrder(Order.CARNIVORE);
-                    Counter.carnivoreTotal++;
-                    Counter.carnivoreAlive++;
+                    Counter.IncrementCarnivoreTotal();
+                    Counter.IncrementCarnivoreAlive();
                 }
             }
         }
-
-        Counter.herbivoreCounts.Add(Counter.herbivoreAlive);
-        Counter.carnivoreCounts.Add(Counter.carnivoreAlive);
     }
 
     private void FirstCyclePositioning()
@@ -208,8 +207,8 @@ public class EntitySpawner : MonoBehaviour
                 e.SetOrder(Order.HERBIVORE);
                 e.ExpressGenome();
                 entities.Add(o);
-                Counter.herbivoreTotal++;
-                Counter.herbivoreAlive++;
+                Counter.IncrementHerbivoreTotal();
+                Counter.IncrementHerbivoreAlive();
             }
         }
 
@@ -227,13 +226,10 @@ public class EntitySpawner : MonoBehaviour
                 e.SetOrder(Order.CARNIVORE);
                 e.ExpressGenome();
                 entities.Add(o);
-                Counter.carnivoreTotal++;
-                Counter.carnivoreAlive++;
+                Counter.IncrementCarnivoreTotal();
+                Counter.IncrementCarnivoreAlive();
             }
         }
-
-        Counter.herbivoreCounts.Add(Counter.herbivoreAlive);
-        Counter.carnivoreCounts.Add(Counter.carnivoreAlive);
     }
 
     /// Get all current active entities

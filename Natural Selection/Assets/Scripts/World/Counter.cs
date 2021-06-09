@@ -10,8 +10,8 @@ public class Counter : MonoBehaviour
 	public TMP_Text herbivoreAliveCount;
 	public TMP_Text carnivoreAliveCount;
 
-	public static int herbivoreTotal = 0;
-	public static int carnivoreTotal = 0;
+	private static int herbivoreTotal = 0;
+	private static int carnivoreTotal = 0;
 
 	public static int herbivoreAlive = 0;
 	public static int carnivoreAlive = 0;
@@ -38,5 +38,52 @@ public class Counter : MonoBehaviour
 		carnivoreTotal = 0;
 		herbivoreAlive = 0;
 		carnivoreAlive = 0;
+	}
+
+	public static void AddCountPerCycle()
+	{
+		herbivoreCounts.Add(herbivoreAlive);
+		carnivoreCounts.Add(carnivoreAlive);
+	}
+
+	public static void IncrementHerbivoreTotal()
+	{
+		herbivoreTotal++;
+	}
+	public static void IncrementCarnivoreTotal()
+	{
+		carnivoreTotal++;
+	}
+
+	public static void DecrementHerbivoreTotal()
+	{
+		herbivoreTotal--;
+	}
+
+	public static void DecrementCarnivoreTotal()
+	{
+		carnivoreTotal--;
+	}
+
+	public static void IncrementHerbivoreAlive()
+	{
+		herbivoreAlive++;
+	}
+
+	public static void IncrementCarnivoreAlive()
+	{
+		carnivoreAlive++;
+	}
+
+	public static void DecrementHerbivoreAlive()
+	{
+		herbivoreAlive--;
+		herbivoreAlive = Mathf.Clamp(herbivoreAlive, 0, 10000);
+	}
+
+	public static void DecrementCarnivoreAlive()
+	{
+		carnivoreAlive--;
+		carnivoreAlive = Mathf.Clamp(carnivoreAlive, 0, 10000);
 	}
 }
