@@ -5,39 +5,52 @@ using Random = UnityEngine.Random;
 
 public class Entity : MonoBehaviour, IPooledObject
 {
-	private const float MIN_SPEED = 0.2f;
-
-	public bool isRunning = false;
-	public bool isDone = false;
-
-	public float opponentUtility = 0.0f;
-	public float peerUtility = 0.0f;
-	public float socializingChance = 0.0f;
-
-	public float Fitness;
-	public float hungriness = 0.0f;
-	public float thirstiness = 0.0f;
-	private float hungerThreshold = 50.0f;
-	private float thirstThreshold = 50.0f;
-
-	// Event handler 
-	public event EventHandler<Entity> Death;
-
+	#region Data
+	// State
 	private State _state = null;
 	[SerializeField] private string _stateName;
-	[SerializeField] public Genome genome;
-	private Sex sex;
-	private Order order;
-	private Speed speed;
-	public Memory Memory { get; private set; }
-	public Sight  Sight	 { get; private set; }
-	public Smell  Smell	 { get; private set; }
 
-	[HideInInspector] public int SenseRefreshInterval = 5;
-	[HideInInspector] public float sightRadius;
-
+	// Agent and Transform
 	private NavMeshAgent agent;
 	public Transform Transform { get; private set; }
+
+	// Genome
+	[SerializeField] private Genome _genome;
+	public Genome Genome { get { return _genome; } set { _genome = value; } }
+
+	// Vitals
+	public Vitals _vitals = new Vitals();
+	public Vitals Vitals { get { return _vitals; } set { _vitals = value; } }
+
+	[SerializeField] public Speed Speed;
+	[SerializeField] public Behavior Behavior;
+
+	[SerializeField] private Order _order;
+	[SerializeField] private Sex _sex;
+
+	// Senses
+	public Memory Memory { get; private set; }
+	public Sight Sight { get; private set; }
+	public Smell Smell { get; private set; }
+	[HideInInspector] public int SenseRefreshInterval = 5;
+	[HideInInspector] public float SightRadius { get; set; }
+
+	private const float MIN_SPEED = 0.2f;
+	#endregion
+
+	public float Fitness;
+
+	// Event handler ???
+	public event EventHandler<Entity> Death;
+
+	void Awake()
+	{
+		Transform = gameObject.GetComponent<Transform>();
+		agent = gameObject.GetComponent<NavMeshAgent>();
+		Memory = gameObject.GetComponent<Memory>();
+		Sight = gameObject.GetComponentInChildren<Sight>();
+		Smell = gameObject.GetComponentInChildren<Smell>();
+	}
 
 	void OnEnable()
 	{
@@ -46,61 +59,27 @@ public class Entity : MonoBehaviour, IPooledObject
 		Memory = gameObject.GetComponent<Memory>();
 		Sight = gameObject.GetComponentInChildren<Sight>();
 		Smell = gameObject.GetComponentInChildren<Smell>();
-		sightRadius = Sight.gameObject.GetComponent<SphereCollider>().radius;
-
-		Fitness = 0.0f;
-		// Do not touch
-		_state = new PrimaryState();
-		_stateName = _state.GetStateName();
+		Vitals.Reset();
+		ChangeState(new PrimaryState());
 		Cycle.CycleStart += OnCycleStart;
 		Cycle.CycleEnd += OnCycleEnd;
 	}
 
 	void Update()
 	{
-		if (isRunning)
+		if (agent.isActiveAndEnabled)
 		{
 			HandleState();
-			hungriness += Time.deltaTime / 1.5f;
-			Fitness += 0.0001f;
+			Vitals.ConvertResourcesToEnergy();
+			Vitals.DepleteEnergy(1.0f);
+			Fitness += 0.01f;
 		}
 
-		if (!isRunning && !isDone)
-		{
-			if (!agent.hasPath)
-			{
-				isDone = true;
-				EntitySpawner.ActiveEntities++;
-			}
-		}
-
-		if (!EntitySpawner.EntitiesNotReachedDestinationsYet && EntitySpawner.HasCycleEnded)
-		{
-			agent.enabled = false;
-		}
-
-		if (hungriness >= 100.0f)
-			DieFromHungerAndThirst();
+		//if (Vitals.IsStarving())
+		//	DieFromStarvation();
 	}
 
-	public void ResetEntity()
-	{
-		_state = new PrimaryState();
-		hungriness = 0.0f;
-	}
-
-	public void ExpressGenome()
-	{
-		genome.ExpressGenome(this);
-	}
-
-	public void OnObjectSpawn()
-	{
-		Fitness = 0.0f;
-		hungriness = 0.0f;
-		gameObject.SetActive(true);
-	}
-
+	#region State
 	// Change entity's state from outside this class
 	public void ChangeState(State state)
 	{
@@ -113,21 +92,25 @@ public class Entity : MonoBehaviour, IPooledObject
 	{
 		_state.HandleState(this);
 	}
+	#endregion
 
 	#region CycleEventMethods
 	public void OnCycleStart(object sender, EventArgs eventArgs)
 	{
-		hungriness = 0.0f;
 		Walk();
 		agent.enabled = true;
-		isRunning = true;
 	}
 
 	public void OnCycleEnd(object sender, EventArgs eventArgs)
 	{
 		_state = new PrimaryState();
-		isRunning = false;
-		isDone = false;
+		agent.enabled = false;
+	}
+
+	public void OnObjectSpawn()
+	{
+		gameObject.SetActive(true);
+		Fitness = 0.0f;
 	}
 	#endregion
 
@@ -160,16 +143,21 @@ public class Entity : MonoBehaviour, IPooledObject
 
 	public void Run()
 	{
-		agent.speed = speed.running;
+		agent.speed = Speed.Running;
 	}
 
-	public float Walk()
+	public void Walk()
 	{
-		return agent.speed = speed.walking;
+		agent.speed = Speed.Walking;
 	}
 	#endregion
 
 	#region SetTraitsMethods
+	public void ExpressGenome()
+	{
+		_genome.ExpressGenome(this);
+	}
+
 	public void SetColor(Color color)
 	{
 		gameObject.GetComponent<Renderer>().material.color = color;
@@ -178,49 +166,29 @@ public class Entity : MonoBehaviour, IPooledObject
 	public void SetHeight(float height)
 	{
 		Transform.localScale = new Vector3(1, height, 1);
+		SightRadius = 5 + height * 2.5f;
+		Sight.gameObject.GetComponent<SphereCollider>().radius = SightRadius;
+		Speed.Running -= height;
 	}
 
 	public void SetSpeed(float pWalking, float pRunning, float pAngular, float pAcceleration)
 	{
-		speed = new Speed(pWalking, pRunning, pAngular, pAcceleration);
+		Speed = new Speed(pWalking, pRunning, pAngular, pAcceleration);
 	}
 
 	public void SetSex(Sex pSex)
 	{
-		sex = pSex;
+		_sex = pSex;
 	}
 
 	public void SetOrder(Order pOrder)
 	{
-		order = pOrder;
+		_order = pOrder;
 	}
 
 	public void SetBehavior(float pPeerUtility, float pOpponentUtility, float pSocializingChance)
 	{
-		peerUtility = pPeerUtility;
-		opponentUtility = pOpponentUtility;
-		socializingChance = pSocializingChance;
-	}
-
-	private void EditPeerUtility(float value)
-	{
-		peerUtility += value;
-		peerUtility = Mathf.Clamp(peerUtility, -1.0f, 1.0f);
-		genome.Behavior.IdealAllele.ChangePeerUtility(value);
-	}
-
-	private void EditOpponentUtility(float value)
-	{
-		opponentUtility += value;
-		opponentUtility = Mathf.Clamp(opponentUtility, -1.0f, 1.0f);
-		genome.Behavior.IdealAllele.ChangeOpponentUtility(value);
-	}
-
-	private void EditSocializingChance(float value)
-	{
-		socializingChance += value;
-		socializingChance = Mathf.Clamp(socializingChance, 0.0f, 100.0f);
-		genome.Behavior.IdealAllele.ChangeSocializingChance(value);
+		Behavior = new Behavior(pPeerUtility, pOpponentUtility, pSocializingChance);
 	}
 	#endregion
 
@@ -232,20 +200,26 @@ public class Entity : MonoBehaviour, IPooledObject
 
 	public void Die()
 	{
+		
 		Cycle.CycleStart -= OnCycleStart;
 		Cycle.CycleEnd -= OnCycleEnd;
-		Counter.DecrementHerbivoreAlive();
-		OnDeath(this);
+		Counter.Instance.RemoveHerbivoreAlive();
+		EntitySpawner.entityPooler.PoolObject("Entity", this.gameObject);
 		gameObject.SetActive(false);
+		
+		//OnDeath(this);
 		//Destroy(this.gameObject);
 	}
 
-	public void DieFromHungerAndThirst()
+	public void DieFromStarvation()
 	{
-		if (order == Order.HERBIVORE)
-			Counter.DecrementHerbivoreAlive();
+		Cycle.CycleStart -= OnCycleStart;
+		Cycle.CycleEnd -= OnCycleEnd;
+
+		if (IsHerbivore())
+			Counter.Instance.RemoveHerbivoreAlive();
 		else
-			Counter.DecrementCarnivoreAlive();
+			Counter.Instance.RemoveCarnivoreAlive();
 
 		gameObject.SetActive(false);
 	}
@@ -253,12 +227,12 @@ public class Entity : MonoBehaviour, IPooledObject
 	// For others (Subscriber method to run)
 	public void OnOtherDeath(object source, Entity entity)
 	{
-		if (order == Order.HERBIVORE)
+		if (_order == Order.HERBIVORE)
 		{
-			EditOpponentUtility(-0.2f);
-			EditPeerUtility(0.1f);
-			EditSocializingChance(Random.Range(-2.0f, 3.0f));
-			Fitness += 0.01f;
+			//EditOpponentUtility(-0.2f);
+			//EditPeerUtility(0.1f);
+			//EditSocializingChance(Random.Range(-2.0f, 3.0f));
+			//Fitness += 0.01f;
 		}
 
 		entity.Death -= OnOtherDeath;
@@ -266,34 +240,39 @@ public class Entity : MonoBehaviour, IPooledObject
 	#endregion
 
 	#region IsMethods
-	public bool IsHungry()
+	public bool NeedsResources(float threshold)
 	{
-		return hungriness > hungerThreshold;
-	}
-
-	public bool IsThirsty()
-	{
-		return thirstiness > thirstThreshold;
+		return Vitals.Resources < threshold;
 	}
 
 	public bool IsHerbivore()
 	{
-		return order == Order.HERBIVORE;
+		return _order == Order.HERBIVORE;
 	}
 
 	public bool IsCarnivore()
 	{
-		return order == Order.CARNIVORE;
+		return _order == Order.CARNIVORE;
 	}
 
 	public bool IsMale()
 	{
-		return sex == Sex.MALE;
+		return _sex == Sex.MALE;
 	}
 
 	public bool IsFemale()
 	{
-		return sex == Sex.FEMALE;
+		return _sex == Sex.FEMALE;
+	}
+
+	public bool IsRunning()
+	{
+		return agent.speed == Speed.Running;
+	}
+
+	public bool IsWalking()
+	{
+		return agent.speed == Speed.Walking;
 	}
 	#endregion
 
@@ -344,54 +323,17 @@ public class Entity : MonoBehaviour, IPooledObject
 				angle = Random.Range(315, 360);
 		}
 
-		Vector3 randomPoint = Quaternion.AngleAxis(angle, Vector3.up) * Transform.forward * sightRadius + Transform.position;
+		Vector3 randomPoint = Quaternion.AngleAxis(angle, Vector3.up) * Transform.forward * SightRadius + Transform.position;
 		Vector3 finalPosition = Vector3.zero;
-		if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, sightRadius, 1))
+		if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, SightRadius, 1))
 		{
 			finalPosition = hit.position;
 		}
 
 		if (finalPosition == Vector3.zero)
-			finalPosition = Random.insideUnitSphere * sightRadius;
+			finalPosition = Random.insideUnitSphere * SightRadius;
 
 		return finalPosition;
 	}
 	#endregion
 }
-
-public enum Sex { MALE, FEMALE }
-public enum Order { HERBIVORE, CARNIVORE, OMNIVORE }
-
-public struct Speed
-{
-	public readonly float walking;
-	public readonly float running;
-	public readonly float angular;
-	public readonly float acceleration;
-
-	public Speed(float pWalking, float pRunning, float pAngular, float pAcceleration)
-	{
-		walking = pWalking;
-		running = pRunning;
-		angular = pAngular;
-		acceleration = pAcceleration;
-	}
-}
-
-// Unused Code
-//LineRenderer lineRenderer;
-
-//lineRenderer = gameObject.GetComponent<LineRenderer>();
-//lineRenderer.positionCount = 6;
-
-//private void DrawFieldOFView()
-//{
-//	lineRenderer.SetPosition(0, transform.position);
-//	lineRenderer.SetPosition(1, transform.forward * 10 + transform.position);
-
-//	lineRenderer.SetPosition(2, transform.position);
-//	lineRenderer.SetPosition(3, Quaternion.AngleAxis(FOV / 2, transform.up) * transform.forward * 10 + transform.position);
-
-//	lineRenderer.SetPosition(4, transform.position);
-//	lineRenderer.SetPosition(5, Quaternion.AngleAxis(-FOV / 2, transform.up) * transform.forward * 10 + transform.position);
-//}

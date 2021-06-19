@@ -16,6 +16,9 @@ public class HungryThirstyState : State
 
 	public override void HandleState(Entity entity)
 	{
+		if (entity.Sight.SightArea.LowestUtilityValue < 0.0f)
+			entity.ChangeState(new PrimaryState());
+
 		if (!goingForFood)
 		{
 			_resource = entity.Memory.FindClosestResource(ResourceType.FOOD);
@@ -28,7 +31,7 @@ public class HungryThirstyState : State
 		{
 			if (_resource != null)
 			{
-				if (entity.CheckIfClose(_resource, entity.sightRadius))
+				if (entity.CheckIfClose(_resource, entity.SightRadius))
 				{
 					if (!entity.Sight.CanSee(_resource))
 					{
@@ -53,7 +56,7 @@ public class HungryThirstyState : State
 		//	entity.hungriness += Time.deltaTime * entity.Velocity() / 10;
 		//}
 
-		if (!entity.IsHungry())
+		if (!entity.NeedsResources(50.0f))
 			entity.ChangeState(new PrimaryState());
 
 		//if (entity.predator != null)
@@ -126,7 +129,7 @@ public class HungryThirstyState : State
 		else
 		{
 			entity.Memory.ForgetResource(resource);
-			entity.hungriness -= 40.0f;
+			entity.Vitals.ReplenishResources(40.0f);
 			resource.GetComponent<Resource>().Consume();
 			_resource = null;
 		}

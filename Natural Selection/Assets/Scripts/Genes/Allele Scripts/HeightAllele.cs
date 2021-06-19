@@ -4,7 +4,7 @@
 public class HeightAllele : Allele<HeightAllele>
 {
 	private const float MIN_HEIGHT = 0.3f;
-	private const float MAX_HEIGHT = 3.0f;
+	private const float MAX_HEIGHT = 2.0f;
 	private const float HEIGHT_DIFF = MAX_HEIGHT - MIN_HEIGHT;
 
 	[Range(MIN_HEIGHT, MAX_HEIGHT)] [SerializeField] private float _height;

@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 8d2f425f85109454abb55955378b272c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - graphContainer: {instanceID: 0}
+  - graphAxes: {instanceID: 0}
+  - axisPrefab: {fileID: 6538905945420930184, guid: 332f86f9211dc2a44bec7f1b7a06a03a,
+      type: 3}
+  - pointPrefab: {fileID: 6252553777226396938, guid: cc0f2f3f757e35b4ca630effc7269132,
+      type: 3}
+  - connectionPrefab: {fileID: 7035894636384292831, guid: 79e16d7d80a90b248868c22c0bb3b4a7,
+      type: 3}
+  - markPrefab: {fileID: 91116903307954824, guid: de5e1f084e545d142bc23aeeb6658fa6,
+      type: 3}
+  - textPrefab: {fileID: 7691221684611786792, guid: 062f02214bc617a48b765187566bab8e,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

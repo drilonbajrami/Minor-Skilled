@@ -5,16 +5,15 @@ using UnityEngine;
 public class Sight : MonoBehaviour
 {
 	private Entity entity;
-	Dictionary<int, MemoryData> _objectsInSight;
+	Dictionary<int, MemoryData> _objectsInSight = new Dictionary<int, MemoryData>();
 
 	public SightArea SightArea;
 	public PieGraph pieGraph;
 
-	// Initialize
-	void OnEnable()
+	private void OnEnable()
 	{
 		entity = gameObject.GetComponentInParent<Entity>();
-		_objectsInSight = new Dictionary<int, MemoryData>();
+		_objectsInSight.Clear();
 		SightArea = new SightArea(12);
 		StartCoroutine(RefreshSightCoroutine());
 
@@ -142,7 +141,11 @@ public class Sight : MonoBehaviour
 			if (other.gameObject.CompareTag("Entity"))
 			{
 				See(other.gameObject);
-				other.gameObject.GetComponent<Entity>().Death += gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
+
+				if (other.gameObject.GetComponent<Entity>().IsCarnivore())
+					AssessUtilities();
+
+				//other.gameObject.GetComponent<Entity>().Death += gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
 			}
 		}
 	}
@@ -157,7 +160,7 @@ public class Sight : MonoBehaviour
 		if (other.gameObject.CompareTag("Entity"))
 		{
 			Unsee(other.gameObject);
-			other.gameObject.GetComponent<Entity>().Death -= gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
+			//other.gameObject.GetComponent<Entity>().Death -= gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
 		}
 	}
 }

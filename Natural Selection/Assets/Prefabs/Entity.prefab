@@ -126,9 +126,9 @@ GameObject:
   - component: {fileID: 9143079990107351946}
   - component: {fileID: 9143079990107351949}
   - component: {fileID: 9143079990107351948}
+  - component: {fileID: 9143079990107351944}
   - component: {fileID: 9143079990107351951}
   - component: {fileID: 9143079990107351947}
-  - component: {fileID: 9143079990107351944}
   - component: {fileID: 9143079990107351943}
   - component: {fileID: 9143079990107351940}
   m_Layer: 8
@@ -201,6 +201,28 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!195 &9143079990107351944
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9143079990107351950}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 10
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 0
+  m_Height: 1
+  m_BaseOffset: 0.8
+  m_WalkableMask: 1
+  m_ObstacleAvoidanceType: 3
 --- !u!135 &9143079990107351951
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -226,43 +248,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dced49d11654b914e8d5ab2b061d9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stateName: 
+  _genome:
+    sex:
+      _alleleA:
+        dominance: 0
+        _isFemale: 0
+      _alleleB:
+        dominance: 0
+        _isFemale: 0
+    color:
+      _alleleA:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+      _alleleB:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+    height:
+      _alleleA:
+        dominance: 0
+        _height: 0
+      _alleleB:
+        dominance: 0
+        _height: 0
+    behavior:
+      _alleleA:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      _alleleB:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      IdealAllele:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+  _vitals:
+    _resources: 0
+  SenseRefreshInterval: 5
   isRunning: 0
   isDone: 0
-  debugOn: 0
-  predatorU: 0
-  preyU: 0
-  social: 0
   Fitness: 0
-  _stateName: 
-  hungriness: 0
-  thirstiness: 0
-  sightRadius: 0
-  smellRadius: 0
-  gender: 0
-  order: 0
-  SenseRefreshInterval: 5
---- !u!195 &9143079990107351944
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9143079990107351950}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 10
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 0
-  m_Height: 1
-  m_BaseOffset: 0.8
-  m_WalkableMask: 1
-  m_ObstacleAvoidanceType: 3
 --- !u!114 &9143079990107351943
 MonoBehaviour:
   m_ObjectHideFlags: 0

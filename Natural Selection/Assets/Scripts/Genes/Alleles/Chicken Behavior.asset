@@ -17,4 +17,4 @@ MonoBehaviour:
     dominance: 0
     _peerUtility: 0
     _opponentUtility: 0
-    _socializingChance: 30
+    _socializingChance: 50

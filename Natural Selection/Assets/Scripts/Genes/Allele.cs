@@ -19,14 +19,6 @@ public abstract class Allele<T> where T : Allele<T>
 	}
 
 	/// <summary>
-	/// Default constructor
-	/// </summary>
-	public Allele()
-	{
-
-	}
-
-	/// <summary>
 	/// Returns a copy of this allele
 	/// </summary>
 	/// <param name="mutationFactor"></param>

@@ -61,7 +61,7 @@ public class ObjectPooler : MonoBehaviour
 			return null;
 		}
 
-		if (!poolDictionary[tag].Peek().activeSelf)
+		if (poolDictionary[tag].Count != 0 && !poolDictionary[tag].Peek().activeSelf)
 		{
 			GameObject objectToSpawn = poolDictionary[tag].Dequeue();
 			objectToSpawn.transform.position = position;
@@ -73,11 +73,17 @@ public class ObjectPooler : MonoBehaviour
 			if (pooledObject != null)
 				pooledObject.OnObjectSpawn();
 
-			poolDictionary[tag].Enqueue(objectToSpawn);
-
+			//poolDictionary[tag].Enqueue(objectToSpawn);
 			return objectToSpawn;
 		}
 		else
+		{
 			return null;
+		}
+	}
+
+	public void PoolObject(string tag, GameObject item)
+	{
+		poolDictionary[tag].Enqueue(item);
 	}
 }

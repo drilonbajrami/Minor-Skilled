@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SizeAlleleSO
   Name: Short
   Allele:
-    dominance: 0
-    _height: 0.6
+    dominance: 2
+    _height: 0.512

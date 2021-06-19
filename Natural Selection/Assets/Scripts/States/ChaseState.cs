@@ -15,7 +15,7 @@ public class ChaseState : State
 		_stateName = "Chase State";
 		prey = null;
 		chasing = false;
-		maxChaseTime = 15.0f;
+		maxChaseTime = 8.0f;
 		currentChaseTime = maxChaseTime;
 	}
 
@@ -58,13 +58,15 @@ public class ChaseState : State
 			{
 				entity.SetDestination(prey.transform.position);
 
-				if (entity.CheckIfClose(prey, 2.5f))
+				if (entity.CheckIfClose(prey, 0.75f))
 				{
+					entity.Smell.RemoveFromSmellZone(prey.gameObject.GetInstanceID());
 					prey.gameObject.GetComponent<Entity>().Die();
-					entity.hungriness -= 25.0f;
+					prey = null;
+					chasing = false;
+					entity.Vitals.ReplenishResources(25.0f);
 					entity.Fitness += 0.01f;
 					entity.ChangeState(new PrimaryState());
-
 				}
 			}
 		}

@@ -47,9 +47,9 @@ public class SightArea
 			if (other != null)
 			{
 				if (other.IsHerbivore())
-					objectUtilityValue = entity.peerUtility;
+					objectUtilityValue = entity.Behavior.PeerUtility;
 				else
-					objectUtilityValue = entity.opponentUtility;
+					objectUtilityValue = entity.Behavior.OpponentUtility;
 			}
 
 			AssessUtilityValuePerSection(objectAngle, objectUtilityValue);

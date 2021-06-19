@@ -6,28 +6,15 @@ using UnityEngine;
 public class Smell : MonoBehaviour
 {
 	private Entity entity;
-	Dictionary<int, MemoryData> _smellZone;
-	Dictionary<int, MemoryData> _smellZonePrey;
+	Dictionary<int, MemoryData> _smellZone = new Dictionary<int, MemoryData>();
+	Dictionary<int, MemoryData> _smellZonePrey = new Dictionary<int, MemoryData>();
 
-	// Initialize
 	void OnEnable()
 	{
 		entity = gameObject.GetComponentInParent<Entity>();
-		_smellZone = new Dictionary<int, MemoryData>();
-		_smellZonePrey = new Dictionary<int, MemoryData>();
+		_smellZone.Clear();
+		_smellZonePrey.Clear();
 		StartCoroutine(RefreshSmellCoroutine());
-	}
-
-	public GameObject ChoosePartner()
-	{
-		// This should be changed at some point, the choice is based on fitness values 
-		if (_smellZone.Count == 0)
-			return null;
-		else
-		{
-			int i = Random.Range(0, _smellZone.Count);
-			return _smellZone.Values.ElementAt(i).Object;
-		}
 	}
 
 	public GameObject ChoosePrey()
@@ -42,9 +29,9 @@ public class Smell : MonoBehaviour
 		}
 	}
 
-	public bool HasPartnersAround()
+	public void RemoveFromSmellZone(int id)
 	{
-		return _smellZone.Count > 0;
+		_smellZonePrey.Remove(id);
 	}
 
 	public bool HasPreyAround()
@@ -87,6 +74,25 @@ public class Smell : MonoBehaviour
 			_smellZonePrey.Remove(i);
 	}
 
+	#region Not used
+	public bool HasPartnersAround()
+	{
+		return _smellZone.Count > 0;
+	}
+
+	public GameObject ChoosePartner()
+	{
+		// This should be changed at some point, the choice is based on fitness values 
+		if (_smellZone.Count == 0)
+			return null;
+		else
+		{
+			int i = Random.Range(0, _smellZone.Count);
+			return _smellZone.Values.ElementAt(i).Object;
+		}
+	}
+	#endregion
+
 	//====================================================================================================
 	//											TRIGGERS
 	//====================================================================================================
@@ -101,7 +107,7 @@ public class Smell : MonoBehaviour
 			//	_smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
 			//}
 
-			if (gameObject.GetComponentInParent<Entity>().IsCarnivore() && a.IsHerbivore())
+			if (entity.IsCarnivore() && a.IsHerbivore())
 			{
 				if (!_smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
 					_smellZonePrey.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
@@ -120,7 +126,7 @@ public class Smell : MonoBehaviour
 				_smellZone.Remove(other.gameObject.GetInstanceID());
 			}
 
-			if (a.IsHerbivore() && gameObject.GetComponentInParent<Entity>().IsCarnivore() && _smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
+			if (a.IsHerbivore() && entity.IsCarnivore() && _smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))
 			{
 				_smellZonePrey.Remove(other.gameObject.GetInstanceID());
 			}

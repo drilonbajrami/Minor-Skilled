@@ -5,8 +5,8 @@
 /// based on their dominance and values
 /// </summary>
 [System.Serializable]
-public abstract class Gene<T, A>
-	where T : Gene<T, A>
+public abstract class Gene<G, A>
+	where G : Gene<G, A>
 	where A : Allele<A>
 {
 	// A gene consist of two alleles, one allele is inherited from each parent
@@ -41,7 +41,7 @@ public abstract class Gene<T, A>
 	/// <param name="mutationFactor"></param>
 	/// <param name="mutationChance"></param>
 	/// <returns></returns>
-	public abstract T CrossGene(T other, float mutationFactor = 0, float mutationChance = 0);
+	public abstract G CrossGene(G other, float mutationFactor = 0, float mutationChance = 0);
 
 	/// <summary>
 	/// Expresses the gene through entity's trait/feature based on its allele's types of dominance and values

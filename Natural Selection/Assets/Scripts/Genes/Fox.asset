@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Fox
   Order: 1
-  total: 10
-  females: 5
-  males: 5
+  total: 4
+  females: 2
+  males: 2
   sexAlleles:
   - {fileID: 11400000, guid: 6bcfaedc01332974faddfe0d83191a79, type: 2}
   - {fileID: 11400000, guid: 7566d16e9a4dadb4d8ce2c590f10f247, type: 2}
@@ -27,7 +27,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4c136474f65b3a34c91c181dc02cf75f, type: 2}
   - {fileID: 11400000, guid: f418eb45c9b24994f94b2444c6a68fa8, type: 2}
   speedAlleles:
-  - {fileID: 11400000, guid: a9d7be331b0e41d409e46a70d60b8575, type: 2}
+  - {fileID: 11400000, guid: f34d4a2257c7e7540a71d662118d7530, type: 2}
   - {fileID: 11400000, guid: 21069768a0b619c4a9a38d2b2f602927, type: 2}
   behaviorAlleles:
   - {fileID: 11400000, guid: 31051d0d5851d82428520b1d4d3d715e, type: 2}

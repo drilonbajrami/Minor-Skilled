@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Fast
   Allele:
     dominance: 0
-    _walking: 7
-    _running: 25
-    _angular: 150
-    _acceleration: 10
+    _walking: 2.369
+    _running: 8.49
+    _angular: 180
+    _acceleration: 15

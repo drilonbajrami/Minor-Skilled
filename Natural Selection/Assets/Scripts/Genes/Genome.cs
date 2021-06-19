@@ -53,7 +53,7 @@ public class Genome
 		ColorGene newColor = color.CrossGene(otherGenome.Color, mutationFactor, mutationChance);
 		HeightGene newSize = height.CrossGene(otherGenome.Height, mutationFactor, mutationChance);
 		SpeedGene newSpeed = speed.CrossGene(otherGenome.Speed, mutationFactor, mutationChance);
-		BehaviorGene newBehavior = behavior.CrossGene(otherGenome.Behavior);
+		BehaviorGene newBehavior = behavior.CrossGene(otherGenome.Behavior, mutationFactor, mutationChance);
 		return new Genome(newSex, newColor, newSize, newSpeed, newBehavior);
 	}
 }

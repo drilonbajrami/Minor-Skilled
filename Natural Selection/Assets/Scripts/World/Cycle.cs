@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Cycle : MonoBehaviour
 {
+	[SerializeField] private Button startCycleButton;
+
 	public static event EventHandler CycleStart;
 	public static event EventHandler CycleEnd;
 
@@ -13,48 +17,53 @@ public class Cycle : MonoBehaviour
 	[Tooltip("Cycle duration in minutes")]
 	[Range(1, 10)] [SerializeField] private int cycleDuration = 1;
 
+	[SerializeField] private bool autoStartCycle = false;
+
 	public static int cycleCount = 0;
-	private bool coroutineStarted = false;
+
+	private void Start()
+	{
+		startCycleButton.onClick.AddListener(delegate { StartCoroutine(StartCycle()); });
+		startCycleButton.GetComponentInChildren<TextMeshProUGUI>().text = "Start Cycle: 1";
+	}
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Keypad1)) SpeedUpTime();
-		else if (Input.GetKeyDown(KeyCode.Keypad2)) SlowDownTime();
+		TimeControls();
 	}
 
 	// Cycle coroutine
 	private IEnumerator StartCycle()
-	{
+	{		
 		OnCycleStart();
 		yield return new WaitForSeconds(cycleDuration * 60);
 		OnCycleEnd();
-		
+		startCycleButton.GetComponentInChildren<TextMeshProUGUI>().text = $"Start Cycle: {cycleCount+1}";
+		StartNewCycle();
 	}
 
 	// Notifiy subscribers that a new cycle has started
 	protected virtual void OnCycleStart()
 	{
-		coroutineStarted = true;
+		startCycleButton.interactable = false;
 		CycleStart?.Invoke(this, EventArgs.Empty);
 	}
 
 	// Notifiy subscribers that the ongoing cycle has ended
 	protected virtual void OnCycleEnd()
-	{
+	{	
 		CycleEnd?.Invoke(this, EventArgs.Empty);
-		coroutineStarted = false;
 		cycleCount++;
+		startCycleButton.interactable = true;
 	}
 
-	// Start Cycle Button
-	private void OnGUI()
+	private void StartNewCycle()
 	{
-		if (!coroutineStarted && EntitySpawner.ReadyToStartNewCycle && GUI.Button(new Rect(10, 10, 400, 100), $"Start Cycle ({cycleCount + 1})"))
-		{
+		if (cycleCount == 50 || Counter.Instance.EveryoneDied())
+			autoStartCycle = false;
+		if (autoStartCycle)
 			StartCoroutine(StartCycle());
-		}
 	}
-
 	//====================================================================================================//
 	//														Time Controls
 	//====================================================================================================//
@@ -76,5 +85,11 @@ public class Cycle : MonoBehaviour
 		timeScale -= 1;
 		timeScale = Mathf.Clamp(timeScale, 0, 20);
 		Time.timeScale = timeScale;
+	}
+
+	void TimeControls()
+	{
+		if (Input.GetKeyDown(KeyCode.Keypad1)) SpeedUpTime();
+		else if (Input.GetKeyDown(KeyCode.Keypad2)) SlowDownTime();
 	}
 }

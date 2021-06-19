@@ -27,7 +27,7 @@ public class PrimaryState : State
 
 	private void RoamingSubState(Entity entity)
 	{
-		if (entity.IsHungry())
+		if (entity.NeedsResources(50.0f))
 		{
 			if (entity.IsCarnivore())
 			{
@@ -35,7 +35,7 @@ public class PrimaryState : State
 			}
 			else
 			{
-				entity.ChangeState(new HungryThirstyState());
+				//entity.ChangeState(new HungryThirstyState());
 			}
 		}
 
@@ -49,7 +49,7 @@ public class PrimaryState : State
 			
 			bool doNotSocialize = false;
 			if(entity.Sight.SightArea.LowestUtilityValue >= 0)
-				doNotSocialize = Random.Range(0.0f, 100.0f) >= entity.genome.Behavior.IdealAllele.SocializingChance;
+				doNotSocialize = Random.Range(0.0f, 100.0f) >= entity.Genome.Behavior.IdealAllele.SocializingChance;
 			entity.SetDestination(entity.GetIdealRandomDestination(doNotSocialize));
 		}
 
@@ -62,20 +62,9 @@ public class PrimaryState : State
 
 	private void IdleSubState(Entity entity)
 	{
-		entity.thirstiness += Time.deltaTime * 5 / 20;
-		entity.hungriness += Time.deltaTime * 5 / 20;
+		//entity._vitals.ConvertResourcesToEnergy(0.25f);
 
-		if (entity.thirstiness > 30.0f || entity.hungriness > 30.0f)
+		if (entity.NeedsResources(30.0f))
 			_currentSubState = SubState.ROAMING;
-	}
-
-	private bool ResourcesAreSufficient(Entity entity, float threshold)
-	{
-		return entity.thirstiness < threshold && entity.hungriness < threshold;
-	}
-
-	private bool IsHungryOrThirsty(Entity entity, float threshold)
-	{
-		return entity.thirstiness > threshold || entity.hungriness > threshold;
 	}
 }
