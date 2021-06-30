@@ -17,6 +17,8 @@ public class Graph : MonoBehaviour
 	[SerializeField] private GameObject markPrefab;
 	[SerializeField] private GameObject textPrefab;
 
+	/* Keep track of currently shown graphs so we can delete them on toggling other options
+	 */
 	private List<GameObject> _currentShownGraphs = new List<GameObject>();
 
 	/* The amount we want to shift the graph
@@ -60,16 +62,15 @@ public class Graph : MonoBehaviour
 		DrawAxes(padding, Cycle.cycleCount);
 	}
 
-	private void OnDisable()
-	{
-		//Clear();
-	}
-
-	public void Clear()
+	public void ClearAll()
 	{
 		yMaxValue = 0;
-		ClearHerbivoreData();
-		ClearCarnivoreData();
+		ClearHerbivoreCountData();
+		ClearCarnivoreCountData();
+		ClearHerbivoreSpeedData();
+		ClearHerbivoreHeightData();
+		ClearHerbivorePeerUtilityData();
+		ClearHerbivoreOpponentUtilityData();
 		yAxisValues.Clear();
 		ClearGraphAxes();
 		this.gameObject.SetActive(false);
@@ -79,10 +80,13 @@ public class Graph : MonoBehaviour
 	{
 		if (value)
 		{
-			ClearHerbivoreData();
-			ClearCarnivoreData();
+			ClearHerbivoreCountData();
+			ClearCarnivoreCountData();
 			ClearHerbivoreSpeedData();
 			ClearHerbivoreHeightData();
+			ClearHerbivorePeerUtilityData();
+			ClearHerbivoreOpponentUtilityData();
+			ClearHerbivoreSocializingChanceData();
 			yMaxValue = 0;
 		}
 	}
@@ -93,21 +97,21 @@ public class Graph : MonoBehaviour
 			Destroy(graphAxesAndMarkings.GetChild(i).gameObject);
 	}
 
+	// Herbivore Count Graph
+	public void ToggleHerbivoreCount(bool value)
+	{
+		if (value)
+			ShowHerbivoreCount();
+		else
+			ClearHerbivoreCountData();
+	}
 	private void ShowHerbivoreCount()
 	{
 		RectTransform holder = CreateDataHolder("Herbivore Count");
 		ShowGraph(Counter.Instance.HerbivoreCounts, Counter.Instance.PeakAliveCount, 0.0f, new Color(255f/255f, 50f/255f, 50f/255f), holder);
 		_currentShownGraphs.Add(holder.gameObject);
 	}
-
-	private void ShowCarnivoreCount()
-	{
-		RectTransform holder = CreateDataHolder("Carnivore Count");
-		ShowGraph(Counter.Instance.CarnivoreCounts, Counter.Instance.PeakAliveCount, 0.0f, new Color(50f/255f, 50f/255f, 255f/255f), holder);
-		_currentShownGraphs.Add(holder.gameObject);
-	}
-
-	private void ClearHerbivoreData()
+	private void ClearHerbivoreCountData()
 	{
 		GameObject a = _currentShownGraphs.Find(o => o.name == "Herbivore Count");
 		if (a != null)
@@ -116,8 +120,22 @@ public class Graph : MonoBehaviour
 			Destroy(a.gameObject);
 		}
 	}
-
-	private void ClearCarnivoreData()
+	
+	// Carnivore Count Graph
+	public void ToggleCarnivoreCount(bool value)
+	{
+		if (value)
+			ShowCarnivoreCount();
+		else
+			ClearCarnivoreCountData();
+	}
+	private void ShowCarnivoreCount()
+	{
+		RectTransform holder = CreateDataHolder("Carnivore Count");
+		ShowGraph(Counter.Instance.CarnivoreCounts, Counter.Instance.PeakAliveCount, 0.0f, new Color(50f/255f, 50f/255f, 255f/255f), holder);
+		_currentShownGraphs.Add(holder.gameObject);
+	}
+	private void ClearCarnivoreCountData()
 	{
 		GameObject a = _currentShownGraphs.Find(o => o.name == "Carnivore Count");
 		if (a != null)
@@ -126,23 +144,8 @@ public class Graph : MonoBehaviour
 			Destroy(a.gameObject);
 		}
 	}
-
-	public void ToggleHerbivoreCount(bool value)
-	{
-		if (value)
-			ShowHerbivoreCount();
-		else
-			ClearHerbivoreData();
-	}
-
-	public void ToggleCarnivoreCount(bool value)
-	{
-		if (value)
-			ShowCarnivoreCount();
-		else
-			ClearCarnivoreData();
-	}
-
+	
+	// Heribvore Speed Graph
 	public void ToggleHerbivoreSpeed(bool value)
 	{
 		if (value)
@@ -150,16 +153,14 @@ public class Graph : MonoBehaviour
 		else
 			ClearHerbivoreSpeedData();
 	}
-
-	public void ShowHerbivoreSpeed()
+	private void ShowHerbivoreSpeed()
 	{
 		ClearHerbivoreHeightData();
 		RectTransform holder = CreateDataHolder("Speed Average");
 		ShowGraph(Counter.Instance.AverageSpeedHerbivore, Counter.Instance.PeakSpeedAverage, 5.0f, new Color(1, 0, 150f/255f, 1), holder);
 		_currentShownGraphs.Add(holder.gameObject);
 	}
-
-	public void ClearHerbivoreSpeedData()
+	private void ClearHerbivoreSpeedData()
 	{
 		yMaxValue = 0;
 		GameObject a = _currentShownGraphs.Find(o => o.name == "Speed Average");
@@ -170,6 +171,7 @@ public class Graph : MonoBehaviour
 		}
 	}
 
+	// Herbivore Height Graph
 	public void ToggleHerbivoreHeight(bool value)
 	{
 		if (value)
@@ -177,16 +179,14 @@ public class Graph : MonoBehaviour
 		else
 			ClearHerbivoreHeightData();
 	}
-
-	public void ShowHerbivoreHeight()
+	private void ShowHerbivoreHeight()
 	{
 		ClearHerbivoreSpeedData();
 		RectTransform holder = CreateDataHolder("Height Average");
 		ShowGraph(Counter.Instance.AverageHeightHerbivore, 2.0f, 0.3f, new Color(1, 150f/255f, 0, 1), holder);
 		_currentShownGraphs.Add(holder.gameObject);
 	}
-
-	public void ClearHerbivoreHeightData()
+	private void ClearHerbivoreHeightData()
 	{
 		yMaxValue = 0;
 		GameObject a = _currentShownGraphs.Find(o => o.name == "Height Average");
@@ -197,8 +197,94 @@ public class Graph : MonoBehaviour
 		}
 	}
 
+	// Herbivore Peer Utility Graph
+	public void ToggleHebivorePeerUtility(bool value)
+	{
+		if (value)
+		{
+			ClearHerbivoreSocializingChanceData();
+			ShowHerbivorePeerUtility();
+		}
+		else
+			ClearHerbivorePeerUtilityData();
+	}
+	private void ShowHerbivorePeerUtility()
+	{
+		RectTransform holder = CreateDataHolder("Peer Utility Average");
+		ShowGraph(Counter.Instance.AveragePeerUtilityHerbivore, 1.0f, -1.0f, new Color(50f / 255f, 50f / 255f, 255f / 255f), holder);
+		_currentShownGraphs.Add(holder.gameObject);
+	}
+	private void ClearHerbivorePeerUtilityData()
+	{
+		yMaxValue = 0;
+		GameObject a = _currentShownGraphs.Find(o => o.name == "Peer Utility Average");
+		if (a != null)
+		{
+			_currentShownGraphs.Remove(a);
+			Destroy(a.gameObject);
+		}
+	}
+
+	// Herbivore Opponent Utility Graph
+	public void ToggleHebivoreOpponentUtility(bool value)
+	{
+		if (value)
+		{
+			ClearHerbivoreSocializingChanceData();
+			ShowHerbivoreOpponentUtility();
+		}
+		else
+			ClearHerbivoreOpponentUtilityData();
+	}
+	private void ShowHerbivoreOpponentUtility()
+	{
+		RectTransform holder = CreateDataHolder("Opponent Utility Average");
+		ShowGraph(Counter.Instance.AverageOpponentUtilityHerbivore, 1.0f, -1.0f, new Color(255f / 255f, 50f / 255f, 50f / 255f), holder);
+		_currentShownGraphs.Add(holder.gameObject);
+	}
+	private void ClearHerbivoreOpponentUtilityData()
+	{
+		yMaxValue = 0;
+		GameObject a = _currentShownGraphs.Find(o => o.name == "Opponent Utility Average");
+		if (a != null)
+		{
+			_currentShownGraphs.Remove(a);
+			Destroy(a.gameObject);
+		}
+	}
+
+	// Herbivore Socializing Chance Graph
+	public void ToggleHerbivoreSocializingChance(bool value)
+	{
+		if (value)
+		{
+			ClearHerbivorePeerUtilityData();
+			ClearHerbivoreOpponentUtilityData();
+			ShowHerbivoreSocializingChance();
+		}
+		else
+			ClearHerbivoreSocializingChanceData();
+	}
+	private void ShowHerbivoreSocializingChance()
+	{
+		RectTransform holder = CreateDataHolder("Socializing Chance Average");
+		ShowGraph(Counter.Instance.AverageSocializingChanceHerbivore, 110.0f, 0.0f, new Color(255f / 255f, 50f / 255f, 50f / 255f), holder);
+		_currentShownGraphs.Add(holder.gameObject);
+	}
+	private void ClearHerbivoreSocializingChanceData()
+	{
+		yMaxValue = 0;
+		GameObject a = _currentShownGraphs.Find(o => o.name == "Socializing Chance Average");
+		if (a != null)
+		{
+			_currentShownGraphs.Remove(a);
+			Destroy(a.gameObject);
+		}
+	}
+
 	#region Drawing Functions
 
+	// Show graph for int values
 	private void ShowGraph(List<int> valueList, float peakValue, float lowestValue, Color color, RectTransform parent)
 	{
 		if (yMaxValue < peakValue)
@@ -214,7 +300,7 @@ public class Graph : MonoBehaviour
 		for (int i = 0; i < valueList.Count; i++)
 		{
 			float xPos = (i * xDivisionLength) + padding; // Cycle on X axis
-			float yPos = (valueList[i] - lowestValue) / (yMaxValue - lowestValue) * yAxisLength + padding;
+			float yPos = (valueList[i] - lowestValue) / (yMaxValue - lowestValue) * yAxisLength + padding * 0.7f;
 			GameObject point = DrawPoint(new Vector2(xPos, yPos), color, parent.GetChild(1).GetComponent<RectTransform>());
 
 			if (lastPoint != null) // If there is a last point, then create a connection
@@ -224,6 +310,7 @@ public class Graph : MonoBehaviour
 		}
 	}
 
+	// Show graph for float values
 	private void ShowGraph(List<float> valueList, float peakValue, float lowestValue, Color color, RectTransform parent)
 	{
 		if (yMaxValue < peakValue)
@@ -239,7 +326,7 @@ public class Graph : MonoBehaviour
 		for (int i = 0; i < valueList.Count; i++)
 		{
 			float xPos = (i * xDivisionLength) + padding; // Cycle on X axis
-			float yPos = (valueList[i] - lowestValue) / (yMaxValue - lowestValue) * yAxisLength + padding;
+			float yPos = (valueList[i] - lowestValue) / (yMaxValue - lowestValue) * yAxisLength + padding * 0.7f;
 			GameObject point = DrawPoint(new Vector2(xPos, yPos), color, parent.GetChild(1).GetComponent<RectTransform>());
 
 			if (lastPoint != null) // If there is a last point, then create a connection
@@ -286,13 +373,15 @@ public class Graph : MonoBehaviour
 			// Text Mark
 			if (i == cycleMarks)
 				continue;
-			else
+			else if (i % 5 == 0)
 			{
 				GameObject text = Instantiate(textPrefab, graphAxesAndMarkings, false);
 				text.GetComponent<TextMeshProUGUI>().text = i.ToString();
 				text.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.Center;
 				text.GetComponent<RectTransform>().anchoredPosition = new Vector2(xDivisionLength * i + padding, 35.0f * 0.7f);
 			}
+
+			
 		}
 
 		// Draw the marks and text marks on Y axis

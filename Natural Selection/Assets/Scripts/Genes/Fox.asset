@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Fox
   Order: 1
-  total: 4
-  females: 2
-  males: 2
+  total: 12
+  females: 6
+  males: 6
   sexAlleles:
   - {fileID: 11400000, guid: 6bcfaedc01332974faddfe0d83191a79, type: 2}
   - {fileID: 11400000, guid: 7566d16e9a4dadb4d8ce2c590f10f247, type: 2}

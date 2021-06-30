@@ -511,17 +511,62 @@ MonoBehaviour:
   m_GameObject: {fileID: 2057974712}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2c6a84fecc6a504b924d9fecab7a478, type: 3}
+  m_Script: {fileID: 11500000, guid: dced49d11654b914e8d5ab2b061d9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CLeft: {fileID: 11400000, guid: 4f6e1c9c9b5565a408f806c0ae9b2209, type: 2}
-  CRight: {fileID: 11400000, guid: 7b32efe6f69472247a72ccb9a97cdc6a, type: 2}
-  SLeft: {fileID: 11400000, guid: 3c40fd6e01aeeb74ca6691be504b47e9, type: 2}
-  SRight: {fileID: 11400000, guid: 95f057a3ddfb79246bfd852bfbfd88dd, type: 2}
-  colorLeft: {r: 0, g: 0, b: 0, a: 0}
-  colorRight: {r: 0, g: 0, b: 0, a: 0}
-  sizeLeft: 0
-  sizeRight: 0
+  stateName: 
+  genome:
+    sex:
+      _alleleA:
+        dominance: 0
+        _isFemale: 0
+      _alleleB:
+        dominance: 0
+        _isFemale: 0
+    color:
+      _alleleA:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+      _alleleB:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+    height:
+      _alleleA:
+        dominance: 0
+        _height: 0
+      _alleleB:
+        dominance: 0
+        _height: 0
+    behavior:
+      _alleleA:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      _alleleB:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      IdealAllele:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+  _vitals:
+    _energy: 100
+  Speed:
+    Walking: 0
+    Running: 0
+    Angular: 0
+    Acceleration: 0
+  order: 0
+  sex: 0
+  SenseRefreshInterval: 5
+  Fitness: 0
+  debugOn: 0
 --- !u!23 &2057974715
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -661,17 +706,62 @@ MonoBehaviour:
   m_GameObject: {fileID: 2137650756}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2c6a84fecc6a504b924d9fecab7a478, type: 3}
+  m_Script: {fileID: 11500000, guid: dced49d11654b914e8d5ab2b061d9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CLeft: {fileID: 11400000, guid: 76c41416a91004249b4b73a4f4ef7e35, type: 2}
-  CRight: {fileID: 11400000, guid: 7b32efe6f69472247a72ccb9a97cdc6a, type: 2}
-  SLeft: {fileID: 11400000, guid: 3c40fd6e01aeeb74ca6691be504b47e9, type: 2}
-  SRight: {fileID: 11400000, guid: 95f057a3ddfb79246bfd852bfbfd88dd, type: 2}
-  colorLeft: {r: 0, g: 0, b: 0, a: 0}
-  colorRight: {r: 0, g: 0, b: 0, a: 0}
-  sizeLeft: 0
-  sizeRight: 0
+  stateName: 
+  genome:
+    sex:
+      _alleleA:
+        dominance: 0
+        _isFemale: 0
+      _alleleB:
+        dominance: 0
+        _isFemale: 0
+    color:
+      _alleleA:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+      _alleleB:
+        dominance: 0
+        _color: {r: 0, g: 0, b: 0, a: 0}
+        monochromaticMutation: 0
+    height:
+      _alleleA:
+        dominance: 0
+        _height: 0
+      _alleleB:
+        dominance: 0
+        _height: 0
+    behavior:
+      _alleleA:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      _alleleB:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+      IdealAllele:
+        dominance: 0
+        _peerUtility: 0
+        _opponentUtility: 0
+        _socializingChance: 0
+  _vitals:
+    _energy: 100
+  Speed:
+    Walking: 0
+    Running: 0
+    Angular: 0
+    Acceleration: 0
+  order: 0
+  sex: 0
+  SenseRefreshInterval: 5
+  Fitness: 0
+  debugOn: 0
 --- !u!23 &2137650759
 MeshRenderer:
   m_ObjectHideFlags: 0

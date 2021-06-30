@@ -21,29 +21,6 @@ public class Sight : MonoBehaviour
 			pieGraph.CreatePieGraph(SightArea, entity);
 	}
 
-	public GameObject ChoosePrey()
-	{
-		if (_objectsInSight.Count == 0)
-			return null;
-
-		GameObject toReturn = null;
-		foreach (KeyValuePair<int, MemoryData> o in _objectsInSight)
-		{
-			if (o.Value.ObjectNoLongerExists())
-				continue;
-
-			Entity e = o.Value.Object.GetComponent<Entity>();
-			if (e.IsCarnivore())
-				continue;
-			else
-			{
-				toReturn = o.Value.Object;
-			}
-		}
-
-		return toReturn;
-	}
-
 	/// <summary>
 	/// Assess all sight area sections utility values
 	/// </summary>
@@ -132,7 +109,7 @@ public class Sight : MonoBehaviour
 	{
 		if (entity.Memory != null)
 		{
-			if (other.gameObject.CompareTag("Water") || other.gameObject.CompareTag("Plant"))
+			if (other.gameObject.CompareTag("Food"))
 			{
 				entity.Memory.MemorizeResource(other.gameObject);
 				See(other.gameObject);
@@ -142,10 +119,8 @@ public class Sight : MonoBehaviour
 			{
 				See(other.gameObject);
 
-				if (other.gameObject.GetComponent<Entity>().IsCarnivore())
+				if (other.gameObject.GetComponent<Entity>().IsCarnivore() && entity.IsHerbivore())
 					AssessUtilities();
-
-				//other.gameObject.GetComponent<Entity>().Death += gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
 			}
 		}
 	}
@@ -160,7 +135,9 @@ public class Sight : MonoBehaviour
 		if (other.gameObject.CompareTag("Entity"))
 		{
 			Unsee(other.gameObject);
-			//other.gameObject.GetComponent<Entity>().Death -= gameObject.transform.parent.gameObject.GetComponent<Entity>().OnOtherDeath;
+
+			if (other.gameObject.GetComponent<Entity>().IsCarnivore() && entity.IsHerbivore())
+				AssessUtilities();
 		}
 	}
 }

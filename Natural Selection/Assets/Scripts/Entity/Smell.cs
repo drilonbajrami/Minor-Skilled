@@ -19,7 +19,6 @@ public class Smell : MonoBehaviour
 
 	public GameObject ChoosePrey()
 	{
-		// This should be changed at some point as well, there should be selections to choose prey
 		if (_smellZonePrey.Count == 0)
 			return null;
 		else
@@ -74,25 +73,6 @@ public class Smell : MonoBehaviour
 			_smellZonePrey.Remove(i);
 	}
 
-	#region Not used
-	public bool HasPartnersAround()
-	{
-		return _smellZone.Count > 0;
-	}
-
-	public GameObject ChoosePartner()
-	{
-		// This should be changed at some point, the choice is based on fitness values 
-		if (_smellZone.Count == 0)
-			return null;
-		else
-		{
-			int i = Random.Range(0, _smellZone.Count);
-			return _smellZone.Values.ElementAt(i).Object;
-		}
-	}
-	#endregion
-
 	//====================================================================================================
 	//											TRIGGERS
 	//====================================================================================================
@@ -102,11 +82,6 @@ public class Smell : MonoBehaviour
 
 		if (a != null)
 		{
-			//if (a.gender != gameObject.GetComponentInParent<Entity>().gender && !a.isOnReproducingState && a.order == gameObject.GetComponentInParent<Entity>().order)
-			//{
-			//	_smellZone.Add(other.gameObject.GetInstanceID(), new MemoryData(other.gameObject));
-			//}
-
 			if (entity.IsCarnivore() && a.IsHerbivore())
 			{
 				if (!_smellZonePrey.ContainsKey(other.gameObject.GetInstanceID()))

@@ -6,7 +6,7 @@ public class SpeedAllele : Allele<SpeedAllele>
 	private const float MIN_WALKING		  = 2.0f; // 5
 	private const float MAX_WALKING		  = 3.0f; // 8
 	private const float MIN_RUNNING		  = 5.0f; // 20
-	private const float MAX_RUNNING		  = 10.0f; // 35
+	private const float MAX_RUNNING		  = 12.0f; // 35
 	private const float MIN_ANGULAR		  = 90.0f;
 	private const float MAX_ANGULAR		  = 180.0f;
 	private const float MIN_ACCELERATION  = 5.0f;

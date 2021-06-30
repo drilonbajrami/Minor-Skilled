@@ -30,9 +30,9 @@ public struct Speed
 [System.Serializable]
 public struct Behavior
 {
-	public readonly float PeerUtility;
-	public readonly float OpponentUtility;
-	public readonly float SocializingChance;
+	public float PeerUtility;
+	public float OpponentUtility;
+	public float SocializingChance;
 
 	public Behavior(float pPeerUtility, float pOpponentUtility, float pSocializingChance)
 	{
@@ -46,36 +46,29 @@ public struct Behavior
 public class Vitals
 {
 	[SerializeField] private float _energy;
-	[SerializeField] private float _resources;
 
 	public float Energy { get { return _energy; } }
-	public float Resources { get { return _resources; } }
 
 	public Vitals()
 	{
 		_energy = 100.0f;
-		_resources = 0.0f;
 	}
 
-	public void DepleteEnergy(float rate = 1)
+	public void ConsumeEnergy(float rate = 1)
 	{
 		_energy -= Time.deltaTime * rate;
 		_energy = Mathf.Clamp(_energy, 0.0f, 100.0f);
 	}
 
-	public void ConvertResourcesToEnergy()
+	public void RecoverEnergy(float amount)
 	{
-		if (_energy == 0.0f && _resources > 0.0f)
-		{
-			_energy = _resources;
-			_resources = 0.0f;
-		}
+		_energy += amount;
+		_energy = Mathf.Clamp(_energy, 0.0f, 100.0f);
 	}
 
-	public void ReplenishResources(float amount)
+	public bool NeedsToEat()
 	{
-		_resources += amount;
-		_resources = Mathf.Clamp(_resources, 0.0f, 100.0f);
+		return _energy < 75.0f;
 	}
 
 	public bool IsStarving()
@@ -86,6 +79,5 @@ public class Vitals
 	public void Reset()
 	{
 		_energy = 100.0f;
-		_resources = 0.0f;
 	}
 }

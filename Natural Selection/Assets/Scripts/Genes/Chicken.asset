@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Chicken
   Order: 0
-  total: 200
-  females: 100
-  males: 100
+  total: 500
+  females: 250
+  males: 250
   sexAlleles:
   - {fileID: 11400000, guid: 6bcfaedc01332974faddfe0d83191a79, type: 2}
   - {fileID: 11400000, guid: 7566d16e9a4dadb4d8ce2c590f10f247, type: 2}

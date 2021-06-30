@@ -57,9 +57,9 @@ public class Cycle : MonoBehaviour
 		startCycleButton.interactable = true;
 	}
 
-	private void StartNewCycle()
+	private void StartNewCycle() // Maybe change condition when to stop?!?!?
 	{
-		if (cycleCount == 50 || Counter.Instance.EveryoneDied())
+		if (cycleCount == 50 || Counter.Instance.AllSpeciesExtinct() || Counter.Instance.HerbivoresExtinct())
 			autoStartCycle = false;
 		if (autoStartCycle)
 			StartCoroutine(StartCycle());

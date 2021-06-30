@@ -4,7 +4,7 @@
 public class BehaviorAlleleSO : ScriptableObject
 {
     public string Name;
-    public BehaviorAllele Allele	;
+    public BehaviorAllele Allele;
 
 	private void OnValidate()
 	{

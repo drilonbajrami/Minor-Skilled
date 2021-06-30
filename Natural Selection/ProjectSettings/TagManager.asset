@@ -8,9 +8,9 @@ TagManager:
   - Water
   - Herbivore
   - Carnivore
-  - Plant
   - Ground
   - Entity
+  - Food
   layers:
   - Default
   - TransparentFX

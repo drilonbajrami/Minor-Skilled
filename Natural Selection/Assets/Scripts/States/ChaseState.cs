@@ -15,7 +15,7 @@ public class ChaseState : State
 		_stateName = "Chase State";
 		prey = null;
 		chasing = false;
-		maxChaseTime = 8.0f;
+		maxChaseTime = 10.0f;
 		currentChaseTime = maxChaseTime;
 	}
 
@@ -44,8 +44,6 @@ public class ChaseState : State
 	{
 		if (chasing)
 		{
-			//entity.hungriness += Time.deltaTime * entity.Velocity() / 7.5f;
-
 			currentChaseTime -= Time.deltaTime;
 			if (currentChaseTime <= 0.0f)
 			{
@@ -64,7 +62,7 @@ public class ChaseState : State
 					prey.gameObject.GetComponent<Entity>().Die();
 					prey = null;
 					chasing = false;
-					entity.Vitals.ReplenishResources(25.0f);
+					entity.Vitals.RecoverEnergy(50.0f);
 					entity.Fitness += 0.01f;
 					entity.ChangeState(new PrimaryState());
 				}

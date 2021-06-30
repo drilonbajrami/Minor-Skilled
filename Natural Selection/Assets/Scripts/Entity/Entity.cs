@@ -8,15 +8,15 @@ public class Entity : MonoBehaviour, IPooledObject
 	#region Data
 	// State
 	private State _state = null;
-	[SerializeField] private string _stateName;
+	[SerializeField] private string stateName;
 
 	// Agent and Transform
 	private NavMeshAgent agent;
 	public Transform Transform { get; private set; }
 
 	// Genome
-	[SerializeField] private Genome _genome;
-	public Genome Genome { get { return _genome; } set { _genome = value; } }
+	[SerializeField] private Genome genome;
+	public Genome Genome { get { return genome; } set { genome = value; } }
 
 	// Vitals
 	public Vitals _vitals = new Vitals();
@@ -25,8 +25,8 @@ public class Entity : MonoBehaviour, IPooledObject
 	[SerializeField] public Speed Speed;
 	[SerializeField] public Behavior Behavior;
 
-	[SerializeField] private Order _order;
-	[SerializeField] private Sex _sex;
+	[SerializeField] private Order order;
+	[SerializeField] private Sex sex;
 
 	// Senses
 	public Memory Memory { get; private set; }
@@ -40,8 +40,7 @@ public class Entity : MonoBehaviour, IPooledObject
 
 	public float Fitness;
 
-	// Event handler ???
-	public event EventHandler<Entity> Death;
+	public bool debugOn = false;
 
 	void Awake()
 	{
@@ -54,11 +53,6 @@ public class Entity : MonoBehaviour, IPooledObject
 
 	void OnEnable()
 	{
-		Transform = gameObject.GetComponent<Transform>();
-		agent = gameObject.GetComponent<NavMeshAgent>();
-		Memory = gameObject.GetComponent<Memory>();
-		Sight = gameObject.GetComponentInChildren<Sight>();
-		Smell = gameObject.GetComponentInChildren<Smell>();
 		Vitals.Reset();
 		ChangeState(new PrimaryState());
 		Cycle.CycleStart += OnCycleStart;
@@ -70,13 +64,15 @@ public class Entity : MonoBehaviour, IPooledObject
 		if (agent.isActiveAndEnabled)
 		{
 			HandleState();
-			Vitals.ConvertResourcesToEnergy();
-			Vitals.DepleteEnergy(1.0f);
+			Vitals.ConsumeEnergy(0.8f);
 			Fitness += 0.01f;
 		}
 
-		//if (Vitals.IsStarving())
-		//	DieFromStarvation();
+		Vitals.ConsumeEnergy(agent.velocity.magnitude * GetHeight() * 0.001f);
+		if (Vitals.IsStarving())
+		{
+			Die();
+		}
 	}
 
 	#region State
@@ -84,7 +80,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	public void ChangeState(State state)
 	{
 		_state = state;
-		_stateName = _state.GetStateName();
+		stateName = _state.GetStateName();
 	}
 
 	// Handles the state the entity is on
@@ -99,6 +95,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	{
 		Walk();
 		agent.enabled = true;
+		Vitals.Reset();
 	}
 
 	public void OnCycleEnd(object sender, EventArgs eventArgs)
@@ -141,6 +138,16 @@ public class Entity : MonoBehaviour, IPooledObject
 		return agent.isStopped || agent.velocity.magnitude < MIN_SPEED;
 	}
 
+	public float CurrentSpeed()
+	{
+		return agent.speed;
+	}
+
+	public float GetHeight()
+	{
+		return gameObject.transform.localScale.y;
+	}
+
 	public void Run()
 	{
 		agent.speed = Speed.Running;
@@ -155,7 +162,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	#region SetTraitsMethods
 	public void ExpressGenome()
 	{
-		_genome.ExpressGenome(this);
+		genome.ExpressGenome(this);
 	}
 
 	public void SetColor(Color color)
@@ -168,7 +175,7 @@ public class Entity : MonoBehaviour, IPooledObject
 		Transform.localScale = new Vector3(1, height, 1);
 		SightRadius = 5 + height * 2.5f;
 		Sight.gameObject.GetComponent<SphereCollider>().radius = SightRadius;
-		Speed.Running -= height;
+		Speed.Running -= height * 5;
 	}
 
 	public void SetSpeed(float pWalking, float pRunning, float pAngular, float pAcceleration)
@@ -178,12 +185,12 @@ public class Entity : MonoBehaviour, IPooledObject
 
 	public void SetSex(Sex pSex)
 	{
-		_sex = pSex;
+		sex = pSex;
 	}
 
 	public void SetOrder(Order pOrder)
 	{
-		_order = pOrder;
+		order = pOrder;
 	}
 
 	public void SetBehavior(float pPeerUtility, float pOpponentUtility, float pSocializingChance)
@@ -192,77 +199,30 @@ public class Entity : MonoBehaviour, IPooledObject
 	}
 	#endregion
 
-	#region EventMethods
-	protected virtual void OnDeath(Entity entity)
-	{
-		Death?.Invoke(this, entity);
-	}
-
-	public void Die()
-	{
-		
-		Cycle.CycleStart -= OnCycleStart;
-		Cycle.CycleEnd -= OnCycleEnd;
-		Counter.Instance.RemoveHerbivoreAlive();
-		EntitySpawner.entityPooler.PoolObject("Entity", this.gameObject);
-		gameObject.SetActive(false);
-		
-		//OnDeath(this);
-		//Destroy(this.gameObject);
-	}
-
-	public void DieFromStarvation()
-	{
-		Cycle.CycleStart -= OnCycleStart;
-		Cycle.CycleEnd -= OnCycleEnd;
-
-		if (IsHerbivore())
-			Counter.Instance.RemoveHerbivoreAlive();
-		else
-			Counter.Instance.RemoveCarnivoreAlive();
-
-		gameObject.SetActive(false);
-	}
-
-	// For others (Subscriber method to run)
-	public void OnOtherDeath(object source, Entity entity)
-	{
-		if (_order == Order.HERBIVORE)
-		{
-			//EditOpponentUtility(-0.2f);
-			//EditPeerUtility(0.1f);
-			//EditSocializingChance(Random.Range(-2.0f, 3.0f));
-			//Fitness += 0.01f;
-		}
-
-		entity.Death -= OnOtherDeath;
-	}
-	#endregion
-
 	#region IsMethods
-	public bool NeedsResources(float threshold)
+	public bool NeedsToEat()
 	{
-		return Vitals.Resources < threshold;
+		return Vitals.NeedsToEat();
 	}
 
 	public bool IsHerbivore()
 	{
-		return _order == Order.HERBIVORE;
+		return order == Order.HERBIVORE;
 	}
 
 	public bool IsCarnivore()
 	{
-		return _order == Order.CARNIVORE;
+		return order == Order.CARNIVORE;
 	}
 
 	public bool IsMale()
 	{
-		return _sex == Sex.MALE;
+		return sex == Sex.MALE;
 	}
 
 	public bool IsFemale()
 	{
-		return _sex == Sex.FEMALE;
+		return sex == Sex.FEMALE;
 	}
 
 	public bool IsRunning()
@@ -283,7 +243,7 @@ public class Entity : MonoBehaviour, IPooledObject
 	/// <returns> Angle in range from <strong>0</strong> to <strong>360</strong> degrees. </returns>
 	public float GetAngleTo(Vector3 directionToObject)
 	{
-		float signedAngle = Vector3.SignedAngle(Transform.forward, directionToObject, Transform.up);
+		float signedAngle = Vector3.SignedAngle(gameObject.transform.forward, directionToObject, Transform.up);
 		return (signedAngle >= 0.0f) ? signedAngle : 360.0f + signedAngle;
 	}
 
@@ -336,4 +296,18 @@ public class Entity : MonoBehaviour, IPooledObject
 		return finalPosition;
 	}
 	#endregion
+
+	public void Die()
+	{
+		Cycle.CycleStart -= OnCycleStart;
+		Cycle.CycleEnd -= OnCycleEnd;
+
+		if (IsHerbivore())
+			Counter.Instance.RemoveHerbivoreAlive();
+		else
+			Counter.Instance.RemoveCarnivoreAlive();
+
+		EntitySpawner.entityPooler.PoolObject("Entity", gameObject);
+		gameObject.SetActive(false);
+	}
 }

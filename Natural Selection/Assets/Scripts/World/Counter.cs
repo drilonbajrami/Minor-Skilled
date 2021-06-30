@@ -47,6 +47,15 @@ public class Counter : MonoBehaviour
 	private List<float> averageHeightHerbivore = new List<float>();
 	public List<float> AverageHeightHerbivore { get { return averageHeightHerbivore; } }
 
+	private List<float> averagePeerUtilityHerbivore = new List<float>();
+	public List<float> AveragePeerUtilityHerbivore { get { return averagePeerUtilityHerbivore; } }
+
+	private List<float> averageOpponentUtilityHerbivore = new List<float>();
+	public List<float> AverageOpponentUtilityHerbivore { get { return averageOpponentUtilityHerbivore; } }
+
+	private List<float> averageSocializingChanceHerbivore = new List<float>();
+	public List<float> AverageSocializingChanceHerbivore { get { return averageSocializingChanceHerbivore; } }
+
 	private void Start()
 	{
 		ResetCounter();
@@ -71,6 +80,16 @@ public class Counter : MonoBehaviour
 		carnivoreCounts.Clear();
 	}
 
+	public bool AllSpeciesExtinct()
+	{
+		return herbivoreAlive == 0 && carnivoreAlive == 0;
+	}
+
+	public bool HerbivoresExtinct()
+	{
+		return herbivoreAlive == 0;
+	}
+
 	public void AddCountPerCycle()
 	{
 		herbivoreCounts.Add(herbivoreAlive);
@@ -91,10 +110,6 @@ public class Counter : MonoBehaviour
 		herbivoreAlive = Mathf.Clamp(herbivoreAlive, 0, 10000);
 	}
 
-	public bool EveryoneDied()
-	{
-		return herbivoreAlive == 0 && carnivoreAlive == 0;
-	}
 	// Carnivore Counts
 	public void AddCarnivoreTotal() => carnivoreTotal++;
 	public void RemoveCarnivoreTotal() => carnivoreTotal--;
@@ -131,5 +146,21 @@ public class Counter : MonoBehaviour
 	public void AddHeightAverageOnCycle(float average)
 	{
 		averageHeightHerbivore.Add(average);
+	}
+
+	// Herbivore Behavior
+	public void AddPeerUtilityAverageOnCycle(float average)
+	{
+		averagePeerUtilityHerbivore.Add(average);
+	}
+
+	public void AddOpponentUtilityAverageOnCycle(float average)
+	{
+		averageOpponentUtilityHerbivore.Add(average);
+	}
+
+	public void AddSocializingChanceAverageOnCycle(float average)
+	{
+		averageSocializingChanceHerbivore.Add(average);
 	}
 }

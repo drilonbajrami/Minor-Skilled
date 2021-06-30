@@ -34,7 +34,7 @@ public class EntitySpawner : MonoBehaviour
         bounds = GameObject.FindGameObjectWithTag("Ground").gameObject.GetComponent<MeshCollider>().bounds;
         entityPooler = gameObject.GetComponent<ObjectPooler>();
         entities = new List<GameObject>();
-        SetupStartPositions();
+        //SetupStartPositions();
         Cycle.CycleStart += OnCycleStart;
         Cycle.CycleEnd += OnCycleEnd;
     }
@@ -46,29 +46,35 @@ public class EntitySpawner : MonoBehaviour
             SpawnFirstGenerationOfEntities();
             GetActiveEntities();
             FirstCyclePositioning();
-            Counter.Instance.AddCountPerCycle();
-            Counter.Instance.AddSpeedAverageOnCycle(AverageSpeed());
-            Counter.Instance.AddHeightAverageOnCycle(AverageHeight());
+            UpdateSimulationData();
         }
         else
         {
             GetActiveEntities();
-            CrossbreedTheFittestEntities();
-            ResetStartingPositions();
+            CrossbreedTheFittestEntitiesByFitness();
+            //ResetStartingPositions();
         }
     }
 
     private void OnCycleEnd(object sender, EventArgs eventArgs)
     {
-        // ???
         GetActiveEntities();
         SendAllEntitiesBackToStartingPositions();
+        UpdateSimulationData();
+    }
+
+	#region Data Methods
+	private void UpdateSimulationData()
+    {
         Counter.Instance.AddCountPerCycle();
         Counter.Instance.AddSpeedAverageOnCycle(AverageSpeed());
         Counter.Instance.AddHeightAverageOnCycle(AverageHeight());
+        Counter.Instance.AddPeerUtilityAverageOnCycle(AveragePeerUtility());
+        Counter.Instance.AddOpponentUtilityAverageOnCycle(AverageOpponentUtility());
+        Counter.Instance.AddSocializingChanceAverageOnCycle(AverageSocializingChance());
     }
 
-    private float AverageSpeed() // ???
+    private float AverageSpeed()
     {
         float average = 0.0f;
         int count = 0;
@@ -102,13 +108,67 @@ public class EntitySpawner : MonoBehaviour
         return average / count;
     }
 
-    private void SpawnFirstGenerationOfEntities() // ???
+    private float AveragePeerUtility()
+    {
+        float average = 0.0f;
+        int count = 0;
+
+        for (int i = 0; i < entities.Count; i++)
+        {
+            if (entities[i].gameObject.GetComponent<Entity>().IsHerbivore())
+            {
+                average += entities[i].gameObject.GetComponent<Entity>().Behavior.PeerUtility;
+                count++;
+            }
+        }
+
+        return average / count;
+    }
+
+    private float AverageOpponentUtility()
+    {
+        float average = 0.0f;
+        int count = 0;
+
+        for (int i = 0; i < entities.Count; i++)
+        {
+            if (entities[i].gameObject.GetComponent<Entity>().IsHerbivore())
+            {
+                average += entities[i].gameObject.GetComponent<Entity>().Behavior.OpponentUtility;
+                count++;
+            }
+        }
+
+        return average / count;
+    }
+
+    private float AverageSocializingChance()
+    {
+        float average = 0.0f;
+        int count = 0;
+
+        for (int i = 0; i < entities.Count; i++)
+        {
+            if (entities[i].gameObject.GetComponent<Entity>().IsHerbivore())
+            {
+                average += entities[i].gameObject.GetComponent<Entity>().Behavior.SocializingChance;
+                count++;
+            }
+        }
+
+        return average / count;
+    }
+
+	#endregion
+
+	private void SpawnFirstGenerationOfEntities() // ???
     {
         for (int s = 0; s < species.Count; s++)
         {
             for (int i = 0; i < species[s].total; i++)
             {
-                GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomPosition()/*GetRandomStartingPosition()*/, Quaternion.identity);
+                GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomPosition(), Quaternion.identity);
+                if (o == null) break;
                 Entity e = o.GetComponent<Entity>();
                 e.transform.LookAt(Vector3.zero);
 
@@ -162,7 +222,7 @@ public class EntitySpawner : MonoBehaviour
         }
     }
    
-    private void CrossbreedTheFittestEntities() // ???
+    private void CrossbreedTheFittestEntitiesByFitness()
     {
         List<GameObject> herbivoreFemales = new List<GameObject>();
         List<GameObject> herbivoreMales = new List<GameObject>();
@@ -175,46 +235,33 @@ public class EntitySpawner : MonoBehaviour
             Entity e = entity.GetComponent<Entity>();
             if (e.IsHerbivore())
             {
-                if (e.IsFemale())
-                    herbivoreFemales.Add(entity);
-                else
-                    herbivoreMales.Add(entity);
+                if (e.IsFemale()) herbivoreFemales.Add(entity);
+                else herbivoreMales.Add(entity);
             }
             else
             {
-                if (e.IsFemale())
-                    carnivoreFemales.Add(entity);
-                else
-                    carnivoreMales.Add(entity);
-
+                if (e.IsFemale()) carnivoreFemales.Add(entity);
+                else carnivoreMales.Add(entity);
             }
         }
 
-        herbivoreFemales.Sort(delegate (GameObject a, GameObject b)
-        { return (b.GetComponent<Entity>().Fitness).CompareTo(a.GetComponent<Entity>().Fitness); }
-                             );
-
-        herbivoreMales.Sort(delegate (GameObject a, GameObject b)
-        { return (b.GetComponent<Entity>().Fitness).CompareTo(a.GetComponent<Entity>().Fitness); }
-                           );
-
-        carnivoreFemales.Sort(delegate (GameObject a, GameObject b)
-        { return (b.GetComponent<Entity>().Fitness).CompareTo(a.GetComponent<Entity>().Fitness); }
-                           );
-
-        carnivoreMales.Sort(delegate (GameObject a, GameObject b)
-        { return (b.GetComponent<Entity>().Fitness).CompareTo(a.GetComponent<Entity>().Fitness); }
-                           );
+        herbivoreFemales.Sort(delegate (GameObject a, GameObject b) { return b.GetComponent<Entity>().Fitness.CompareTo(a.GetComponent<Entity>().Fitness); } );
+        herbivoreMales.Sort(delegate (GameObject a, GameObject b)   { return b.GetComponent<Entity>().Fitness.CompareTo(a.GetComponent<Entity>().Fitness); } );
+        carnivoreFemales.Sort(delegate (GameObject a, GameObject b) { return b.GetComponent<Entity>().Fitness.CompareTo(a.GetComponent<Entity>().Fitness); } );
+        carnivoreMales.Sort(delegate (GameObject a, GameObject b)   { return b.GetComponent<Entity>().Fitness.CompareTo(a.GetComponent<Entity>().Fitness); } );
 
         if (herbivoreFemales.Count != 0 && herbivoreMales.Count != 0)
         {
-            int maxFemaleCount = herbivoreFemales.Count >= 20 ? 20 : herbivoreFemales.Count;
-            int maxMaleCount = herbivoreMales.Count >= 10 ? 10 : herbivoreMales.Count;
+            //int maxFemaleCount = herbivoreFemales.Count >= 20 ? 20 : herbivoreFemales.Count;
+            //int maxMaleCount = herbivoreMales.Count >= 10 ? 10 : herbivoreMales.Count;
+
+            int maxFemaleCount = herbivoreFemales.Count * 20 / 100;
+            int maxMaleCount = herbivoreMales.Count * 20 / 100;
 
             for (int i = 0; i < maxFemaleCount; i++)
             {
-                GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomPosition()/*GetRandomStartingPosition()*/, Quaternion.identity);
-                if (o == null) continue;
+                GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomPosition(), Quaternion.identity);
+                if (o == null) break;
                 Entity e = o.GetComponent<Entity>();
                 e.transform.LookAt(Vector3.zero);
 
@@ -229,16 +276,18 @@ public class EntitySpawner : MonoBehaviour
             }
         }
 
-        if (Random.Range(0.0f, 100.0f) < 20.0f)
+        if (Random.Range(0.0f, 100.0f) < 80.0f)
         {
             if (carnivoreFemales.Count != 0 && carnivoreMales.Count != 0)
             {
-                int maxFemaleCount = carnivoreFemales.Count >= 3 ? 3 : carnivoreFemales.Count;
-                int maxMaleCount = carnivoreMales.Count >= 3 ? 3 : carnivoreMales.Count;
+                int maxFemaleCount = carnivoreFemales.Count >= 10 ? 10 : carnivoreFemales.Count;
+                int maxMaleCount = carnivoreMales.Count >= 5 ? 5 : carnivoreMales.Count;
 
                 for (int i = 0; i < maxFemaleCount; i++)
                 {
-                    GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomStartingPosition(), Quaternion.identity);
+                    GameObject o = entityPooler.SpawnFromPool("Entity", GetRandomPosition(), Quaternion.identity);
+                    if (o == null) break;
+
                     Entity e = o.GetComponent<Entity>();
                     e.transform.LookAt(Vector3.zero);
                     e.Genome = carnivoreFemales[i].GetComponent<Entity>().Genome.CrossGenome(carnivoreMales[Random.Range(0, maxMaleCount)].GetComponent<Entity>().Genome, mutationFactor, mutationChance);
@@ -256,7 +305,7 @@ public class EntitySpawner : MonoBehaviour
     {
         foreach (GameObject entity in entities) entity.transform.position = GetRandomPosition();
                 //GetRandomStartingPosition();
-        ResetStartingPositions();
+        //ResetStartingPositions();
     }
 
     /// Get all current active entities
@@ -267,6 +316,14 @@ public class EntitySpawner : MonoBehaviour
         for (int i = 0; i < gameObject.transform.childCount; i++)
             if (gameObject.transform.GetChild(i).gameObject.activeSelf)
                 entities.Add(gameObject.transform.GetChild(i).gameObject);
+    }
+
+    private Vector3 GetRandomPosition()
+    {
+        float x = Random.Range(bounds.min.x + 2.0f, bounds.max.x - 2.0f);
+        float z = Random.Range(bounds.min.z + 2.0f, bounds.max.z - 2.0f);
+
+        return new Vector3(x, 0, z);
     }
 
     #region Positioning Functions
@@ -344,12 +401,4 @@ public class EntitySpawner : MonoBehaviour
             entity.GetComponent<Entity>().Transform.position = GetRandomPosition()/*GetRandomStartingPosition()*/;
     }
     #endregion
-
-    private Vector3 GetRandomPosition()
-    {
-        float x = Random.Range(bounds.min.x + 2.0f, bounds.max.x - 2.0f);
-        float z = Random.Range(bounds.min.z + 2.0f, bounds.max.z - 2.0f);
-
-        return new Vector3(x, 0, z);
-    }
 }

@@ -6,13 +6,13 @@ using UnityEngine;
 public class Memory : MonoBehaviour
 {
 	private Entity entity;
-	private Dictionary<int, MemoryData> _resources = new Dictionary<int, MemoryData>();
+	private Dictionary<int, MemoryData> _resources;
 	private int _memoryCapacity = 20;
 
 	public void OnEnable()
 	{
 		entity = gameObject.GetComponent<Entity>();
-		_resources.Clear();
+		_resources = new Dictionary<int, MemoryData>();
 		StartCoroutine(RefreshMemoryCoroutine());
 	}
 
@@ -51,9 +51,9 @@ public class Memory : MonoBehaviour
 	/// <param name="gameObject"></param>
 	public void MemorizeResource(GameObject gameObject)
 	{
-		if (gameObject == null)
+		if (gameObject == null || !gameObject.activeSelf)
 			return;
-		else if (!RemembersResource(gameObject) && !gameObject.GetComponent<Resource>().IsConsumed() && _resources.Count <= _memoryCapacity)
+		else if (!RemembersResource(gameObject) && gameObject.activeSelf && _resources.Count <= _memoryCapacity)
 			_resources.Add(gameObject.GetInstanceID(), new MemoryData(gameObject));
 	}
 
